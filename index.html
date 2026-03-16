@@ -154,7 +154,20 @@
     .d-btn{font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--border2);background:transparent;cursor:pointer;color:var(--muted);font-family:'Inter',sans-serif;transition:all .15s}
     .d-btn:hover{color:var(--ink)}
     .d-btn.picked{background:var(--ink);color:#fff;border-color:transparent}
-    .maybe-wrap{padding:0 1.2rem .8rem}
+    .maybe-next-btn{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap}
+    .maybe-next-btn:hover{border-color:rgba(184,138,16,.4);color:#8A6010;background:#FDFAED}
+    .maybe-next-btn.set{background:#FDFAED;color:#8A6010;border-color:rgba(184,138,16,.45)}
+    .tip-section{width:100%;background:linear-gradient(135deg,#FDFAED,#FFF8DC);border:1.5px solid rgba(184,138,16,.3);border-radius:var(--r);padding:12px 14px;margin-bottom:1.2rem}
+    .tip-section-hdr{font-size:11px;font-weight:500;color:#8A6010;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+    .tip-pill{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid rgba(184,138,16,.3);border-radius:999px;padding:5px 10px;font-size:12px;color:#5A4008;margin:3px 3px 0 0;cursor:pointer;transition:background .15s}
+    .tip-pill:hover{background:#FFF3C0}
+    .card-tip-badge{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#C89B14,#E8B820);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:.3px;box-shadow:0 1px 6px rgba(184,138,16,.4)}
+    .card-labels{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:4px}
+    .card-label{font-size:10px;font-weight:600;padding:3px 9px;border-radius:999px;letter-spacing:.2px;display:inline-block;width:fit-content}
+    .card-label.tip{background:linear-gradient(135deg,#C89B14,#E8B820);color:#fff;box-shadow:0 1px 6px rgba(184,138,16,.4)}
+    .card-label.fav{background:linear-gradient(135deg,#B85C30,#D06830);color:#fff;box-shadow:0 1px 5px rgba(184,92,48,.35)}
+    .card-label.diego-fav{background:var(--diego);color:#fff;box-shadow:0 1px 5px rgba(61,82,184,.3)}
+    .card-label.britt-fav{background:var(--britt);color:#fff;box-shadow:0 1px 5px rgba(160,48,112,.3)}
     .maybe-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r);background:var(--bg2);border:1px solid var(--border);margin-bottom:5px}
     .maybe-name{flex:1;font-size:13px;color:var(--muted);font-family:'Cormorant Garamond',serif;font-style:italic}
     .cal-wrap{padding:0 1.2rem 1rem}
@@ -228,12 +241,27 @@
     .leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
     .leg-lbl{font-size:12px;color:var(--ink2);flex:1}
     .leg-pct{font-size:12px;font-weight:500;color:var(--ink)}
-    .bars-wrap{display:flex;align-items:flex-end;gap:4px;height:80px;padding-bottom:18px;position:relative}
-    .bar-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;height:100%}
-    .bar-col-fill{width:100%;border-radius:4px 4px 0 0;background:var(--bg3);min-height:3px;transition:height .4s ease;flex-shrink:0}
+    .bars-wrap{display:flex;align-items:flex-end;gap:6px;height:120px;padding:0 0 22px;position:relative;border-bottom:1px solid var(--border)}
+    .bar-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative}
+    .bar-col-fill{width:100%;border-radius:4px 4px 0 0;background:var(--bg3);min-height:3px;transition:height .5s cubic-bezier(.4,0,.2,1);flex-shrink:0}
     .bar-col-fill.active{background:var(--accent)}
-    .bar-col-lbl{font-size:9px;color:var(--muted);white-space:nowrap;position:absolute;bottom:0}
-    .empty-state{font-size:13px;color:var(--muted);text-align:center;padding:2.5rem 1rem;line-height:1.8}
+    .bar-col-val{font-size:10px;font-weight:500;color:var(--ink2);margin-bottom:3px;line-height:1}
+    .bar-col-lbl{font-size:9px;color:var(--muted);white-space:nowrap;position:absolute;bottom:0;left:50%;transform:translateX(-50%)}
+    .all-meals-toggle{width:100%;padding:9px 14px;border-radius:var(--r);border:1px solid var(--border2);background:transparent;font-family:'Inter',sans-serif;font-size:12px;color:var(--muted);cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:background .15s;margin-top:-4px}
+    .all-meals-toggle:hover{background:var(--bg2);color:var(--ink2)}
+    .all-meals-toggle .chevron{transition:transform .2s;font-style:normal;font-size:10px}
+    .all-meals-toggle.open .chevron{transform:rotate(180deg)}
+    .all-meals-list{display:none;margin-top:6px}
+    .all-meals-list.open{display:block}
+    .am-row{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:var(--bg);border:1px solid var(--border);margin-bottom:4px}
+    .am-img{width:32px;height:32px;border-radius:8px;flex-shrink:0;position:relative;overflow:hidden;background:var(--bg3)}
+    .am-img .fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+    .am-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
+    .am-info{flex:1;min-width:0}
+    .am-name{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .am-bar-wrap{height:3px;background:var(--bg3);border-radius:999px;margin-top:4px;overflow:hidden}
+    .am-bar{height:100%;border-radius:999px;background:var(--accent)}
+    .am-count{font-size:12px;font-weight:500;color:var(--muted);flex-shrink:0;min-width:28px;text-align:right}
     .hist-week{margin-bottom:1.4rem}
     .hist-week-lbl{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
     .hist-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);margin-bottom:5px}
@@ -309,12 +337,14 @@
   <!-- TAGS -->
   <div id="s-tags" class="gone" style="width:100%">
     <div class="tag-inner">
-      <div class="screen-title" id="tags-title">Wat heb je zin in?</div>
+      <div class="screen-title" id="tags-title">Waar heb je zin in?</div>
       <div class="screen-sub" id="tags-sub">Kies een of meer categorieën, of sla over voor alle gerechten.</div>
+      <div id="tip-section" class="gone"></div>
       <div class="tag-grid" id="tag-grid"></div>
       <div class="tag-count" id="tag-count"></div>
       <button class="btn-primary" id="tags-start-btn" style="margin-top:0" onclick="startSwiping()">Start swipen →</button>
       <button class="btn-ghost" onclick="clearTags()">Alles tonen</button>
+      <button class="btn-ghost" id="tags-menu-btn" onclick="goToMenu()" style="border-color:var(--border2);color:var(--muted)">Ga naar menu →</button>
       <button class="btn-ghost" id="tags-back-btn" style="display:none;color:var(--muted)" onclick="backFromTags()">← Terug naar menu</button>
     </div>
   </div>
@@ -353,10 +383,10 @@
       <div class="res-week" id="res-week-lbl"></div>
     </div>
     <div class="res-tabs">
-      <button class="res-tab active" onclick="switchTab('menu')">🍽 Menu</button>
-      <button class="res-tab" onclick="switchTab('smaak')">📊 Smaak</button>
-      <button class="res-tab" onclick="switchTab('stats')">🔥 Streak</button>
-      <button class="res-tab" onclick="switchTab('history')">🔁 Gegeten</button>
+      <button class="res-tab active" onclick="switchTab('menu')">Menu</button>
+      <button class="res-tab" onclick="switchTab('smaak')">Smaak</button>
+      <button class="res-tab" onclick="switchTab('stats')">Streak</button>
+      <button class="res-tab" onclick="switchTab('history')">Gegeten</button>
     </div>
     <div class="tab-pane active" id="tab-menu">
       <div class="week-hdr"><h2>Menu deze week</h2><p id="ressub"></p></div>
@@ -375,7 +405,18 @@
       </div>
       <button class="act-btn" style="margin:0 1.2rem .6rem;width:calc(100% - 2.4rem);border-color:rgba(61,82,184,.3);color:var(--diego)" onclick="startExtraRound()">🔄 Nog een ronde swipen</button>
       <button class="act-btn" style="margin:0 1.2rem .6rem;width:calc(100% - 2.4rem)" onclick="addMoreMeals()">➕ Gerecht handmatig toevoegen</button>
+      <button class="act-btn" style="margin:0 1.2rem .6rem;width:calc(100% - 2.4rem);border-color:rgba(45,122,66,.3);color:var(--grn)" onclick="startNextWeekSwipe()">📅 Volgende week inplannen</button>
       <button class="reset-btn" onclick="resetGame()">Opnieuw beginnen</button>
+      <!-- NEXT WEEK SECTION -->
+      <div id="nextweek-sec" class="gone">
+        <div style="border-top:1px solid var(--border);margin:0 1.2rem .8rem"></div>
+        <div class="week-hdr" style="padding-top:.6rem"><h2>Volgende week</h2><p id="nextweek-sub"></p></div>
+        <div class="sec-label" id="nextweek-matches-label"></div>
+        <div class="weekgrid" id="nextweek-grid"></div>
+        <div class="cal-wrap" style="margin-top:.8rem"><h3>Weekoverzicht</h3><div class="cal-grid" id="nextweek-calgrid"></div></div>
+        <button class="act-btn" style="margin:0 1.2rem .4rem;width:calc(100% - 2.4rem);border-color:rgba(61,82,184,.3);color:var(--diego)" onclick="startNextWeekSwipe()">🔄 Nog een ronde voor volgende week</button>
+        <button class="reset-btn" style="color:var(--red);border-color:rgba(179,48,48,.25)" onclick="clearNextWeek()">Volgende week wissen</button>
+      </div>
     </div>
     <div class="tab-pane" id="tab-smaak"><div class="tab-inner" id="smaak-content"></div></div>
     <div class="tab-pane" id="tab-stats"><div class="tab-inner" id="stats-content"></div></div>
@@ -484,14 +525,16 @@ const TAGS=[
 ];
 const DAYS=['Ma','Di','Wo','Do','Vr','Za','Zo'];
 const CAT_COLORS={Vlees:'#B85C30',Kip:'#A03070',Vis:'#3D52B8',Healthy:'#2D7A42',Quick:'#8A6010','Friends & family':'#5040A0',Oven:'#903030',Pan:'#606060',Thermomix:'#205880'};
-const SK='dinnr-history-v3',SSK='dinnr-sessions-v1';
+const SK='dinnr-history-v3',SSK='dinnr-sessions-v1',SMN='dinnr-maybenext-v1',SLK='dinnr-likes-v1',SNW='dinnr-nextweek-v1';
 
 let fp=null,cp=null,selTags=new Set(),recs=[];
 let dV={},bV={},ci=0,voting=false,p1done=false;
 let drag=false,sx=0,del=null;
 let matches=[],vetoed=[],plan={},vetoIdx=null;
-let hist=[],sess=[];
-let mergeMode=false;
+let hist=[],sess=[],maybeNext=[],likes={};
+let mergeMode=false,nextWeekMode=false;
+// Next week state
+let nextMatches=[],nextPlan={};
 // Accumulated votes across all rounds (for Smaak tab)
 let allRecs=[],allDV={},allBV={};
 
@@ -507,12 +550,20 @@ function pvotes(p){return p==='diego'?dV:bV;}
 function loadData(){
   hist = storage.get(SK) || [];
   sess = storage.get(SSK) || [];
+  maybeNext = storage.get(SMN) || [];
+  likes = storage.get(SLK) || {};
+  const nw = storage.get(SNW) || {};
+  nextMatches = nw.matches || [];
+  nextPlan = nw.plan || {};
 }
 function saveHist(){ storage.set(SK, hist); }
 function saveSess(){ storage.set(SSK, sess); }
+function saveMaybeNext(){ storage.set(SMN, maybeNext); }
+function saveLikes(){ storage.set(SLK, likes); }
+function saveNextWeek(){ storage.set(SNW, {matches:nextMatches, plan:nextPlan}); }
 function clearAll(){
-  hist=[];sess=[];
-  storage.delete(SK);storage.delete(SSK);
+  hist=[];sess=[];maybeNext=[];likes={};nextMatches=[];nextPlan={};
+  storage.delete(SK);storage.delete(SSK);storage.delete(SMN);storage.delete(SLK);storage.delete(SNW);
   renderHist();renderStats();
 }
 function recentIds(){const cut=Date.now()-14*24*60*60*1000;return new Set(hist.filter(h=>h.ts>cut).map(h=>h.id));}
@@ -529,9 +580,10 @@ function selectPlayer(p){
   btn.style.background=p==='diego'?'#3D52B8':'#A03070';
 }
 
-function goToTags(merge){
+function goToTags(merge, nextWeek){
   if(!fp)return;
   mergeMode=!!merge;
+  nextWeekMode=!!nextWeek;
   selTags.clear();
   renderTags();
   showScreen('s-tags');
@@ -544,13 +596,26 @@ function renderTags(){
     b.innerHTML=`${tag.e} ${tag.l} <span class="tag-check-ico">✓</span>`;
     b.onclick=()=>toggleTag(tag.k);b.id='tp-'+tag.k;g.appendChild(b);
   });
-  // Update title/subtitle/button to reflect merge context
-  document.getElementById('tags-title').textContent=mergeMode?'Nog een ronde':'Wat heb je zin in?';
-  document.getElementById('tags-sub').textContent=mergeMode
-    ?`Kies categorieën voor een extra swipe ronde. Gerechten die al in je menu staan worden overgeslagen.`
-    :'Kies een of meer categorieën, of sla over voor alle gerechten.';
-  document.getElementById('tags-start-btn').textContent=mergeMode?'Extra ronde swipen →':'Start swipen →';
-  document.getElementById('tags-back-btn').style.display=mergeMode?'block':'none';
+  // Tip section — meals marked "maybe next week"
+  const tipEl=document.getElementById('tip-section');
+  const tipMeals=maybeNext.map(id=>ALL.find(r=>r.id===id)).filter(Boolean);
+  if(tipMeals.length&&!mergeMode){
+    tipEl.className='tip-section';
+    tipEl.innerHTML=`<div class="tip-section-hdr">⭐ Bewaard voor deze week</div>`+
+      `<div style="font-size:11px;color:#8A6010;margin-bottom:8px;line-height:1.5">Deze gerechten staan bovenaan de swipe-deck. Beiden moeten swipen om ze toe te voegen.</div>`+
+      tipMeals.map(m=>`<span class="tip-pill">${m.e} ${m.name}</span>`).join('');
+  } else {
+    tipEl.className='gone';tipEl.innerHTML='';
+  }
+  document.getElementById('tags-title').textContent=nextWeekMode?'Volgende week':mergeMode?'Nog een ronde':'Waar heb je zin in?';
+  document.getElementById('tags-sub').textContent=nextWeekMode
+    ?'Swipe alvast voor volgende week. Jullie plan wordt apart bewaard.'
+    :mergeMode
+      ?'Kies categorieën voor een extra swipe ronde. Gerechten die al in je menu staan worden overgeslagen.'
+      :'Kies een of meer categorieën, of sla over voor alle gerechten.';
+  document.getElementById('tags-start-btn').textContent=nextWeekMode?'Swipen voor volgende week →':mergeMode?'Extra ronde swipen →':'Start swipen →';
+  document.getElementById('tags-back-btn').style.display=(mergeMode||nextWeekMode)?'block':'none';
+  document.getElementById('tags-menu-btn').style.display=(mergeMode||nextWeekMode)?'none':'block';
   updTagCount();
 }
 function toggleTag(k){selTags.has(k)?selTags.delete(k):selTags.add(k);document.getElementById('tp-'+k).classList.toggle('on',selTags.has(k));updTagCount();}
@@ -559,22 +624,34 @@ function filtered(){if(!selTags.size)return ALL;return ALL.filter(r=>[...r.t,...
 function updTagCount(){
   let pool=filtered();
   if(mergeMode){const ids=new Set(matches.map(m=>m.id));pool=pool.filter(r=>!ids.has(r.id));}
+  if(nextWeekMode){const ids=new Set(nextMatches.map(m=>m.id));pool=pool.filter(r=>!ids.has(r.id));}
   const n=pool.length;
   document.getElementById('tag-count').textContent=selTags.size===0
-    ?(mergeMode?`${n} nieuwe gerechten beschikbaar.`:`Alle ${ALL.length} gerechten worden getoond.`)
+    ?(mergeMode||nextWeekMode?`${n} gerechten beschikbaar.`:`Alle ${ALL.length} gerechten worden getoond.`)
     :`${n} gerecht${n!==1?'en':''} gevonden.`;
 }
 
 function startSwiping(){
-  let f=filtered();if(!f.length){alert('Geen gerechten gevonden.');return;}
-  // In merge mode, exclude meals already in matches
+  let f=filtered();if(!f.length&&!maybeNext.length){alert('Geen gerechten gevonden.');return;}
   if(mergeMode){
     const existingIds=new Set(matches.map(m=>m.id));
     f=f.filter(r=>!existingIds.has(r.id));
-    if(!f.length){alert('Alle gerechten in deze categorie staan al in je menu.');return;}
+    if(!f.length&&!maybeNext.length){alert('Alle gerechten in deze categorie staan al in je menu.');return;}
+  }
+  if(nextWeekMode){
+    const existingIds=new Set(nextMatches.map(m=>m.id));
+    f=f.filter(r=>!existingIds.has(r.id));
   }
   const ri=recentIds();
-  recs=[...f.filter(r=>!ri.has(r.id)),...f.filter(r=>ri.has(r.id))];
+  const tipIds=new Set(maybeNext);
+  const tipMeals=ALL.filter(r=>tipIds.has(r.id));
+  const filteredWithoutTips=f.filter(r=>!tipIds.has(r.id));
+  recs=[
+    ...tipMeals,
+    ...filteredWithoutTips.filter(r=>!ri.has(r.id)),
+    ...filteredWithoutTips.filter(r=>ri.has(r.id))
+  ];
+  if(!recs.length){alert('Geen gerechten gevonden.');return;}
   dV={};bV={};p1done=false;cp=fp;ci=0;voting=false;
   buildCards();showScreen('s-swipe');updHeader();
 }
@@ -592,17 +669,58 @@ function updProg(){
 function buildCards(){
   const st=document.getElementById('stack');st.innerHTML='';
   const ri=recentIds();
+  const tipIds=new Set(maybeNext);
+  // Clear maybeNext now that we've surfaced them
+  if(maybeNext.length){maybeNext=[];saveMaybeNext();}
+
+  // Compute favorites: meals eaten 3+ times
+  const freq={};hist.forEach(h=>{freq[h.id]=(freq[h.id]||0)+1;});
+  const favIds=new Set(Object.keys(freq).filter(id=>freq[id]>=3).map(Number));
+
+  // Compute "most swiped by person":
+  // Only label a meal if BOTH players have seen it (likes[id] exists for both with count > 0)
+  // AND one person likes it clearly more than the other (likes it more sessions than the other)
+  const dTopIds=new Set();
+  const bTopIds=new Set();
+  recs.forEach(r=>{
+    const d=likes[r.id]?.diego||0;
+    const b=likes[r.id]?.britt||0;
+    // Both must have been exposed to it (both have a non-zero session count)
+    // We use total sessions as proxy: if either is 0, we can't compare fairly
+    if(d===0||b===0) return;
+    // Must have at least 2 likes total and a clear preference gap
+    if(d>b&&d>=2) dTopIds.add(r.id);
+    if(b>d&&b>=2) bTopIds.add(r.id);
+  });
+
   recs.forEach((r,i)=>{
     const el=document.createElement('div');el.className='card';el.id='card-'+i;
     el.style.zIndex=recs.length-i;setDepth(el,i);
     const isR=ri.has(r.id);
+    const isTip=tipIds.has(r.id);
+    const isFav=favIds.has(r.id);
+    const isDTop=dTopIds.has(r.id);
+    const isBTop=bTopIds.has(r.id);
     const bc=r.b.map(x=>`<span class="chip b">${x}</span>`).join('');
     const tc=r.t.map(x=>`<span class="chip t">${x}</span>`).join('');
+
+    // Build label stack (top-left)
+    const labelHtml=(isTip||isFav||isDTop||isBTop)?`<div class="card-labels">
+      ${isTip?`<span class="card-label tip">⭐ Bewaard</span>`:''}
+      ${isFav?`<span class="card-label fav">❤️ Favoriet</span>`:''}
+      ${isDTop&&!isBTop?`<span class="card-label diego-fav">👤 Diego's keuze</span>`:''}
+      ${isBTop&&!isDTop?`<span class="card-label britt-fav">👤 Britt's keuze</span>`:''}
+      ${isDTop&&isBTop?`<span class="card-label diego-fav">👥 Beider favoriet</span>`:''}
+    </div>`:'';
+
+    // RECENT badge top-right (only when no left labels competing)
+    const recentHtml=isR&&!isTip?`<div style="position:absolute;top:10px;right:10px;background:rgba(61,82,184,.85);color:#fff;font-size:10px;font-weight:500;padding:3px 9px;border-radius:999px">RECENT</div>`:'';
+
     el.innerHTML=`
       <div class="card-img-wrap" style="background:${r.bg}">
         <div class="card-emoji">${r.e}</div>
         <img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s">
-        ${isR?`<div style="position:absolute;top:10px;right:10px;background:rgba(61,82,184,.85);color:#fff;font-size:10px;font-weight:500;padding:3px 9px;border-radius:999px">RECENT</div>`:''}
+        ${labelHtml}${recentHtml}
       </div>
       <div class="card-body"><div class="card-name">${r.name}</div><div class="card-chips">${bc}${tc}</div></div>
       <div class="stamp yes" id="sy-${i}">Ja ♥</div>
@@ -642,7 +760,16 @@ function vote(liked){
     }else{aDrag();if(isMatch)showMatch(r);}
   },350);
 }
-function backFromTags(){mergeMode=false;showScreen('s-results');}
+function backFromTags(){mergeMode=false;nextWeekMode=false;showScreen('s-results');}
+function goToMenu(){
+  // Skip swiping entirely — go straight to results with empty state
+  // so the user can manually add meals via the extra round or addMore
+  matches=[];vetoed=[];plan={};recs=[];dV={};bV={};allRecs=[];allDV={};allBV={};
+  document.getElementById('ressub').textContent='Voeg gerechten toe via "Nog een ronde swipen" of "Gerecht handmatig toevoegen".';
+  document.getElementById('res-week-lbl').textContent='Week van '+wlabel(Date.now());
+  document.getElementById('save-note').textContent='';
+  renderAll();switchTab('menu');showScreen('s-results');
+}
 function startExtraRound(){
   if(!fp) fp='diego';
   goToTags(true);
@@ -658,14 +785,23 @@ function dismissMatch(){document.getElementById('matchscreen').classList.remove(
 
 function showResults(){
   const newMatches=recs.filter(r=>dV[r.id]===true&&bV[r.id]===true);
-  if(mergeMode){
+
+  if(nextWeekMode){
+    // Merge new matches into nextMatches
+    const existingIds=new Set(nextMatches.map(m=>m.id));
+    const added=newMatches.filter(m=>!existingIds.has(m.id));
+    nextMatches=[...nextMatches,...added];
+    const usedDays=new Set(Object.keys(nextPlan).map(Number));
+    added.forEach(m=>{for(let d=0;d<7;d++){if(!usedDays.has(d)){nextPlan[d]=m;usedDays.add(d);break;}}});
+    nextWeekMode=false;
+    saveNextWeek();
+  } else if(mergeMode){
     const existingIds=new Set(matches.map(m=>m.id));
     const added=newMatches.filter(m=>!existingIds.has(m.id));
     matches=[...matches,...added];
     const usedDays=new Set(Object.keys(plan).map(Number));
     added.forEach(m=>{for(let d=0;d<7;d++){if(!usedDays.has(d)){plan[d]=m;usedDays.add(d);break;}}});
     mergeMode=false;
-    // Accumulate votes
     const seenIds=new Set(allRecs.map(r=>r.id));
     recs.forEach(r=>{if(!seenIds.has(r.id))allRecs.push(r);});
     Object.assign(allDV,dV);Object.assign(allBV,bV);
@@ -673,11 +809,19 @@ function showResults(){
     matches=newMatches;
     vetoed=[];plan={};
     matches.forEach((m,i)=>{if(i<7)plan[i]=m;});
-    // Fresh round: reset accumulated
     allRecs=[...recs];Object.assign(allDV={},dV);Object.assign(allBV={},bV);
   }
-  const wk=wkey();
-  if(!sess.find(s=>s.week===wk)){sess.unshift({week:wk,matchCount:matches.length,ts:Date.now()});sess.sort((a,b)=>b.ts-a.ts);saveSess();}
+  // Accumulate per-player persistent likes
+  recs.forEach(r=>{
+    if(!likes[r.id])likes[r.id]={diego:0,britt:0};
+    if(dV[r.id]===true)likes[r.id].diego++;
+    if(bV[r.id]===true)likes[r.id].britt++;
+  });
+  saveLikes();
+  if(!nextWeekMode){
+    const wk=wkey();
+    if(!sess.find(s=>s.week===wk)){sess.unshift({week:wk,matchCount:matches.length,ts:Date.now()});sess.sort((a,b)=>b.ts-a.ts);saveSess();}
+  }
   document.getElementById('ressub').textContent=matches.length?`Diego & Britt zijn het eens over ${matches.length} gerecht${matches.length!==1?'en':''}!`:'Geen matches — probeer opnieuw!';
   document.getElementById('res-week-lbl').textContent='Week van '+wlabel(Date.now());
   document.getElementById('save-note').textContent='';
@@ -700,8 +844,77 @@ function savePlan(){
   renderHist();renderStats();
 }
 
-function renderAll(){renderMenu();renderCal();renderMaybe();renderSmaak();renderStats();renderHist();const ac=matches.filter(m=>!vetoed.includes(m.id)).length;document.getElementById('matches-label').textContent=`${ac} match${ac!==1?'es':''}`;}
+function renderAll(){renderMenu();renderCal();renderMaybe();renderNextWeek();renderSmaak();renderStats();renderHist();const ac=matches.filter(m=>!vetoed.includes(m.id)).length;document.getElementById('matches-label').textContent=`${ac} match${ac!==1?'es':''}`;}
 
+function startNextWeekSwipe(){
+  if(!fp) fp='diego';
+  goToTags(false, true);
+}
+function clearNextWeek(){
+  nextMatches=[];nextPlan={};
+  saveNextWeek();
+  renderNextWeek();
+}
+function renderNextWeek(){
+  const sec=document.getElementById('nextweek-sec');
+  if(!nextMatches.length){sec.classList.add('gone');return;}
+  sec.classList.remove('gone');
+  const ac=nextMatches.length;
+  document.getElementById('nextweek-sub').textContent=`${ac} gerecht${ac!==1?'en':''} gepland voor volgende week`;
+  document.getElementById('nextweek-matches-label').textContent=`${ac} match${ac!==1?'es':''}`;
+  // Render meal rows
+  const g=document.getElementById('nextweek-grid');g.innerHTML='';
+  nextMatches.forEach((meal,mi)=>{
+    const ad=Object.keys(nextPlan).find(d=>nextPlan[d]&&nextPlan[d].id===meal.id);
+    const lbl=ad!==undefined?DAYS[ad]:'—';
+    const bc=meal.b.map(x=>`<span class="chip b" style="font-size:10px">${x}</span>`).join('');
+    const tc=meal.t.slice(0,2).map(x=>`<span class="chip t" style="font-size:10px">${x}</span>`).join('');
+    const row=document.createElement('div');row.className='mrow';
+    row.innerHTML=`<div class="mrow-top">
+      <div class="mrow-img" style="background:${meal.bg}"><div class="fb">${meal.e}</div><img src="${meal.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div>
+      <div style="flex:1;min-width:0"><div class="meal-name">${meal.name}</div><div class="meal-chips">${bc}${tc}</div></div>
+      <div class="row-actions"><button class="day-tag ${ad!==undefined?'set':''}" onclick="toggleNextWeekDayPick(${mi})">${lbl}</button><button class="veto-btn" onclick="removeNextWeekMeal(${mi})">✕</button></div>
+    </div>
+    <div class="day-pick" id="ndp-${mi}">${DAYS.map((d,di)=>`<button class="d-btn ${nextPlan[di]&&nextPlan[di].id===meal.id?'picked':''}" onclick="assignNextWeekDay(${mi},${di})">${d}</button>`).join('')}<button class="d-btn" style="color:var(--red)" onclick="unassignNextWeek(${mi})">✕</button></div>`;
+    g.appendChild(row);
+  });
+  renderNextWeekCal();
+}
+function renderNextWeekCal(){
+  const g=document.getElementById('nextweek-calgrid');g.innerHTML='';
+  const mon=monday();mon.setDate(mon.getDate()+7);mon.setHours(18,0,0,0);
+  DAYS.forEach(d=>{const h=document.createElement('div');h.className='cal-head';h.textContent=d;g.appendChild(h);});
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);const m=nextPlan[i];
+    const cell=document.createElement('div');cell.className='cal-cell'+(m?' has-meal':' empty');
+    if(m){cell.innerHTML=`<div style="height:28px;position:relative;overflow:hidden;background:${m.bg}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px">${m.e}</div><img src="${m.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div class="cal-inner"><div class="cal-date">${d.getDate()}</div><div class="cal-meal">${m.name}</div></div>`;}
+    else{cell.innerHTML=`<div class="cal-inner" style="padding-top:6px"><div class="cal-date">${d.getDate()}</div></div>`;}
+    g.appendChild(cell);
+  }
+}
+function toggleNextWeekDayPick(mi){
+  document.querySelectorAll('#nextweek-grid .day-pick.open').forEach(el=>{if(el.id!=='ndp-'+mi)el.classList.remove('open');});
+  document.getElementById('ndp-'+mi)?.classList.toggle('open');
+}
+function assignNextWeekDay(mi,di){
+  const m=nextMatches[mi];
+  Object.keys(nextPlan).forEach(d=>{if(nextPlan[d]&&nextPlan[d].id===m.id)delete nextPlan[d];});
+  nextPlan[di]=m;
+  document.getElementById('ndp-'+mi)?.classList.remove('open');
+  saveNextWeek();renderNextWeek();
+}
+function unassignNextWeek(mi){
+  const m=nextMatches[mi];
+  Object.keys(nextPlan).forEach(d=>{if(nextPlan[d]&&nextPlan[d].id===m.id)delete nextPlan[d];});
+  document.getElementById('ndp-'+mi)?.classList.remove('open');
+  saveNextWeek();renderNextWeek();
+}
+function removeNextWeekMeal(mi){
+  const m=nextMatches[mi];
+  nextMatches.splice(mi,1);
+  Object.keys(nextPlan).forEach(d=>{if(nextPlan[d]&&nextPlan[d].id===m.id)delete nextPlan[d];});
+  saveNextWeek();renderNextWeek();
+}
 function renderMenu(){
   const g=document.getElementById('weekgrid');g.innerHTML='';
   if(!matches.length){g.innerHTML='<div class="empty-state">Geen matches 😅<br>Swipe opnieuw voor meer gerechten.</div>';return;}
@@ -715,11 +928,47 @@ function renderMenu(){
     row.innerHTML=`<div class="mrow-top">
       <div class="mrow-img" style="background:${meal.bg}"><div class="fb">${meal.e}</div><img src="${meal.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div>
       <div style="flex:1;min-width:0"><div class="meal-name">${isV?'<s style="opacity:.5">'+meal.name+'</s>':meal.name}</div><div class="meal-chips">${isV?'<span style="font-size:10px;color:var(--red)">geveto</span>':bc+tc}</div></div>
-      <div class="row-actions">${isV?`<button class="restore-btn" onclick="restoreMeal(${mi})">Herstellen</button>`:`<button class="day-tag ${ad!==undefined?'set':''}" onclick="toggleDayPick(${mi})">${lbl}</button><button class="veto-btn" onclick="startVeto(${mi})">👎</button>`}</div>
+      <div class="row-actions">${isV
+        ?`<button class="restore-btn" onclick="restoreMeal(${mi})">Herstellen</button>`
+        :`<button class="maybe-next-btn ${maybeNext.includes(meal.id)?'set':''}" onclick="toggleMaybeNext(${meal.id})" title="${maybeNext.includes(meal.id)?'Terugzetten naar deze week':'Verplaats naar volgende week'}">⭐</button><button class="day-tag ${ad!==undefined?'set':''}" onclick="toggleDayPick(${mi})">${lbl}</button><button class="veto-btn" onclick="startVeto(${mi})">👎</button>`
+      }</div>
     </div>
     ${!isV?`<div class="day-pick" id="dp-${mi}">${DAYS.map((d,di)=>`<button class="d-btn ${plan[di]&&plan[di].id===meal.id?'picked':''}" onclick="assignDay(${mi},${di})">${d}</button>`).join('')}<button class="d-btn" style="color:var(--red)" onclick="unassign(${mi})">✕</button></div>`:''}`;
     g.appendChild(row);
   });
+}
+function toggleMaybeNext(id){
+  const meal=matches.find(m=>m.id===id);
+  if(!meal) return;
+
+  if(maybeNext.includes(id)){
+    // Un-star: remove from nextWeek, put back in this week's matches
+    maybeNext=maybeNext.filter(x=>x!==id);
+    nextMatches=nextMatches.filter(m=>m.id!==id);
+    Object.keys(nextPlan).forEach(d=>{if(nextPlan[d]&&nextPlan[d].id===id)delete nextPlan[d];});
+    // Re-add to this week's matches if not already there
+    if(!matches.find(m=>m.id===id)) matches.push(meal);
+    // Auto-assign to first free day this week
+    const used=new Set(Object.keys(plan).map(Number));
+    for(let d=0;d<7;d++){if(!used.has(d)){plan[d]=meal;break;}}
+    saveNextWeek();
+  } else {
+    // Star: move out of this week, into next week
+    maybeNext.push(id);
+    // Remove from this week's plan and matches
+    Object.keys(plan).forEach(d=>{if(plan[d]&&plan[d].id===id)delete plan[d];});
+    matches=matches.filter(m=>m.id!==id);
+    vetoed=vetoed.filter(x=>x!==id);
+    // Add to next week if not already there
+    if(!nextMatches.find(m=>m.id===id)){
+      nextMatches.push(meal);
+      const usedNext=new Set(Object.keys(nextPlan).map(Number));
+      for(let d=0;d<7;d++){if(!usedNext.has(d)){nextPlan[d]=meal;break;}}
+    }
+    saveNextWeek();
+  }
+  saveMaybeNext();
+  renderAll();
 }
 function startVeto(mi){vetoIdx=mi;const m=matches[mi];document.getElementById('veto-dish').textContent=m.e+' '+m.name;document.getElementById('s-results').classList.add('gone');document.getElementById('veto-ovl').classList.add('show');}
 function cancelVeto(){vetoIdx=null;document.getElementById('veto-ovl').classList.remove('show');document.getElementById('s-results').classList.remove('gone');}
@@ -798,6 +1047,13 @@ function renderSmaak(){
       </div>
     </div>`;
 }
+function toggleAllMeals(){
+  const btn=document.getElementById('all-meals-btn');
+  const list=document.getElementById('all-meals-list');
+  if(!btn||!list)return;
+  const open=list.classList.toggle('open');
+  btn.classList.toggle('open',open);
+}
 function calcStreak(){
   if(!sess.length)return{current:0,best:0,weeks:[]};
   const wks=new Set(sess.map(s=>s.week));
@@ -846,9 +1102,12 @@ function renderStats(){
       <div class="stat-box"><div class="stat-box-lbl">Gem. matches/week</div><div class="stat-box-val">${avg}</div><div class="stat-box-sub">per sessie</div></div>
       <div class="stat-box"><div class="stat-box-lbl">Beste sessie</div><div class="stat-box-val">${bst}</div><div class="stat-box-sub">matches</div></div>
     </div>
-    ${top.length?`<div class="tab-section"><h3>Meest gegeten</h3>${top.map((r,i)=>{const mx2=top[0].count||1;return`<div class="top-item"><div class="top-rank">${['🥇','🥈','🥉'][i]}</div><div class="top-img" style="background:${r.bg}"><div class="fb">${r.e}</div><img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div class="top-info"><div class="top-name">${r.name}</div><div class="top-count">${r.count}× gekookt</div><div class="top-bar" style="width:${Math.round(r.count/mx2*100)}%"></div></div></div>`;}).join('')}</div>`:''}
+    ${top.length?`<div class="tab-section"><h3>Meest gegeten</h3>
+      ${top.map((r,i)=>{const mx2=top[0].count||1;return`<div class="top-item"><div class="top-rank">${['🥇','🥈','🥉'][i]}</div><div class="top-img" style="background:${r.bg}"><div class="fb">${r.e}</div><img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div class="top-info"><div class="top-name">${r.name}</div><div class="top-count">${r.count}× gekookt</div><div class="top-bar" style="width:${Math.round(r.count/mx2*100)}%"></div></div></div>`;}).join('')}
+      ${(()=>{const all=Object.values(freq).sort((a,b)=>b.count-a.count);if(all.length<=3)return'';const mx2=all[0].count||1;return`<button class="all-meals-toggle" id="all-meals-btn" onclick="toggleAllMeals()">Alle ${all.length} gerechten bekijken <em class="chevron">▼</em></button><div class="all-meals-list" id="all-meals-list">${all.map(r=>`<div class="am-row"><div class="am-img" style="background:${r.bg}"><div class="fb">${r.e}</div><img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div class="am-info"><div class="am-name">${r.name}</div><div class="am-bar-wrap"><div class="am-bar" style="width:${Math.round(r.count/mx2*100)}%"></div></div></div><div class="am-count">${r.count}×</div></div>`).join('')}</div>`;})()}
+    </div>`:''}
     ${catE.length?`<div class="tab-section"><h3>Categorie verdeling</h3><div class="donut-wrap"><svg viewBox="0 0 100 100" width="100" height="100" style="flex-shrink:0">${donut}</svg><div class="legend">${catE.map(([cat,cnt])=>`<div class="leg-item"><div class="leg-dot" style="background:${catCol[cat]}"></div><div class="leg-lbl">${cat}</div><div class="leg-pct">${Math.round(cnt/totC*100)}%</div></div>`).join('')}</div></div></div>`:''}
-    ${rS.length?`<div class="tab-section"><h3>Matches per sessie</h3><div class="bars-wrap">${rS.map(s=>{const h=Math.max(4,Math.round(s.matchCount/mxM*56));return`<div class="bar-col"><div class="bar-col-fill active" style="height:${h}px"></div><div class="bar-col-lbl">${s.week.split('-').slice(1).join('/')}</div></div>`;}).join('')}</div></div>`:''}
+    ${rS.length?`<div class="tab-section"><h3>Matches per sessie</h3><div class="bars-wrap">${rS.map(s=>{const h=Math.max(4,Math.round(s.matchCount/mxM*92));return`<div class="bar-col"><div class="bar-col-val">${s.matchCount}</div><div class="bar-col-fill active" style="height:${h}px"></div><div class="bar-col-lbl">${s.week.split('-').slice(1).join('/')}</div></div>`;}).join('')}</div></div>`:''}
     ${!tw&&!total?`<div class="empty-state">Sla je eerste weekmenu op<br>om stats te zien</div>`:''}`;
 }
 function renderHist(){
@@ -935,16 +1194,16 @@ function renderAddMoreList(){
 function addMealToMatches(id){
   const meal=ALL.find(r=>r.id===id);if(!meal)return;
   matches.push(meal);
-  // Auto-assign to first free day
   const usedDays=new Set(Object.keys(plan).map(Number));
   for(let d=0;d<7;d++){if(!usedDays.has(d)){plan[d]=meal;break;}}
-  closeAddMore();
   renderAll();
   document.getElementById('ressub').textContent=`Diego & Britt zijn het eens over ${matches.length} gerecht${matches.length!==1?'en':''}!`;
+  // Re-render the list so the added meal disappears from the picker
+  renderAddMoreList();
 }
 function closeAddMore(){document.getElementById('addmore-ovl').classList.remove('show');}
 function resetGame(){
-  dV={};bV={};ci=0;fp=null;cp=null;voting=false;p1done=false;matches=[];vetoed=[];plan={};selTags.clear();recs=[];mergeMode=false;
+  dV={};bV={};ci=0;fp=null;cp=null;voting=false;p1done=false;matches=[];vetoed=[];plan={};selTags.clear();recs=[];mergeMode=false;nextWeekMode=false;
   allRecs=[];allDV={};allBV={};
   document.getElementById('pick-diego').classList.remove('selected');
   document.getElementById('pick-britt').classList.remove('selected');
