@@ -488,36 +488,20 @@ const storage = {
   delete: (key) => { try { localStorage.removeItem(key); } catch(e) {} }
 };
 
-const W=(f,w=300)=>`https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/${encodeURIComponent(f)}&width=${w}`;
-const ALL=[
-  {id:1,name:"Moussaka",b:["Oven","Pan"],t:["Vlees"],bg:"#F5EDE6",e:"🥩",img:W("Moussaka_by_Ediblenature.jpg")},
-  {id:2,name:"Ovenschotel spinazie",b:["Oven"],t:["Quick","Vlees"],bg:"#E8F2EC",e:"🥬",img:W("Spinach_quiche.jpg")},
-  {id:3,name:"Ovenschotel vis",b:["Oven"],t:["Healthy","Vis"],bg:"#E6EEF8",e:"🐟",img:W("Baked_fish.jpg")},
-  {id:4,name:"Fishsticks & puree",b:["Pan"],t:["Quick","Vis"],bg:"#F5F0E6",e:"🐠",img:W("Fish_sticks_with_mashed_potato.jpg")},
-  {id:5,name:"Macaroni",b:["Thermomix"],t:["Quick"],bg:"#F5EDE6",e:"🍝",img:W("Pasta_salad_closeup.jpg")},
-  {id:6,name:"Courgettensoep",b:["Thermomix"],t:["Healthy","Quick"],bg:"#E8F2EC",e:"🥣",img:W("Leek_soup.jpg")},
-  {id:7,name:"Papillot kabeljauw & zalm",b:["Oven"],t:["Healthy","Vis"],bg:"#E6EEF8",e:"🐟",img:W("Salmon_en_papillote.jpg")},
-  {id:8,name:"Pasta met room, paprika & spek",b:["Pan"],t:["Quick","Vlees"],bg:"#F5EDE6",e:"🍝",img:W("Pasta_carbonara.jpg")},
-  {id:9,name:"Cannelloni mozarella & tomaten",b:["Oven"],t:["Vlees"],bg:"#F5EDE6",e:"🫙",img:W("Cannelloni_baked.jpg")},
-  {id:10,name:"Worst & wortelpuree",b:["Pan","Thermomix"],t:["Quick","Vlees"],bg:"#F5F0E6",e:"🥩",img:W("Sausages_with_mash.jpg")},
-  {id:11,name:"Brochetten, rijst & curry",b:["Pan"],t:["Quick","Vlees"],bg:"#F5F0E6",e:"🍢",img:W("Yakitori_by_woinary.jpg")},
-  {id:12,name:"Pita met kip en groentjes",b:["Pan"],t:["Kip","Quick"],bg:"#F5F0E6",e:"🫓",img:W("Pita_doner_kebab.jpg")},
-  {id:13,name:"Salade met tonijn",b:[],t:["Healthy","Vis"],bg:"#E8F2EC",e:"🥗",img:W("Tuna_salad_sandwich.jpg")},
-  {id:14,name:"Spaghetti",b:["Pan"],t:["Vlees"],bg:"#F5EDE6",e:"🍝",img:W("Spaghetti_bolognese_(hozinja).jpg")},
-  {id:15,name:"Kaasplank",b:[],t:["Friends & family"],bg:"#F8F5E6",e:"🧀",img:W("Cheese_board.jpg")},
-  {id:16,name:"Hespenrolletjes",b:["Oven"],t:["Vlees"],bg:"#F5EDE6",e:"🥩",img:W("Ham_rolls.jpg")},
-  {id:17,name:"Kip, rijst & curry",b:["Pan"],t:["Kip"],bg:"#F5F0E6",e:"🍗",img:W("Chicken_curry.jpg")},
-  {id:18,name:"Soep",b:["Thermomix"],t:["Healthy","Quick"],bg:"#E8F2EC",e:"🥣",img:W("Bowl_of_Pho.jpg")},
-  {id:19,name:"Carbonara",b:[],t:[],bg:"#F5EDE6",e:"🍝",img:W("Spaghetti_alla_carbonara.jpg")},
-  {id:20,name:"Ribbetjes",b:[],t:[],bg:"#F5EAE6",e:"🥩",img:W("Grilled_pork_ribs.jpg")},
-  {id:21,name:"Pulled chicken broodje",b:["Oven","Pan"],t:["Kip"],bg:"#F5F0E6",e:"🍗",img:W("Pulled_pork_sandwich.jpg")},
-  {id:22,name:"Lasagne",b:[],t:[],bg:"#F5EDE6",e:"🫕",img:W("Lasagne_al_forno_(Melanzane).jpg")},
-  {id:23,name:"Pasta scampi",b:[],t:[],bg:"#E6EEF8",e:"🦐",img:W("Shrimp_scampi.jpg")},
-  {id:24,name:"Koude wraps",b:[],t:[],bg:"#E8F2EC",e:"🌯",img:W("Wraps.jpg")},
-  {id:25,name:"Salade met kip",b:[],t:[],bg:"#E8F2EC",e:"🥗",img:W("Caesar_salad_(1).jpg")},
-  {id:26,name:"Hollands pannetje met jachtsaus",b:["Pan"],t:["Kip"],bg:"#F5F0E6",e:"🍲",img:W("Hutspot_with_klapstuk.jpg")},
-  {id:27,name:"Pompoenrisotto",b:[],t:[],bg:"#F8F0E6",e:"🎃",img:W("Risotto_with_porcini_mushrooms.jpg")},
-];
+let ALL=[];
+
+fetch('meals.json')
+  .then(r=>r.json())
+  .then(data=>{
+    ALL=data;
+    loadData();
+    // Show loading is done — pick screen is already visible by default
+  })
+  .catch(()=>{
+    // Fallback: show error in pick screen
+    document.getElementById('s-pick').innerHTML+='<p style="color:#B33030;font-size:13px;text-align:center;padding:1rem">Fout bij laden van gerechten.<br>Controleer je verbinding.</p>';
+  });
+
 const TAGS=[
   {k:"Vlees",l:"Vlees",e:"🥩"},{k:"Kip",l:"Kip",e:"🍗"},{k:"Vis",l:"Vis",e:"🐟"},
   {k:"Healthy",l:"Healthy",e:"🥗"},{k:"Quick",l:"Quick",e:"⚡"},{k:"Friends & family",l:"Friends & family",e:"🎉"},
@@ -567,8 +551,6 @@ function clearAll(){
   renderHist();renderStats();
 }
 function recentIds(){const cut=Date.now()-14*24*60*60*1000;return new Set(hist.filter(h=>h.ts>cut).map(h=>h.id));}
-
-loadData();
 
 function selectPlayer(p){
   fp=p;
