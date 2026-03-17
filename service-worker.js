@@ -1,6 +1,9 @@
 const CACHE = 'dinnr-v3';
 
 self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(['/', '/meals.json']))
+  );
   self.skipWaiting();
 });
 
