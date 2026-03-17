@@ -1,4 +1,4 @@
-const CACHE = 'dinnr-v2';
+const CACHE = 'dinnr-v3';
 
 self.addEventListener('install', e => {
   self.skipWaiting();
