@@ -504,11 +504,12 @@ fetch('meals.json')
 
 const TAGS=[
   {k:"Vlees",l:"Vlees",e:"🥩"},{k:"Kip",l:"Kip",e:"🍗"},{k:"Vis",l:"Vis",e:"🐟"},
-  {k:"Healthy",l:"Healthy",e:"🥗"},{k:"Quick",l:"Quick",e:"⚡"},{k:"Friends & family",l:"Friends & family",e:"🎉"},
+  {k:"Pasta",l:"Pasta",e:"🍝"},{k:"Healthy",l:"Healthy",e:"🥗"},{k:"Quick",l:"Quick",e:"⚡"},
+  {k:"Friends & family",l:"Friends & family",e:"🎉"},
   {k:"Oven",l:"Oven",e:"🔥"},{k:"Pan",l:"Pan",e:"🍳"},{k:"Thermomix",l:"Thermomix",e:"🤖"},
 ];
 const DAYS=['Ma','Di','Wo','Do','Vr','Za','Zo'];
-const CAT_COLORS={Vlees:'#B85C30',Kip:'#A03070',Vis:'#3D52B8',Healthy:'#2D7A42',Quick:'#8A6010','Friends & family':'#5040A0',Oven:'#903030',Pan:'#606060',Thermomix:'#205880'};
+const CAT_COLORS={Vlees:'#B85C30',Kip:'#A03070',Vis:'#3D52B8',Pasta:'#C06010',Healthy:'#2D7A42',Quick:'#8A6010','Friends & family':'#5040A0',Oven:'#903030',Pan:'#606060',Thermomix:'#205880'};
 const SK='dinnr-history-v3',SSK='dinnr-sessions-v1',SMN='dinnr-maybenext-v1',SLK='dinnr-likes-v1',SNW='dinnr-nextweek-v1';
 
 let fp=null,cp=null,selTags=new Set(),recs=[];
@@ -601,7 +602,7 @@ function renderTags(){
   updTagCount();
 }
 function toggleTag(k){selTags.has(k)?selTags.delete(k):selTags.add(k);document.getElementById('tp-'+k).classList.toggle('on',selTags.has(k));updTagCount();}
-function clearTags(){selTags.clear();document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('on'));updTagCount();}
+function clearTags(){selTags.clear();document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('on'));updTagCount();startSwiping();}
 function filtered(){if(!selTags.size)return ALL;return ALL.filter(r=>[...r.t,...r.b].some(k=>selTags.has(k)));}
 function updTagCount(){
   let pool=filtered();
