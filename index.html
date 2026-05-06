@@ -154,20 +154,7 @@
     .d-btn{font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--border2);background:transparent;cursor:pointer;color:var(--muted);font-family:'Inter',sans-serif;transition:all .15s}
     .d-btn:hover{color:var(--ink)}
     .d-btn.picked{background:var(--ink);color:#fff;border-color:transparent}
-    .maybe-next-btn{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap}
-    .maybe-next-btn:hover{border-color:rgba(184,138,16,.4);color:#8A6010;background:#FDFAED}
-    .maybe-next-btn.set{background:#FDFAED;color:#8A6010;border-color:rgba(184,138,16,.45)}
-    .tip-section{width:100%;background:linear-gradient(135deg,#FDFAED,#FFF8DC);border:1.5px solid rgba(184,138,16,.3);border-radius:var(--r);padding:12px 14px;margin-bottom:1.2rem}
-    .tip-section-hdr{font-size:11px;font-weight:500;color:#8A6010;text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;display:flex;align-items:center;gap:5px}
-    .tip-pill{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid rgba(184,138,16,.3);border-radius:999px;padding:5px 10px;font-size:12px;color:#5A4008;margin:3px 3px 0 0;cursor:pointer;transition:background .15s}
-    .tip-pill:hover{background:#FFF3C0}
-    .card-tip-badge{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#C89B14,#E8B820);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:.3px;box-shadow:0 1px 6px rgba(184,138,16,.4)}
-    .card-labels{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:4px}
-    .card-label{font-size:10px;font-weight:600;padding:3px 9px;border-radius:999px;letter-spacing:.2px;display:inline-block;width:fit-content}
-    .card-label.tip{background:linear-gradient(135deg,#C89B14,#E8B820);color:#fff;box-shadow:0 1px 6px rgba(184,138,16,.4)}
-    .card-label.fav{background:linear-gradient(135deg,#B85C30,#D06830);color:#fff;box-shadow:0 1px 5px rgba(184,92,48,.35)}
-    .card-label.diego-fav{background:var(--diego);color:#fff;box-shadow:0 1px 5px rgba(61,82,184,.3)}
-    .card-label.britt-fav{background:var(--britt);color:#fff;box-shadow:0 1px 5px rgba(160,48,112,.3)}
+    .maybe-wrap{padding:0 1.2rem .8rem}
     .maybe-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r);background:var(--bg2);border:1px solid var(--border);margin-bottom:5px}
     .maybe-name{flex:1;font-size:13px;color:var(--muted);font-family:'Cormorant Garamond',serif;font-style:italic}
     .cal-wrap{padding:0 1.2rem 1rem}
@@ -241,27 +228,12 @@
     .leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
     .leg-lbl{font-size:12px;color:var(--ink2);flex:1}
     .leg-pct{font-size:12px;font-weight:500;color:var(--ink)}
-    .bars-wrap{display:flex;align-items:flex-end;gap:6px;height:120px;padding:0 0 22px;position:relative;border-bottom:1px solid var(--border)}
-    .bar-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative}
-    .bar-col-fill{width:100%;border-radius:4px 4px 0 0;background:var(--bg3);min-height:3px;transition:height .5s cubic-bezier(.4,0,.2,1);flex-shrink:0}
+    .bars-wrap{display:flex;align-items:flex-end;gap:4px;height:60px}
+    .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
+    .bar-col-fill{width:100%;border-radius:4px 4px 0 0;background:var(--bg3);min-height:3px;transition:height .4s ease}
     .bar-col-fill.active{background:var(--accent)}
-    .bar-col-val{font-size:10px;font-weight:500;color:var(--ink2);margin-bottom:3px;line-height:1}
-    .bar-col-lbl{font-size:9px;color:var(--muted);white-space:nowrap;position:absolute;bottom:0;left:50%;transform:translateX(-50%)}
-    .all-meals-toggle{width:100%;padding:9px 14px;border-radius:var(--r);border:1px solid var(--border2);background:transparent;font-family:'Inter',sans-serif;font-size:12px;color:var(--muted);cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;transition:background .15s;margin-top:-4px}
-    .all-meals-toggle:hover{background:var(--bg2);color:var(--ink2)}
-    .all-meals-toggle .chevron{transition:transform .2s;font-style:normal;font-size:10px}
-    .all-meals-toggle.open .chevron{transform:rotate(180deg)}
-    .all-meals-list{display:none;margin-top:6px}
-    .all-meals-list.open{display:block}
-    .am-row{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:var(--bg);border:1px solid var(--border);margin-bottom:4px}
-    .am-img{width:32px;height:32px;border-radius:8px;flex-shrink:0;position:relative;overflow:hidden;background:var(--bg3)}
-    .am-img .fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px}
-    .am-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
-    .am-info{flex:1;min-width:0}
-    .am-name{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .am-bar-wrap{height:3px;background:var(--bg3);border-radius:999px;margin-top:4px;overflow:hidden}
-    .am-bar{height:100%;border-radius:999px;background:var(--accent)}
-    .am-count{font-size:12px;font-weight:500;color:var(--muted);flex-shrink:0;min-width:28px;text-align:right}
+    .bar-col-lbl{font-size:9px;color:var(--muted);white-space:nowrap}
+    .empty-state{font-size:13px;color:var(--muted);text-align:center;padding:2.5rem 1rem;line-height:1.8}
     .hist-week{margin-bottom:1.4rem}
     .hist-week-lbl{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
     .hist-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);margin-bottom:5px}
@@ -283,26 +255,120 @@
     .veto-pbtn{flex:1;padding:13px 8px;border-radius:var(--r);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#F0EBE0;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;cursor:pointer;transition:background .15s}
     .veto-pbtn:hover{background:rgba(255,255,255,.12)}
     .veto-cancel{font-size:12px;color:rgba(240,235,224,.5);background:transparent;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:6px}
-    .gcal-ovl{display:none;position:fixed;inset:0;background:rgba(26,23,20,.7);z-index:200;align-items:flex-end;justify-content:center}
-    .gcal-ovl.show{display:flex}
-    .gcal-sheet{background:var(--bg);border-radius:var(--r2) var(--r2) 0 0;width:100%;max-width:400px;padding:1.4rem 1.2rem calc(1.4rem + var(--safe-bottom));max-height:80vh;overflow-y:auto}
-    .gcal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ink);margin-bottom:4px}
-    .gcal-sub{font-size:12px;color:var(--muted);margin-bottom:1rem}
-    .gcal-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;text-decoration:none;color:var(--ink);background:var(--bg2);transition:background .15s}
-    .gcal-item:hover{background:var(--bg3)}
-    .gcal-item-emoji{font-size:18px;flex-shrink:0}
-    .gcal-item-info{flex:1}
-    .gcal-item-name{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600}
-    .gcal-item-date{font-size:11px;color:var(--muted);margin-top:1px}
-    .gcal-item-arrow{font-size:12px;color:var(--muted)}
-    .gcal-close{width:100%;margin-top:.6rem;padding:11px;border-radius:var(--r);border:1px solid var(--border2);background:transparent;font-family:'Inter',sans-serif;font-size:13px;color:var(--muted);cursor:pointer}
-    .gcal-close:hover{color:var(--ink)}
     .veto-anim{display:none;min-height:420px;background:rgba(80,15,15,.97);border-radius:var(--r2);margin:.8rem;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 2rem;width:calc(100% - 1.6rem);animation:fadein .2s ease;text-align:center}
     .veto-anim.show{display:flex}
     .veto-anim-ico{font-size:64px;animation:pop .4s ease;margin-bottom:.8rem}
     .veto-anim-ttl{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;color:#F0EBE0;margin-bottom:5px}
     .veto-anim-sub{font-size:13px;color:rgba(240,235,224,.7);margin-bottom:.3rem}
     .veto-anim-dish{font-family:'Cormorant Garamond',serif;font-size:20px;color:#F0EBE0;font-weight:600;margin-bottom:1.4rem;font-style:italic}
+
+    /* AUTO-PROPOSE */
+    .auto-entry{width:100%;padding:2.5rem 1.2rem 2rem;display:flex;flex-direction:column;align-items:center;gap:1rem}
+    .auto-hero{text-align:center;margin-bottom:.4rem}
+    .auto-hero-ico{font-size:48px;margin-bottom:.6rem}
+    .auto-hero h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--ink);margin-bottom:6px}
+    .auto-hero p{font-size:13px;color:var(--muted);line-height:1.7}
+    .auto-opts{width:100%;display:flex;flex-direction:column;gap:8px;margin-bottom:.4rem}
+    .auto-opt{width:100%;padding:13px 16px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--bg2);display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s,background .15s;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+    .auto-opt:hover{border-color:var(--border2);background:var(--bg3)}
+    .auto-opt.selected{border-color:var(--accent);background:var(--al)}
+    .auto-opt-ico{font-size:22px;flex-shrink:0}
+    .auto-opt-lbl{font-size:13px;font-weight:500;color:var(--ink)}
+    .auto-opt-sub{font-size:11px;color:var(--muted);margin-top:1px}
+    .auto-opt-check{margin-left:auto;font-size:13px;color:var(--accent);opacity:0;transition:opacity .15s}
+    .auto-opt.selected .auto-opt-check{opacity:1}
+    .auto-days-wrap{width:100%}
+    .auto-days-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px}
+    .auto-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+    .auto-day-btn{padding:10px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;text-align:center;transition:all .15s;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+    .auto-day-btn:hover{border-color:var(--border2);color:var(--ink2)}
+    .auto-day-btn.picked{border-color:var(--grn);background:var(--gl);color:var(--grn)}
+    .auto-propose-screen{display:none;width:100%;flex-direction:column;align-items:center}
+    .auto-propose-screen.show{display:flex}
+    .ap-hdr{width:100%;padding:1.2rem 1.4rem .8rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+    .ap-back{font-size:13px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:2px 0}
+    .ap-back:hover{color:var(--ink)}
+    .ap-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink)}
+    .ap-card{width:calc(100% - 2.4rem);margin:0 1.2rem;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;background:var(--bg);margin-bottom:6px;transition:opacity .3s}
+    .ap-card-img{width:100%;height:110px;position:relative;overflow:hidden}
+    .ap-card-body{padding:12px 14px}
+    .ap-card-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:var(--ink);margin-bottom:6px}
+    .ap-day-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+    .ap-day-chip{font-size:11px;padding:4px 10px;border-radius:999px;border:1.5px solid var(--border);background:var(--bg2);color:var(--muted);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
+    .ap-day-chip:hover{border-color:var(--border2);color:var(--ink)}
+    .ap-day-chip.picked{border-color:var(--grn);background:var(--gl);color:var(--grn);font-weight:500}
+    .ap-chips{display:flex;gap:4px;flex-wrap:wrap}
+    .ap-shuffle{display:flex;align-items:center;justify-content:center;gap:6px;padding:4px 0 .4rem;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;width:100%}
+    .ap-shuffle:hover{color:var(--ink2)}
+    .ap-footer{width:100%;padding:0 1.2rem 1.2rem;display:flex;flex-direction:column;gap:8px}
+    .ap-count-note{font-size:12px;color:var(--muted);text-align:center;padding:.2rem 0}
+
+    /* LOCK BUTTON on proposal cards */
+    .ap-lock-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .ap-lock-btn{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:999px;padding:3px 10px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+    .ap-lock-btn:hover{color:var(--ink2);border-color:var(--border2)}
+    .ap-lock-btn.locked{background:var(--al);color:var(--accent2);border-color:rgba(184,92,48,.3);font-weight:500}
+    .ap-card.locked-card{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+
+    /* ADD MEAL SCREEN */
+    .add-meal-hdr{width:100%;padding:1.2rem 1.4rem .8rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+    .add-meal-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink)}
+    .add-form{padding:1.2rem;display:flex;flex-direction:column;gap:14px;width:100%}
+    .add-field{display:flex;flex-direction:column;gap:6px}
+    .add-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+    .add-input{width:100%;padding:11px 13px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--bg);font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s}
+    .add-input:focus{border-color:var(--accent)}
+    .add-emoji-grid{display:flex;flex-wrap:wrap;gap:6px}
+    .add-emoji-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .add-emoji-btn:hover{border-color:var(--border2);background:var(--bg3)}
+    .add-emoji-btn.picked{border-color:var(--accent);background:var(--al)}
+    .add-tag-grid{display:flex;flex-wrap:wrap;gap:6px}
+    .add-tag-pill{padding:7px 12px;border-radius:999px;border:1.5px solid var(--border);background:var(--bg);font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s}
+    .add-tag-pill:hover{border-color:var(--border2);color:var(--ink2)}
+    .add-tag-pill.on{border-color:var(--accent);background:var(--al);color:var(--accent2)}
+    .custom-badge{font-size:10px;padding:2px 7px;border-radius:999px;background:var(--diego-bg);color:var(--diego);border:1px solid rgba(61,82,184,.2);margin-left:4px;vertical-align:middle}
+    .custom-meals-section{padding:0 1.2rem 1rem}
+    .custom-meal-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:5px}
+    .custom-meal-delete{width:26px;height:26px;border-radius:50%;border:1px solid rgba(179,48,48,.3);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--red);flex-shrink:0;transition:background .15s}
+    .custom-meal-delete:hover{background:var(--rl)}
+
+    /* MEAL PICKER OVERLAY */
+    .picker-ovl{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);flex-direction:column}
+    .picker-ovl.show{display:flex}
+    .picker-hdr{padding:1rem 1.2rem .6rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);flex-shrink:0}
+    .picker-close{font-size:18px;background:none;border:none;cursor:pointer;color:var(--muted);line-height:1;padding:2px 4px}
+    .picker-close:hover{color:var(--ink)}
+    .picker-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);flex:1}
+    .picker-search{width:100%;padding:8px 12px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--bg2);font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .15s}
+    .picker-search:focus{border-color:var(--accent)}
+    .picker-filter-row{display:flex;gap:6px;overflow-x:auto;padding:.5rem 1.2rem;flex-shrink:0;scrollbar-width:none}
+    .picker-filter-row::-webkit-scrollbar{display:none}
+    .picker-filter{padding:5px 12px;border-radius:999px;border:1.5px solid var(--border);background:var(--bg);font-size:11px;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Inter',sans-serif;flex-shrink:0}
+    .picker-filter:hover{border-color:var(--border2);color:var(--ink2)}
+    .picker-filter.on{border-color:var(--accent);background:var(--al);color:var(--accent2);font-weight:500}
+    .picker-body{flex:1;overflow-y:auto;padding:0 1.2rem 1.5rem}
+    .picker-cat-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:1rem 0 6px}
+    .picker-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg);margin-bottom:5px;cursor:pointer;transition:background .15s,border-color .15s;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+    .picker-item:hover{background:var(--bg2);border-color:var(--border2)}
+    .picker-item.in-plan{opacity:.4;cursor:default;pointer-events:none}
+    .picker-item-img{width:40px;height:40px;border-radius:9px;flex-shrink:0;position:relative;overflow:hidden;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px}
+    .picker-item-name{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--ink);font-weight:600}
+    .picker-item-chips{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px}
+    .picker-item-add{margin-left:auto;font-size:18px;color:var(--muted);flex-shrink:0}
+    .picker-item:hover .picker-item-add{color:var(--grn)}
+    .picker-empty{font-size:13px;color:var(--muted);text-align:center;padding:3rem 1rem}
+    .picker-day-modal{display:none;position:fixed;inset:0;z-index:300;background:rgba(26,23,20,.7);align-items:flex-end;justify-content:center}
+    .picker-day-modal.show{display:flex}
+    .picker-day-sheet{background:var(--bg);border-radius:var(--r2) var(--r2) 0 0;padding:1.4rem 1.2rem 2rem;width:100%;max-width:400px;animation:slideup .25s ease}
+    @keyframes slideup{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .picker-day-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ink);margin-bottom:4px}
+    .picker-day-sub{font-size:12px;color:var(--muted);margin-bottom:1rem}
+    .picker-day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:1rem}
+    .picker-day-opt{padding:10px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;text-align:center;transition:all .15s}
+    .picker-day-opt:hover:not(.taken){border-color:var(--grn);background:var(--gl);color:var(--grn)}
+    .picker-day-opt.taken{opacity:.35;cursor:not-allowed}
+    .picker-day-opt.free{border-color:var(--border2);color:var(--ink2)}
+    .picker-day-cancel{width:100%;padding:11px;border-radius:var(--r);border:1.5px solid var(--border2);background:transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer}
   </style>
 </head>
 <body>
@@ -331,21 +397,112 @@
         </div>
       </div>
       <button class="btn-primary" id="pick-btn" disabled onclick="goToTags()">Kies een speler</button>
+      <div style="display:flex;align-items:center;gap:10px;width:100%;margin-top:1rem">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">of</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+      <button class="btn-ghost" style="margin-top:0;display:flex;align-items:center;justify-content:center;gap:6px" onclick="goToAutoPropose()">✨ Stel me een menu voor</button>
+    </div>
+      <button class="btn-ghost" style="margin-top:0;display:flex;align-items:center;justify-content:center;gap:6px" onclick="openAddMeal('s-pick')">＋ Gerecht toevoegen</button>
+  </div>
+
+  <!-- AUTO-PROPOSE ENTRY -->
+  <div id="s-auto-entry" class="scr gone">
+    <div style="padding:2.5rem 0 0;text-align:center;width:100%">
+      <div class="logo">Dinn<em>r</em></div>
+    </div>
+    <div class="auto-entry">
+      <div class="auto-hero">
+        <div class="auto-hero-ico">✨</div>
+        <h2>Stel menu voor</h2>
+        <p>Dinnr kiest slimme gerechten op basis van jullie geschiedenis. Jij kiest alleen nog welke dag.</p>
+      </div>
+      <div class="auto-days-wrap">
+        <div class="auto-days-label">Voor welke dagen?</div>
+        <div class="auto-days-grid" id="auto-days-grid"></div>
+      </div>
+      <div class="auto-opts">
+        <div class="auto-opt selected" id="aopt-balanced" onclick="selectAutoMode('balanced')">
+          <div class="auto-opt-ico">⚖️</div>
+          <div><div class="auto-opt-lbl">Gebalanceerd</div><div class="auto-opt-sub">Mix van vlees, vis & groenten</div></div>
+          <div class="auto-opt-check">✓</div>
+        </div>
+        <div class="auto-opt" id="aopt-quick" onclick="selectAutoMode('quick')">
+          <div class="auto-opt-ico">⚡</div>
+          <div><div class="auto-opt-lbl">Snel & makkelijk</div><div class="auto-opt-sub">Alleen quick & eenvoudige gerechten</div></div>
+          <div class="auto-opt-check">✓</div>
+        </div>
+        <div class="auto-opt" id="aopt-healthy" onclick="selectAutoMode('healthy')">
+          <div class="auto-opt-ico">🥗</div>
+          <div><div class="auto-opt-lbl">Healthy</div><div class="auto-opt-sub">Licht en voedzaam</div></div>
+          <div class="auto-opt-check">✓</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="generateProposal()">Menu voorstellen →</button>
+      <button class="btn-ghost" onclick="showScreen('s-pick')">← Terug</button>
+    </div>
+  </div>
+
+  <!-- AUTO-PROPOSE RESULT -->
+  <div id="s-auto-result" class="gone" style="width:100%">
+    <div class="ap-hdr">
+      <button class="ap-back" onclick="showScreen('s-auto-entry')">← Aanpassen</button>
+      <div class="ap-title">Dinn<em style="color:var(--accent);font-style:normal">r</em> stelt voor</div>
+      <div style="width:60px"></div>
+    </div>
+    <div style="padding:.7rem 1.2rem .4rem;font-size:13px;color:var(--muted)" id="ap-subtitle"></div>
+    <div id="ap-cards-wrap"></div>
+    <button class="ap-shuffle" onclick="shuffleProposal()">🔀 Andere suggesties</button>
+    <button class="ap-shuffle" onclick="openMealPicker()" style="color:var(--accent2)">＋ Gerecht handmatig kiezen</button>
+    <div class="ap-footer">
+      <div class="ap-count-note" id="ap-count-note"></div>
+      <button class="btn-primary" onclick="acceptProposal()">✓ Dit menu overnemen</button>
+      <button class="btn-ghost" onclick="showScreen('s-auto-entry')">← Aanpassen</button>
+    </div>
+  </div>
+
+  <!-- ADD MEAL SCREEN -->
+  <div id="s-add-meal" class="gone" style="width:100%">
+    <div class="add-meal-hdr">
+      <button class="ap-back" id="add-meal-back-btn" onclick="closeAddMeal()">← Terug</button>
+      <div class="add-meal-title">Gerecht toevoegen</div>
+      <div style="width:60px"></div>
+    </div>
+    <div class="add-form">
+      <div class="add-field">
+        <div class="add-label">Naam *</div>
+        <input class="add-input" id="am-name" type="text" placeholder="bv. Pasta pesto met kipreepjes" maxlength="60">
+      </div>
+      <div class="add-field">
+        <div class="add-label">Emoji</div>
+        <div class="add-emoji-grid" id="am-emoji-grid"></div>
+      </div>
+      <div class="add-field">
+        <div class="add-label">Categorie</div>
+        <div class="add-tag-grid" id="am-tag-grid"></div>
+      </div>
+      <div class="add-field">
+        <div class="add-label">Bereiding</div>
+        <div class="add-tag-grid" id="am-b-grid"></div>
+      </div>
+      <button class="btn-primary" onclick="saveCustomMeal()">+ Toevoegen aan lijst</button>
+    </div>
+    <div id="custom-meals-wrap" class="gone">
+      <div class="sec-label" style="padding:0 1.2rem;margin-bottom:6px">Jouw gerechten</div>
+      <div class="custom-meals-section" id="custom-meals-list"></div>
     </div>
   </div>
 
   <!-- TAGS -->
   <div id="s-tags" class="gone" style="width:100%">
     <div class="tag-inner">
-      <div class="screen-title" id="tags-title">Waar heb je zin in?</div>
-      <div class="screen-sub" id="tags-sub">Kies een of meer categorieën, of sla over voor alle gerechten.</div>
-      <div id="tip-section" class="gone"></div>
+      <div class="screen-title">Wat heb je zin in?</div>
+      <div class="screen-sub">Kies een of meer categorieën, of sla over voor alle gerechten.</div>
       <div class="tag-grid" id="tag-grid"></div>
       <div class="tag-count" id="tag-count"></div>
-      <button class="btn-primary" id="tags-start-btn" style="margin-top:0" onclick="startSwiping()">Start swipen →</button>
+      <button class="btn-primary" style="margin-top:0" onclick="startSwiping()">Start swipen →</button>
       <button class="btn-ghost" onclick="clearTags()">Alles tonen</button>
-      <button class="btn-ghost" id="tags-menu-btn" onclick="goToMenu()" style="border-color:var(--border2);color:var(--muted)">Ga naar menu →</button>
-      <button class="btn-ghost" id="tags-back-btn" style="display:none;color:var(--muted)" onclick="backFromTags()">← Terug naar menu</button>
     </div>
   </div>
 
@@ -383,10 +540,10 @@
       <div class="res-week" id="res-week-lbl"></div>
     </div>
     <div class="res-tabs">
-      <button class="res-tab active" onclick="switchTab('menu')">Menu</button>
-      <button class="res-tab" onclick="switchTab('smaak')">Smaak</button>
-      <button class="res-tab" onclick="switchTab('stats')">Streak</button>
-      <button class="res-tab" onclick="switchTab('history')">Gegeten</button>
+      <button class="res-tab active" onclick="switchTab('menu')">🍽 Menu</button>
+      <button class="res-tab" onclick="switchTab('smaak')">📊 Smaak</button>
+      <button class="res-tab" onclick="switchTab('stats')">🔥 Streak</button>
+      <button class="res-tab" onclick="switchTab('history')">🔁 Gegeten</button>
     </div>
     <div class="tab-pane active" id="tab-menu">
       <div class="week-hdr"><h2>Menu deze week</h2><p id="ressub"></p></div>
@@ -403,20 +560,7 @@
         <button class="act-btn" onclick="exportICS()">📅 .ics exporteren</button>
         <button class="act-btn" onclick="exportGoogle()">🗓 Google Calendar</button>
       </div>
-      <button class="act-btn" style="margin:0 1.2rem .6rem;width:calc(100% - 2.4rem);border-color:rgba(61,82,184,.3);color:var(--diego)" onclick="startExtraRound()">🔄 Nog een ronde swipen</button>
-      <button class="act-btn" style="margin:0 1.2rem .6rem;width:calc(100% - 2.4rem)" onclick="addMoreMeals()">➕ Gerecht handmatig toevoegen</button>
-      <button class="act-btn" style="margin:0 1.2rem .6rem;width:calc(100% - 2.4rem);border-color:rgba(45,122,66,.3);color:var(--grn)" onclick="startNextWeekSwipe()">📅 Volgende week inplannen</button>
       <button class="reset-btn" onclick="resetGame()">Opnieuw beginnen</button>
-      <!-- NEXT WEEK SECTION -->
-      <div id="nextweek-sec" class="gone">
-        <div style="border-top:1px solid var(--border);margin:0 1.2rem .8rem"></div>
-        <div class="week-hdr" style="padding-top:.6rem"><h2>Volgende week</h2><p id="nextweek-sub"></p></div>
-        <div class="sec-label" id="nextweek-matches-label"></div>
-        <div class="weekgrid" id="nextweek-grid"></div>
-        <div class="cal-wrap" style="margin-top:.8rem"><h3>Weekoverzicht</h3><div class="cal-grid" id="nextweek-calgrid"></div></div>
-        <button class="act-btn" style="margin:0 1.2rem .4rem;width:calc(100% - 2.4rem);border-color:rgba(61,82,184,.3);color:var(--diego)" onclick="startNextWeekSwipe()">🔄 Nog een ronde voor volgende week</button>
-        <button class="reset-btn" style="color:var(--red);border-color:rgba(179,48,48,.25)" onclick="clearNextWeek()">Volgende week wissen</button>
-      </div>
     </div>
     <div class="tab-pane" id="tab-smaak"><div class="tab-inner" id="smaak-content"></div></div>
     <div class="tab-pane" id="tab-stats"><div class="tab-inner" id="stats-content"></div></div>
@@ -432,27 +576,6 @@
     <button class="match-dismiss" onclick="dismissMatch()">Doorgaan →</button>
   </div>
 
-  <!-- GOOGLE CALENDAR LINKS -->
-  <div class="gcal-ovl" id="gcal-ovl" onclick="if(event.target===this)closeGcal()">
-    <div class="gcal-sheet">
-      <div class="gcal-title">🗓 Google Calendar</div>
-      <div class="gcal-sub">Tik op een gerecht om het toe te voegen aan Google Calendar.</div>
-      <div id="gcal-links"></div>
-      <button class="gcal-close" onclick="closeGcal()">Sluiten</button>
-    </div>
-  </div>
-
-  <!-- ADD MORE MEALS OVERLAY -->
-  <div class="gcal-ovl" id="addmore-ovl" onclick="if(event.target===this)closeAddMore()">
-    <div class="gcal-sheet">
-      <div class="gcal-title">➕ Meer gerechten</div>
-      <div class="gcal-sub">Kies een categorie om extra gerechten toe te voegen aan het weekmenu.</div>
-      <div class="tag-grid" id="addmore-tags" style="margin-bottom:1rem"></div>
-      <div id="addmore-list" style="margin-bottom:.6rem"></div>
-      <button class="gcal-close" onclick="closeAddMore()">Sluiten</button>
-    </div>
-  </div>
-
   <!-- VETO -->
   <div class="veto-ovl" id="veto-ovl">
     <div class="veto-ico">👎</div>
@@ -465,6 +588,53 @@
     </div>
     <button class="veto-cancel" onclick="cancelVeto()">Annuleren</button>
   </div>
+  <!-- MEAL PICKER OVERLAY -->
+  <div class="picker-ovl" id="picker-ovl">
+    <div class="picker-hdr">
+      <button class="picker-close" onclick="closeMealPicker()">✕</button>
+      <div class="picker-title">Kies een gerecht</div>
+    </div>
+    <div style="padding:.6rem 1.2rem .2rem;flex-shrink:0">
+      <input class="picker-search" id="picker-search" type="text" placeholder="Zoeken…" oninput="renderPickerList()">
+    </div>
+    <div class="picker-filter-row" id="picker-filter-row"></div>
+    <div class="picker-body" id="picker-body"></div>
+  </div>
+
+  <!-- DAY PICKER SHEET -->
+  <div class="picker-day-modal" id="picker-day-modal" onclick="if(event.target===this)closeDaySheet()">
+    <div class="picker-day-sheet">
+      <div class="picker-day-title" id="pdm-title"></div>
+      <div class="picker-day-sub">Kies een dag voor dit gerecht</div>
+      <div class="picker-day-grid" id="pdm-grid"></div>
+      <button class="picker-day-cancel" onclick="closeDaySheet()">Annuleren</button>
+    </div>
+  </div>
+
+
+  <!-- MEAL PICKER OVERLAY -->
+  <div class="picker-ovl" id="picker-ovl">
+    <div class="picker-hdr">
+      <button class="picker-close" onclick="closeMealPicker()">✕</button>
+      <div class="picker-title">Kies een gerecht</div>
+    </div>
+    <div style="padding:.6rem 1.2rem .2rem;flex-shrink:0">
+      <input class="picker-search" id="picker-search" type="text" placeholder="Zoeken…" oninput="renderPickerList()">
+    </div>
+    <div class="picker-filter-row" id="picker-filter-row"></div>
+    <div class="picker-body" id="picker-body"></div>
+  </div>
+
+  <!-- DAY PICKER SHEET -->
+  <div class="picker-day-modal" id="picker-day-modal" onclick="if(event.target===this)closeDaySheet()">
+    <div class="picker-day-sheet">
+      <div class="picker-day-title" id="pdm-title"></div>
+      <div class="picker-day-sub">Kies een dag voor dit gerecht</div>
+      <div class="picker-day-grid" id="pdm-grid"></div>
+      <button class="picker-day-cancel" onclick="closeDaySheet()">Annuleren</button>
+    </div>
+  </div>
+
   <div class="veto-anim" id="veto-anim">
     <div class="veto-anim-ico">🚫</div>
     <div class="veto-anim-ttl">Geveto!</div>
@@ -481,77 +651,151 @@ if('serviceWorker' in navigator){
   });
 }
 
-// ── STORAGE: uses localStorage (works outside Claude sandbox) ──
-const storage = {
-  get: (key) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch(e) { return null; } },
-  set: (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {} },
-  delete: (key) => { try { localStorage.removeItem(key); } catch(e) {} }
-};
+// ── UPSTASH CONFIG ──
+const UPSTASH_URL = 'https://unbiased-mayfly-116423.upstash.io';
+const UPSTASH_TOKEN = 'gQAAAAAAAcbHAAIgcDEzNDA1ZGYyMzg5ZDg0YjM3YmM5Nzc3YTBmNDBiNmM1ZQ';
+const NS = 'dinnr:'; // namespace prefix
 
-let ALL=[];
+// ── STORAGE: localStorage as cache + Upstash for cross-device sync ──
+const lsGet = (k) => { try { const v=localStorage.getItem(k); return v?JSON.parse(v):null; } catch(e){return null;} };
+const lsSet = (k,v) => { try { localStorage.setItem(k,JSON.stringify(v)); } catch(e){} };
+const lsDel = (k) => { try { localStorage.removeItem(k); } catch(e){} };
 
-fetch('meals.json')
-  .then(r=>r.json())
-  .then(data=>{
-    ALL=data;
-    loadData();
-    // Show loading is done — pick screen is already visible by default
-  })
-  .catch(()=>{
-    // Fallback: show error in pick screen
-    document.getElementById('s-pick').innerHTML+='<p style="color:#B33030;font-size:13px;text-align:center;padding:1rem">Fout bij laden van gerechten.<br>Controleer je verbinding.</p>';
-  });
+async function kvGet(key) {
+  try {
+    const r = await fetch(`${UPSTASH_URL}/get/${NS}${key}`, {
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
+    });
+    const j = await r.json();
+    if (j.result === null || j.result === undefined) return null;
+    return JSON.parse(j.result);
+  } catch(e) { return null; }
+}
 
+async function kvSet(key, value) {
+  lsSet(key, value); // update cache immediately
+  try {
+    // Upstash REST: POST /set/key/value  (value URL-encoded, EX = 90 days)
+    const val = encodeURIComponent(JSON.stringify(value));
+    await fetch(`${UPSTASH_URL}/set/${NS}${encodeURIComponent(key)}/${val}?EX=7776000`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
+    });
+  } catch(e) { /* local cache already updated */ }
+}
+
+async function kvDel(key) {
+  try {
+    await fetch(`${UPSTASH_URL}/del/${NS}${key}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
+    });
+    lsDel(key);
+  } catch(e) { lsDel(key); }
+}
+
+const W=(f,w=300)=>`https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/${encodeURIComponent(f)}&width=${w}`;
+const ALL=[
+  {id:1,name:"Moussaka",b:["Oven","Pan"],t:["Vlees"],bg:"#F5EDE6",e:"🥩",img:W("Moussaka_by_Ediblenature.jpg")},
+  {id:2,name:"Ovenschotel spinazie",b:["Oven"],t:["Quick","Vlees"],bg:"#E8F2EC",e:"🥬",img:W("Spinach_quiche.jpg")},
+  {id:3,name:"Ovenschotel vis",b:["Oven"],t:["Healthy","Vis"],bg:"#E6EEF8",e:"🐟",img:W("Baked_fish.jpg")},
+  {id:4,name:"Fishsticks & puree",b:["Pan"],t:["Quick","Vis"],bg:"#F5F0E6",e:"🐠",img:W("Fish_sticks_with_mashed_potato.jpg")},
+  {id:5,name:"Macaroni",b:["Thermomix"],t:["Quick"],bg:"#F5EDE6",e:"🍝",img:W("Pasta_salad_closeup.jpg")},
+  {id:6,name:"Courgettensoep",b:["Thermomix"],t:["Healthy","Quick"],bg:"#E8F2EC",e:"🥣",img:W("Leek_soup.jpg")},
+  {id:7,name:"Papillot kabeljauw & zalm",b:["Oven"],t:["Healthy","Vis"],bg:"#E6EEF8",e:"🐟",img:W("Salmon_en_papillote.jpg")},
+  {id:8,name:"Pasta met room, paprika & spek",b:["Pan"],t:["Quick","Vlees"],bg:"#F5EDE6",e:"🍝",img:W("Pasta_carbonara.jpg")},
+  {id:9,name:"Cannelloni mozarella & tomaten",b:["Oven"],t:["Vlees"],bg:"#F5EDE6",e:"🫙",img:W("Cannelloni_baked.jpg")},
+  {id:10,name:"Worst & wortelpuree",b:["Pan","Thermomix"],t:["Quick","Vlees"],bg:"#F5F0E6",e:"🥩",img:W("Sausages_with_mash.jpg")},
+  {id:11,name:"Brochetten, rijst & curry",b:["Pan"],t:["Quick","Vlees"],bg:"#F5F0E6",e:"🍢",img:W("Yakitori_by_woinary.jpg")},
+  {id:12,name:"Pita met kip en groentjes",b:["Pan"],t:["Kip","Quick"],bg:"#F5F0E6",e:"🫓",img:W("Pita_doner_kebab.jpg")},
+  {id:13,name:"Salade met tonijn",b:[],t:["Healthy","Vis"],bg:"#E8F2EC",e:"🥗",img:W("Tuna_salad_sandwich.jpg")},
+  {id:14,name:"Spaghetti",b:["Pan"],t:["Vlees"],bg:"#F5EDE6",e:"🍝",img:W("Spaghetti_bolognese_(hozinja).jpg")},
+  {id:15,name:"Kaasplank",b:[],t:["Friends & family"],bg:"#F8F5E6",e:"🧀",img:W("Cheese_board.jpg")},
+  {id:16,name:"Hespenrolletjes",b:["Oven"],t:["Vlees"],bg:"#F5EDE6",e:"🥩",img:W("Ham_rolls.jpg")},
+  {id:17,name:"Kip, rijst & curry",b:["Pan"],t:["Kip"],bg:"#F5F0E6",e:"🍗",img:W("Chicken_curry.jpg")},
+  {id:18,name:"Soep",b:["Thermomix"],t:["Healthy","Quick"],bg:"#E8F2EC",e:"🥣",img:W("Bowl_of_Pho.jpg")},
+  {id:19,name:"Carbonara",b:[],t:[],bg:"#F5EDE6",e:"🍝",img:W("Spaghetti_alla_carbonara.jpg")},
+  {id:20,name:"Ribbetjes",b:[],t:[],bg:"#F5EAE6",e:"🥩",img:W("Grilled_pork_ribs.jpg")},
+  {id:21,name:"Pulled chicken broodje",b:["Oven","Pan"],t:["Kip"],bg:"#F5F0E6",e:"🍗",img:W("Pulled_pork_sandwich.jpg")},
+  {id:22,name:"Lasagne",b:[],t:[],bg:"#F5EDE6",e:"🫕",img:W("Lasagne_al_forno_(Melanzane).jpg")},
+  {id:23,name:"Pasta scampi",b:[],t:[],bg:"#E6EEF8",e:"🦐",img:W("Shrimp_scampi.jpg")},
+  {id:24,name:"Koude wraps",b:[],t:[],bg:"#E8F2EC",e:"🌯",img:W("Wraps.jpg")},
+  {id:25,name:"Salade met kip",b:[],t:[],bg:"#E8F2EC",e:"🥗",img:W("Caesar_salad_(1).jpg")},
+  {id:26,name:"Hollands pannetje met jachtsaus",b:["Pan"],t:["Kip"],bg:"#F5F0E6",e:"🍲",img:W("Hutspot_with_klapstuk.jpg")},
+  {id:27,name:"Pompoenrisotto",b:[],t:[],bg:"#F8F0E6",e:"🎃",img:W("Risotto_with_porcini_mushrooms.jpg")},
+];
 const TAGS=[
   {k:"Vlees",l:"Vlees",e:"🥩"},{k:"Kip",l:"Kip",e:"🍗"},{k:"Vis",l:"Vis",e:"🐟"},
-  {k:"Pasta",l:"Pasta",e:"🍝"},{k:"Healthy",l:"Healthy",e:"🥗"},{k:"Quick",l:"Quick",e:"⚡"},
-  {k:"Friends & family",l:"Friends & family",e:"🎉"},
+  {k:"Healthy",l:"Healthy",e:"🥗"},{k:"Quick",l:"Quick",e:"⚡"},{k:"Friends & family",l:"Friends & family",e:"🎉"},
   {k:"Oven",l:"Oven",e:"🔥"},{k:"Pan",l:"Pan",e:"🍳"},{k:"Thermomix",l:"Thermomix",e:"🤖"},
 ];
 const DAYS=['Ma','Di','Wo','Do','Vr','Za','Zo'];
-const CAT_COLORS={Vlees:'#B85C30',Kip:'#A03070',Vis:'#3D52B8',Pasta:'#C06010',Healthy:'#2D7A42',Quick:'#8A6010','Friends & family':'#5040A0',Oven:'#903030',Pan:'#606060',Thermomix:'#205880'};
-const SK='dinnr-history-v3',SSK='dinnr-sessions-v1',SMN='dinnr-maybenext-v1',SLK='dinnr-likes-v1',SNW='dinnr-nextweek-v1';
+const CAT_COLORS={Vlees:'#B85C30',Kip:'#A03070',Vis:'#3D52B8',Healthy:'#2D7A42',Quick:'#8A6010','Friends & family':'#5040A0',Oven:'#903030',Pan:'#606060',Thermomix:'#205880'};
+const SK='dinnr-history-v3',SSK='dinnr-sessions-v1',CMK='dinnr-custom-meals-v1';
 
 let fp=null,cp=null,selTags=new Set(),recs=[];
 let dV={},bV={},ci=0,voting=false,p1done=false;
 let drag=false,sx=0,del=null;
 let matches=[],vetoed=[],plan={},vetoIdx=null;
-let hist=[],sess=[],maybeNext=[],likes={};
-let mergeMode=false,nextWeekMode=false;
-// Next week state
-let nextMatches=[],nextPlan={};
-// Accumulated votes across all rounds (for Smaak tab)
-let allRecs=[],allDV={},allBV={};
+let hist=[],sess=[],customMeals=[];
+let addMealReturnScreen='s-pick';
 
 function monday(ts){const t=ts?new Date(ts):new Date(),d=t.getDay(),m=new Date(t);m.setDate(t.getDate()-(d===0?6:d-1));m.setHours(0,0,0,0);return m;}
-function wkey(ts){const m=monday(ts);const mo=String(m.getMonth()+1).padStart(2,'0');const d=String(m.getDate()).padStart(2,'0');return`${m.getFullYear()}-${mo}-${d}`;}
-function wlabel(ts){const m=monday(ts);return`${m.getDate()}/${m.getMonth()+1}/${m.getFullYear()}`;}
-function wts(ts){return monday(ts).getTime();}
+function wkey(ts){const m=monday(ts);return`${m.getFullYear()}-${m.getMonth()+1}-${m.getDate()}`;}
 function pdate(di){const m=monday();m.setHours(18,0,0,0);m.setDate(m.getDate()+di);return m.getTime();}
+function wlabel(ts){const m=monday(ts);return`${m.getDate()}/${m.getMonth()+1}/${m.getFullYear()}`;}
 function other(p){return p==='diego'?'britt':'diego';}
 function pname(p){return p==='diego'?'Diego':'Britt';}
 function pvotes(p){return p==='diego'?dV:bV;}
 
-function loadData(){
-  hist = storage.get(SK) || [];
-  sess = storage.get(SSK) || [];
-  maybeNext = storage.get(SMN) || [];
-  likes = storage.get(SLK) || {};
-  const nw = storage.get(SNW) || {};
-  nextMatches = nw.matches || [];
-  nextPlan = nw.plan || {};
+function showSyncStatus(msg, ok=true){
+  let el=document.getElementById('sync-status');
+  if(!el){el=document.createElement('div');el.id='sync-status';
+    el.style.cssText='position:fixed;bottom:calc(1rem + var(--safe-bottom));left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:11px;padding:6px 14px;border-radius:999px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap';
+    document.body.appendChild(el);}
+  el.style.background=ok?'var(--ink)':'var(--red)';
+  el.textContent=msg;el.style.opacity='1';
+  setTimeout(()=>el.style.opacity='0',2000);
 }
-function saveHist(){ storage.set(SK, hist); }
-function saveSess(){ storage.set(SSK, sess); }
-function saveMaybeNext(){ storage.set(SMN, maybeNext); }
-function saveLikes(){ storage.set(SLK, likes); }
-function saveNextWeek(){ storage.set(SNW, {matches:nextMatches, plan:nextPlan}); }
-function clearAll(){
-  hist=[];sess=[];maybeNext=[];likes={};nextMatches=[];nextPlan={};
-  storage.delete(SK);storage.delete(SSK);storage.delete(SMN);storage.delete(SLK);storage.delete(SNW);
+
+async function loadData(){
+  // First load from localStorage cache for instant startup
+  hist = lsGet(SK) || [];
+  sess = lsGet(SSK) || [];
+  customMeals = lsGet(CMK) || [];
+  customMeals.forEach(cm=>{if(!ALL.find(r=>r.id===cm.id))ALL.push(cm);});
+
+  // Then fetch fresh from Upstash in background
+  showSyncStatus('⟳ Synchroniseren…');
+  try {
+    const [h, s, cm] = await Promise.all([kvGet(SK), kvGet(SSK), kvGet(CMK)]);
+    let changed = false;
+    if (h !== null) { hist = h; lsSet(SK, h); changed = true; }
+    if (s !== null) { sess = s; lsSet(SSK, s); changed = true; }
+    if (cm !== null) {
+      customMeals = cm; lsSet(CMK, cm);
+      // Re-merge custom meals (clear old ones first)
+      customMeals.forEach(cm=>{if(!ALL.find(r=>r.id===cm.id))ALL.push(cm);});
+      changed = true;
+    }
+    showSyncStatus('✓ Gesynchroniseerd');
+    if (changed) { renderHist(); renderStats(); }
+  } catch(e) {
+    showSyncStatus('Offline — lokale data', false);
+  }
+}
+
+function saveCustomMeals(){ kvSet(CMK, customMeals); }
+function saveHist(){ kvSet(SK, hist); }
+function saveSess(){ kvSet(SSK, sess); }
+async function clearAll(){
+  hist=[];sess=[];
+  await Promise.all([kvDel(SK), kvDel(SSK)]);
   renderHist();renderStats();
 }
 function recentIds(){const cut=Date.now()-14*24*60*60*1000;return new Set(hist.filter(h=>h.ts>cut).map(h=>h.id));}
+
+loadData();
 
 function selectPlayer(p){
   fp=p;
@@ -563,14 +807,7 @@ function selectPlayer(p){
   btn.style.background=p==='diego'?'#3D52B8':'#A03070';
 }
 
-function goToTags(merge, nextWeek){
-  if(!fp)return;
-  mergeMode=!!merge;
-  nextWeekMode=!!nextWeek;
-  selTags.clear();
-  renderTags();
-  showScreen('s-tags');
-}
+function goToTags(){if(!fp)return;selTags.clear();renderTags();showScreen('s-tags');}
 function renderTags(){
   const g=document.getElementById('tag-grid');g.innerHTML='';
   TAGS.forEach(tag=>{
@@ -578,63 +815,17 @@ function renderTags(){
     b.className='tag-pill'+(selTags.has(tag.k)?' on':'');
     b.innerHTML=`${tag.e} ${tag.l} <span class="tag-check-ico">✓</span>`;
     b.onclick=()=>toggleTag(tag.k);b.id='tp-'+tag.k;g.appendChild(b);
-  });
-  // Tip section — meals marked "maybe next week"
-  const tipEl=document.getElementById('tip-section');
-  const tipMeals=maybeNext.map(id=>ALL.find(r=>r.id===id)).filter(Boolean);
-  if(tipMeals.length&&!mergeMode){
-    tipEl.className='tip-section';
-    tipEl.innerHTML=`<div class="tip-section-hdr">⭐ Bewaard voor deze week</div>`+
-      `<div style="font-size:11px;color:#8A6010;margin-bottom:8px;line-height:1.5">Deze gerechten staan bovenaan de swipe-deck. Beiden moeten swipen om ze toe te voegen.</div>`+
-      tipMeals.map(m=>`<span class="tip-pill">${m.e} ${m.name}</span>`).join('');
-  } else {
-    tipEl.className='gone';tipEl.innerHTML='';
-  }
-  document.getElementById('tags-title').textContent=nextWeekMode?'Volgende week':mergeMode?'Nog een ronde':'Waar heb je zin in?';
-  document.getElementById('tags-sub').textContent=nextWeekMode
-    ?'Swipe alvast voor volgende week. Jullie plan wordt apart bewaard.'
-    :mergeMode
-      ?'Kies categorieën voor een extra swipe ronde. Gerechten die al in je menu staan worden overgeslagen.'
-      :'Kies een of meer categorieën, of sla over voor alle gerechten.';
-  document.getElementById('tags-start-btn').textContent=nextWeekMode?'Swipen voor volgende week →':mergeMode?'Extra ronde swipen →':'Start swipen →';
-  document.getElementById('tags-back-btn').style.display=(mergeMode||nextWeekMode)?'block':'none';
-  document.getElementById('tags-menu-btn').style.display=(mergeMode||nextWeekMode)?'none':'block';
-  updTagCount();
+  });updTagCount();
 }
 function toggleTag(k){selTags.has(k)?selTags.delete(k):selTags.add(k);document.getElementById('tp-'+k).classList.toggle('on',selTags.has(k));updTagCount();}
-function clearTags(){selTags.clear();document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('on'));updTagCount();startSwiping();}
+function clearTags(){selTags.clear();document.querySelectorAll('.tag-pill').forEach(b=>b.classList.remove('on'));updTagCount();}
 function filtered(){if(!selTags.size)return ALL;return ALL.filter(r=>[...r.t,...r.b].some(k=>selTags.has(k)));}
-function updTagCount(){
-  let pool=filtered();
-  if(mergeMode){const ids=new Set(matches.map(m=>m.id));pool=pool.filter(r=>!ids.has(r.id));}
-  if(nextWeekMode){const ids=new Set(nextMatches.map(m=>m.id));pool=pool.filter(r=>!ids.has(r.id));}
-  const n=pool.length;
-  document.getElementById('tag-count').textContent=selTags.size===0
-    ?(mergeMode||nextWeekMode?`${n} gerechten beschikbaar.`:`Alle ${ALL.length} gerechten worden getoond.`)
-    :`${n} gerecht${n!==1?'en':''} gevonden.`;
-}
+function updTagCount(){const n=filtered().length;document.getElementById('tag-count').textContent=selTags.size===0?`Alle ${ALL.length} gerechten worden getoond.`:`${n} gerecht${n!==1?'en':''} gevonden.`;}
 
 function startSwiping(){
-  let f=filtered();if(!f.length&&!maybeNext.length){alert('Geen gerechten gevonden.');return;}
-  if(mergeMode){
-    const existingIds=new Set(matches.map(m=>m.id));
-    f=f.filter(r=>!existingIds.has(r.id));
-    if(!f.length&&!maybeNext.length){alert('Alle gerechten in deze categorie staan al in je menu.');return;}
-  }
-  if(nextWeekMode){
-    const existingIds=new Set(nextMatches.map(m=>m.id));
-    f=f.filter(r=>!existingIds.has(r.id));
-  }
+  let f=filtered();if(!f.length){alert('Geen gerechten gevonden.');return;}
   const ri=recentIds();
-  const tipIds=new Set(maybeNext);
-  const tipMeals=ALL.filter(r=>tipIds.has(r.id));
-  const filteredWithoutTips=f.filter(r=>!tipIds.has(r.id));
-  recs=[
-    ...tipMeals,
-    ...filteredWithoutTips.filter(r=>!ri.has(r.id)),
-    ...filteredWithoutTips.filter(r=>ri.has(r.id))
-  ];
-  if(!recs.length){alert('Geen gerechten gevonden.');return;}
+  recs=[...f.filter(r=>!ri.has(r.id)),...f.filter(r=>ri.has(r.id))];
   dV={};bV={};p1done=false;cp=fp;ci=0;voting=false;
   buildCards();showScreen('s-swipe');updHeader();
 }
@@ -652,58 +843,17 @@ function updProg(){
 function buildCards(){
   const st=document.getElementById('stack');st.innerHTML='';
   const ri=recentIds();
-  const tipIds=new Set(maybeNext);
-  // Clear maybeNext now that we've surfaced them
-  if(maybeNext.length){maybeNext=[];saveMaybeNext();}
-
-  // Compute favorites: meals eaten 3+ times
-  const freq={};hist.forEach(h=>{freq[h.id]=(freq[h.id]||0)+1;});
-  const favIds=new Set(Object.keys(freq).filter(id=>freq[id]>=3).map(Number));
-
-  // Compute "most swiped by person":
-  // Only label a meal if BOTH players have seen it (likes[id] exists for both with count > 0)
-  // AND one person likes it clearly more than the other (likes it more sessions than the other)
-  const dTopIds=new Set();
-  const bTopIds=new Set();
-  recs.forEach(r=>{
-    const d=likes[r.id]?.diego||0;
-    const b=likes[r.id]?.britt||0;
-    // Both must have been exposed to it (both have a non-zero session count)
-    // We use total sessions as proxy: if either is 0, we can't compare fairly
-    if(d===0||b===0) return;
-    // Must have at least 2 likes total and a clear preference gap
-    if(d>b&&d>=2) dTopIds.add(r.id);
-    if(b>d&&b>=2) bTopIds.add(r.id);
-  });
-
   recs.forEach((r,i)=>{
     const el=document.createElement('div');el.className='card';el.id='card-'+i;
     el.style.zIndex=recs.length-i;setDepth(el,i);
     const isR=ri.has(r.id);
-    const isTip=tipIds.has(r.id);
-    const isFav=favIds.has(r.id);
-    const isDTop=dTopIds.has(r.id);
-    const isBTop=bTopIds.has(r.id);
     const bc=r.b.map(x=>`<span class="chip b">${x}</span>`).join('');
     const tc=r.t.map(x=>`<span class="chip t">${x}</span>`).join('');
-
-    // Build label stack (top-left)
-    const labelHtml=(isTip||isFav||isDTop||isBTop)?`<div class="card-labels">
-      ${isTip?`<span class="card-label tip">⭐ Bewaard</span>`:''}
-      ${isFav?`<span class="card-label fav">❤️ Favoriet</span>`:''}
-      ${isDTop&&!isBTop?`<span class="card-label diego-fav">👤 Diego's keuze</span>`:''}
-      ${isBTop&&!isDTop?`<span class="card-label britt-fav">👤 Britt's keuze</span>`:''}
-      ${isDTop&&isBTop?`<span class="card-label diego-fav">👥 Beider favoriet</span>`:''}
-    </div>`:'';
-
-    // RECENT badge top-right (only when no left labels competing)
-    const recentHtml=isR&&!isTip?`<div style="position:absolute;top:10px;right:10px;background:rgba(61,82,184,.85);color:#fff;font-size:10px;font-weight:500;padding:3px 9px;border-radius:999px">RECENT</div>`:'';
-
     el.innerHTML=`
       <div class="card-img-wrap" style="background:${r.bg}">
         <div class="card-emoji">${r.e}</div>
         <img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s">
-        ${labelHtml}${recentHtml}
+        ${isR?`<div style="position:absolute;top:10px;right:10px;background:rgba(61,82,184,.85);color:#fff;font-size:10px;font-weight:500;padding:3px 9px;border-radius:999px">RECENT</div>`:''}
       </div>
       <div class="card-body"><div class="card-name">${r.name}</div><div class="card-chips">${bc}${tc}</div></div>
       <div class="stamp yes" id="sy-${i}">Ja ♥</div>
@@ -716,7 +866,8 @@ function topEl(){return document.getElementById('card-'+ci);}
 function aDrag(){const el=topEl();if(!el)return;del=el;del.addEventListener('mousedown',ds);del.addEventListener('touchstart',ds,{passive:true});}
 function ds(e){if(voting)return;drag=true;sx=(e.touches?e.touches[0]:e).clientX;del.classList.add('dragging');document.addEventListener('mousemove',dm);document.addEventListener('touchmove',dm,{passive:true});document.addEventListener('mouseup',de);document.addEventListener('touchend',de);}
 function dm(e){if(!drag)return;const dx=(e.touches?e.touches[0]:e).clientX-sx;del.style.transform=`translateX(${dx}px) rotate(${dx*0.035}deg)`;const sy=document.getElementById('sy-'+ci),sn=document.getElementById('sn-'+ci);if(sy)sy.style.opacity=dx>30?Math.min(1,(dx-30)/60):'0';if(sn)sn.style.opacity=dx<-30?Math.min(1,(-dx-30)/60):'0';}
-function de(e){if(!drag)return;drag=false;const _del=del;del=null;if(_del)_del.classList.remove('dragging');document.removeEventListener('mousemove',dm);document.removeEventListener('touchmove',dm);document.removeEventListener('mouseup',de);document.removeEventListener('touchend',de);const touch=e.changedTouches&&e.changedTouches[0];const clientX=touch?touch.clientX:(e.clientX!==undefined?e.clientX:sx);const dx=clientX-sx;if(Math.abs(dx)>80){vote(dx>0);}else{if(_del){_del.style.transition='transform .3s';setDepth(_del,0);setTimeout(()=>{if(_del)_del.style.transition='transform .3s,opacity .3s';},300);}['sy-','sn-'].forEach(p=>{const el=document.getElementById(p+ci);if(el)el.style.opacity='0';});}}
+function de(e){if(!drag)return;drag=false;del.classList.remove('dragging');document.removeEventListener('mousemove',dm);document.removeEventListener('touchmove',dm);document.removeEventListener('mouseup',de);document.removeEventListener('touchend',de);const dx=(e.changedTouches?e.changedTouches[0]:e).clientX-sx;if(Math.abs(dx)>80){vote(dx>0);}else{del.style.transition='transform .3s';setDepth(del,0);setTimeout(()=>{if(del)del.style.transition='transform .3s,opacity .3s';},300);['sy-','sn-'].forEach(p=>{const el=document.getElementById(p+ci);if(el)el.style.opacity='0';});}}
+
 function vote(liked){
   if(voting)return;voting=true;
   const el=topEl();if(!el){voting=false;return;}
@@ -729,33 +880,10 @@ function vote(liked){
     for(let i=ci;i<recs.length;i++){const c=document.getElementById('card-'+i);if(c){c.style.transition='transform .3s,opacity .3s';setDepth(c,i-ci);}}
     voting=false;
     if(ci>=recs.length){
-      if(!p1done){
-        p1done=true;
-        const s=other(cp);
-        document.getElementById('handoff-title').textContent='Geef de telefoon aan '+pname(s)+'!';
-        document.getElementById('handoffmsg').textContent=mergeMode
-          ?'Extra ronde: nu is '+pname(s)+' aan de beurt om de nieuwe gerechten te swipen.'
-          :'Goed gedaan, '+pname(cp)+'! Nu is '+pname(s)+' aan de beurt.';
-        showScreen('s-handoff');
-      } else {
-        showResults();
-      }
+      if(!p1done){p1done=true;const s=other(cp);document.getElementById('handoff-title').textContent='Geef de telefoon aan '+pname(s)+'!';document.getElementById('handoffmsg').textContent='Goed gedaan, '+pname(cp)+'! Nu is '+pname(s)+' aan de beurt.';showScreen('s-handoff');}
+      else showResults();
     }else{aDrag();if(isMatch)showMatch(r);}
   },350);
-}
-function backFromTags(){mergeMode=false;nextWeekMode=false;showScreen('s-results');}
-function goToMenu(){
-  // Skip swiping entirely — go straight to results with empty state
-  // so the user can manually add meals via the extra round or addMore
-  matches=[];vetoed=[];plan={};recs=[];dV={};bV={};allRecs=[];allDV={};allBV={};
-  document.getElementById('ressub').textContent='Voeg gerechten toe via "Nog een ronde swipen" of "Gerecht handmatig toevoegen".';
-  document.getElementById('res-week-lbl').textContent='Week van '+wlabel(Date.now());
-  document.getElementById('save-note').textContent='';
-  renderAll();switchTab('menu');showScreen('s-results');
-}
-function startExtraRound(){
-  if(!fp) fp='diego';
-  goToTags(true);
 }
 function startSecondPlayer(){cp=other(fp);ci=0;voting=false;buildCards();showScreen('s-swipe');updHeader();}
 
@@ -767,44 +895,10 @@ function showMatch(r){
 function dismissMatch(){document.getElementById('matchscreen').classList.remove('show');document.getElementById('s-swipe').classList.remove('gone');}
 
 function showResults(){
-  const newMatches=recs.filter(r=>dV[r.id]===true&&bV[r.id]===true);
-
-  if(nextWeekMode){
-    // Merge new matches into nextMatches
-    const existingIds=new Set(nextMatches.map(m=>m.id));
-    const added=newMatches.filter(m=>!existingIds.has(m.id));
-    nextMatches=[...nextMatches,...added];
-    const usedDays=new Set(Object.keys(nextPlan).map(Number));
-    added.forEach(m=>{for(let d=0;d<7;d++){if(!usedDays.has(d)){nextPlan[d]=m;usedDays.add(d);break;}}});
-    nextWeekMode=false;
-    saveNextWeek();
-  } else if(mergeMode){
-    const existingIds=new Set(matches.map(m=>m.id));
-    const added=newMatches.filter(m=>!existingIds.has(m.id));
-    matches=[...matches,...added];
-    const usedDays=new Set(Object.keys(plan).map(Number));
-    added.forEach(m=>{for(let d=0;d<7;d++){if(!usedDays.has(d)){plan[d]=m;usedDays.add(d);break;}}});
-    mergeMode=false;
-    const seenIds=new Set(allRecs.map(r=>r.id));
-    recs.forEach(r=>{if(!seenIds.has(r.id))allRecs.push(r);});
-    Object.assign(allDV,dV);Object.assign(allBV,bV);
-  } else {
-    matches=newMatches;
-    vetoed=[];plan={};
-    matches.forEach((m,i)=>{if(i<7)plan[i]=m;});
-    allRecs=[...recs];Object.assign(allDV={},dV);Object.assign(allBV={},bV);
-  }
-  // Accumulate per-player persistent likes
-  recs.forEach(r=>{
-    if(!likes[r.id])likes[r.id]={diego:0,britt:0};
-    if(dV[r.id]===true)likes[r.id].diego++;
-    if(bV[r.id]===true)likes[r.id].britt++;
-  });
-  saveLikes();
-  if(!nextWeekMode){
-    const wk=wkey();
-    if(!sess.find(s=>s.week===wk)){sess.unshift({week:wk,matchCount:matches.length,ts:Date.now()});sess.sort((a,b)=>b.ts-a.ts);saveSess();}
-  }
+  matches=recs.filter(r=>dV[r.id]===true&&bV[r.id]===true);
+  vetoed=[];plan={};matches.forEach((m,i)=>{if(i<7)plan[i]=m;});
+  const wk=wkey();
+  if(!sess.find(s=>s.week===wk)){sess.unshift({week:wk,matchCount:matches.length,ts:Date.now()});sess.sort((a,b)=>b.ts-a.ts);saveSess();}
   document.getElementById('ressub').textContent=matches.length?`Diego & Britt zijn het eens over ${matches.length} gerecht${matches.length!==1?'en':''}!`:'Geen matches — probeer opnieuw!';
   document.getElementById('res-week-lbl').textContent='Week van '+wlabel(Date.now());
   document.getElementById('save-note').textContent='';
@@ -814,90 +908,14 @@ function showResults(){
 function savePlan(){
   const pl=Object.keys(plan);
   if(!pl.length){document.getElementById('save-note').textContent='Wijs eerst maaltijden toe aan dagen.';return;}
-  const thisWeek=wkey();
-  pl.forEach(di=>{
-    const m=plan[di];if(!m)return;
-    const ts=pdate(parseInt(di));
-    // Deduplicate: same meal in same week (not same exact timestamp)
-    const alreadySaved=hist.find(h=>h.id===m.id&&wkey(h.ts)===thisWeek);
-    if(!alreadySaved)hist.unshift({id:m.id,name:m.name,e:m.e,img:m.img,bg:m.bg,t:m.t,b:m.b,ts});
-  });
+  pl.forEach(di=>{const m=plan[di];if(!m)return;const ts=pdate(parseInt(di));if(!hist.find(h=>h.id===m.id&&h.ts===ts))hist.unshift({id:m.id,name:m.name,e:m.e,img:m.img,bg:m.bg,t:m.t,b:m.b,ts});});
   hist.sort((a,b)=>b.ts-a.ts);saveHist();
   document.getElementById('save-note').textContent='✓ Opgeslagen in "Al gegeten"';
   renderHist();renderStats();
 }
 
-function renderAll(){renderMenu();renderCal();renderMaybe();renderNextWeek();renderSmaak();renderStats();renderHist();const ac=matches.filter(m=>!vetoed.includes(m.id)).length;document.getElementById('matches-label').textContent=`${ac} match${ac!==1?'es':''}`;}
+function renderAll(){renderMenu();renderCal();renderMaybe();renderSmaak();renderStats();renderHist();const ac=matches.filter(m=>!vetoed.includes(m.id)).length;document.getElementById('matches-label').textContent=`${ac} match${ac!==1?'es':''}`;}
 
-function startNextWeekSwipe(){
-  if(!fp) fp='diego';
-  goToTags(false, true);
-}
-function clearNextWeek(){
-  nextMatches=[];nextPlan={};
-  saveNextWeek();
-  renderNextWeek();
-}
-function renderNextWeek(){
-  const sec=document.getElementById('nextweek-sec');
-  if(!nextMatches.length){sec.classList.add('gone');return;}
-  sec.classList.remove('gone');
-  const ac=nextMatches.length;
-  document.getElementById('nextweek-sub').textContent=`${ac} gerecht${ac!==1?'en':''} gepland voor volgende week`;
-  document.getElementById('nextweek-matches-label').textContent=`${ac} match${ac!==1?'es':''}`;
-  // Render meal rows
-  const g=document.getElementById('nextweek-grid');g.innerHTML='';
-  nextMatches.forEach((meal,mi)=>{
-    const ad=Object.keys(nextPlan).find(d=>nextPlan[d]&&nextPlan[d].id===meal.id);
-    const lbl=ad!==undefined?DAYS[ad]:'—';
-    const bc=meal.b.map(x=>`<span class="chip b" style="font-size:10px">${x}</span>`).join('');
-    const tc=meal.t.slice(0,2).map(x=>`<span class="chip t" style="font-size:10px">${x}</span>`).join('');
-    const row=document.createElement('div');row.className='mrow';
-    row.innerHTML=`<div class="mrow-top">
-      <div class="mrow-img" style="background:${meal.bg}"><div class="fb">${meal.e}</div><img src="${meal.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div>
-      <div style="flex:1;min-width:0"><div class="meal-name">${meal.name}</div><div class="meal-chips">${bc}${tc}</div></div>
-      <div class="row-actions"><button class="day-tag ${ad!==undefined?'set':''}" onclick="toggleNextWeekDayPick(${mi})">${lbl}</button><button class="veto-btn" onclick="removeNextWeekMeal(${mi})">✕</button></div>
-    </div>
-    <div class="day-pick" id="ndp-${mi}">${DAYS.map((d,di)=>`<button class="d-btn ${nextPlan[di]&&nextPlan[di].id===meal.id?'picked':''}" onclick="assignNextWeekDay(${mi},${di})">${d}</button>`).join('')}<button class="d-btn" style="color:var(--red)" onclick="unassignNextWeek(${mi})">✕</button></div>`;
-    g.appendChild(row);
-  });
-  renderNextWeekCal();
-}
-function renderNextWeekCal(){
-  const g=document.getElementById('nextweek-calgrid');g.innerHTML='';
-  const mon=monday();mon.setDate(mon.getDate()+7);mon.setHours(18,0,0,0);
-  DAYS.forEach(d=>{const h=document.createElement('div');h.className='cal-head';h.textContent=d;g.appendChild(h);});
-  for(let i=0;i<7;i++){
-    const d=new Date(mon);d.setDate(mon.getDate()+i);const m=nextPlan[i];
-    const cell=document.createElement('div');cell.className='cal-cell'+(m?' has-meal':' empty');
-    if(m){cell.innerHTML=`<div style="height:28px;position:relative;overflow:hidden;background:${m.bg}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px">${m.e}</div><img src="${m.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div class="cal-inner"><div class="cal-date">${d.getDate()}</div><div class="cal-meal">${m.name}</div></div>`;}
-    else{cell.innerHTML=`<div class="cal-inner" style="padding-top:6px"><div class="cal-date">${d.getDate()}</div></div>`;}
-    g.appendChild(cell);
-  }
-}
-function toggleNextWeekDayPick(mi){
-  document.querySelectorAll('#nextweek-grid .day-pick.open').forEach(el=>{if(el.id!=='ndp-'+mi)el.classList.remove('open');});
-  document.getElementById('ndp-'+mi)?.classList.toggle('open');
-}
-function assignNextWeekDay(mi,di){
-  const m=nextMatches[mi];
-  Object.keys(nextPlan).forEach(d=>{if(nextPlan[d]&&nextPlan[d].id===m.id)delete nextPlan[d];});
-  nextPlan[di]=m;
-  document.getElementById('ndp-'+mi)?.classList.remove('open');
-  saveNextWeek();renderNextWeek();
-}
-function unassignNextWeek(mi){
-  const m=nextMatches[mi];
-  Object.keys(nextPlan).forEach(d=>{if(nextPlan[d]&&nextPlan[d].id===m.id)delete nextPlan[d];});
-  document.getElementById('ndp-'+mi)?.classList.remove('open');
-  saveNextWeek();renderNextWeek();
-}
-function removeNextWeekMeal(mi){
-  const m=nextMatches[mi];
-  nextMatches.splice(mi,1);
-  Object.keys(nextPlan).forEach(d=>{if(nextPlan[d]&&nextPlan[d].id===m.id)delete nextPlan[d];});
-  saveNextWeek();renderNextWeek();
-}
 function renderMenu(){
   const g=document.getElementById('weekgrid');g.innerHTML='';
   if(!matches.length){g.innerHTML='<div class="empty-state">Geen matches 😅<br>Swipe opnieuw voor meer gerechten.</div>';return;}
@@ -911,47 +929,11 @@ function renderMenu(){
     row.innerHTML=`<div class="mrow-top">
       <div class="mrow-img" style="background:${meal.bg}"><div class="fb">${meal.e}</div><img src="${meal.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div>
       <div style="flex:1;min-width:0"><div class="meal-name">${isV?'<s style="opacity:.5">'+meal.name+'</s>':meal.name}</div><div class="meal-chips">${isV?'<span style="font-size:10px;color:var(--red)">geveto</span>':bc+tc}</div></div>
-      <div class="row-actions">${isV
-        ?`<button class="restore-btn" onclick="restoreMeal(${mi})">Herstellen</button>`
-        :`<button class="maybe-next-btn ${maybeNext.includes(meal.id)?'set':''}" onclick="toggleMaybeNext(${meal.id})" title="${maybeNext.includes(meal.id)?'Terugzetten naar deze week':'Verplaats naar volgende week'}">⭐</button><button class="day-tag ${ad!==undefined?'set':''}" onclick="toggleDayPick(${mi})">${lbl}</button><button class="veto-btn" onclick="startVeto(${mi})">👎</button>`
-      }</div>
+      <div class="row-actions">${isV?`<button class="restore-btn" onclick="restoreMeal(${mi})">Herstellen</button>`:`<button class="day-tag ${ad!==undefined?'set':''}" onclick="toggleDayPick(${mi})">${lbl}</button><button class="veto-btn" onclick="startVeto(${mi})">👎</button>`}</div>
     </div>
     ${!isV?`<div class="day-pick" id="dp-${mi}">${DAYS.map((d,di)=>`<button class="d-btn ${plan[di]&&plan[di].id===meal.id?'picked':''}" onclick="assignDay(${mi},${di})">${d}</button>`).join('')}<button class="d-btn" style="color:var(--red)" onclick="unassign(${mi})">✕</button></div>`:''}`;
     g.appendChild(row);
   });
-}
-function toggleMaybeNext(id){
-  const meal=matches.find(m=>m.id===id);
-  if(!meal) return;
-
-  if(maybeNext.includes(id)){
-    // Un-star: remove from nextWeek, put back in this week's matches
-    maybeNext=maybeNext.filter(x=>x!==id);
-    nextMatches=nextMatches.filter(m=>m.id!==id);
-    Object.keys(nextPlan).forEach(d=>{if(nextPlan[d]&&nextPlan[d].id===id)delete nextPlan[d];});
-    // Re-add to this week's matches if not already there
-    if(!matches.find(m=>m.id===id)) matches.push(meal);
-    // Auto-assign to first free day this week
-    const used=new Set(Object.keys(plan).map(Number));
-    for(let d=0;d<7;d++){if(!used.has(d)){plan[d]=meal;break;}}
-    saveNextWeek();
-  } else {
-    // Star: move out of this week, into next week
-    maybeNext.push(id);
-    // Remove from this week's plan and matches
-    Object.keys(plan).forEach(d=>{if(plan[d]&&plan[d].id===id)delete plan[d];});
-    matches=matches.filter(m=>m.id!==id);
-    vetoed=vetoed.filter(x=>x!==id);
-    // Add to next week if not already there
-    if(!nextMatches.find(m=>m.id===id)){
-      nextMatches.push(meal);
-      const usedNext=new Set(Object.keys(nextPlan).map(Number));
-      for(let d=0;d<7;d++){if(!usedNext.has(d)){nextPlan[d]=meal;break;}}
-    }
-    saveNextWeek();
-  }
-  saveMaybeNext();
-  renderAll();
 }
 function startVeto(mi){vetoIdx=mi;const m=matches[mi];document.getElementById('veto-dish').textContent=m.e+' '+m.name;document.getElementById('s-results').classList.add('gone');document.getElementById('veto-ovl').classList.add('show');}
 function cancelVeto(){vetoIdx=null;document.getElementById('veto-ovl').classList.remove('show');document.getElementById('s-results').classList.remove('gone');}
@@ -964,13 +946,7 @@ function confirmVeto(who){
   setTimeout(()=>{document.getElementById('veto-anim').classList.remove('show');document.getElementById('s-results').classList.remove('gone');vetoIdx=null;renderAll();},2200);
 }
 function restoreMeal(mi){const m=matches[mi];vetoed=vetoed.filter(id=>id!==m.id);const used=new Set(Object.keys(plan).map(Number));for(let d=0;d<7;d++){if(!used.has(d)){plan[d]=m;break;}}renderAll();}
-function toggleDayPick(mi){
-  // Close all others first
-  document.querySelectorAll('.day-pick.open').forEach(el=>{
-    if(el.id!=='dp-'+mi) el.classList.remove('open');
-  });
-  document.getElementById('dp-'+mi)?.classList.toggle('open');
-}
+function toggleDayPick(mi){document.getElementById('dp-'+mi)?.classList.toggle('open');}
 function assignDay(mi,di){const m=matches[mi];Object.keys(plan).forEach(d=>{if(plan[d]&&plan[d].id===m.id)delete plan[d];});plan[di]=m;document.getElementById('dp-'+mi)?.classList.remove('open');renderAll();}
 function unassign(mi){const m=matches[mi];Object.keys(plan).forEach(d=>{if(plan[d]&&plan[d].id===m.id)delete plan[d];});document.getElementById('dp-'+mi)?.classList.remove('open');renderAll();}
 function renderMaybe(){
@@ -994,15 +970,15 @@ function renderCal(){
 }
 function renderSmaak(){
   const el=document.getElementById('smaak-content');
-  if(!allRecs.length){el.innerHTML='<div class="empty-state">Speel eerst een ronde!</div>';return;}
-  const total=allRecs.length,dl=allRecs.filter(r=>allDV[r.id]===true).length,bl=allRecs.filter(r=>allBV[r.id]===true).length,mc=matches.length;
+  if(!recs.length){el.innerHTML='<div class="empty-state">Speel eerst een ronde!</div>';return;}
+  const total=recs.length,dl=recs.filter(r=>dV[r.id]===true).length,bl=recs.filter(r=>bV[r.id]===true).length,mc=matches.length;
   const cs=Math.round((mc/Math.max(dl,bl,1))*100),mr=Math.round(mc/total*100);
   const cl=cs>=80?'Perfecte match 🎉':cs>=60?'Goed op één lijn 👍':cs>=40?'Redelijke match 🤷':'Heel andere smaken 😅';
   const tkeys=['Vlees','Kip','Vis','Healthy','Quick','Friends & family'];
-  function tc(v){const c={};tkeys.forEach(k=>c[k]=0);allRecs.forEach(r=>{if(v[r.id]===true)r.t.forEach(t=>{if(c[t]!==undefined)c[t]++;});});return c;}
-  const dt=tc(allDV),bt=tc(allBV);const mx=Math.max(...tkeys.map(k=>Math.max(dt[k],bt[k])),1);
-  function fb(v){const c={};allRecs.forEach(r=>{if(v[r.id]===true)r.b.forEach(b=>{c[b]=(c[b]||0)+1;});});return Object.entries(c).sort((a,b)=>b[1]-a[1])[0];}
-  const df=fb(allDV),bf2=fb(allBV);
+  function tc(v){const c={};tkeys.forEach(k=>c[k]=0);recs.forEach(r=>{if(v[r.id]===true)r.t.forEach(t=>{if(c[t]!==undefined)c[t]++;});});return c;}
+  const dt=tc(dV),bt=tc(bV);const mx=Math.max(...tkeys.map(k=>Math.max(dt[k],bt[k])),1);
+  function fb(v){const c={};recs.forEach(r=>{if(v[r.id]===true)r.b.forEach(b=>{c[b]=(c[b]||0)+1;});});return Object.entries(c).sort((a,b)=>b[1]-a[1])[0];}
+  const df=fb(dV),bf2=fb(bV);
   const circ=2*Math.PI*24,dash=circ*(cs/100);
   el.innerHTML=`
     <div class="tab-section"><h3>Compatibiliteit</h3>
@@ -1030,31 +1006,11 @@ function renderSmaak(){
       </div>
     </div>`;
 }
-function toggleAllMeals(){
-  const btn=document.getElementById('all-meals-btn');
-  const list=document.getElementById('all-meals-list');
-  if(!btn||!list)return;
-  const open=list.classList.toggle('open');
-  btn.classList.toggle('open',open);
-}
 function calcStreak(){
   if(!sess.length)return{current:0,best:0,weeks:[]};
-  const wks=new Set(sess.map(s=>s.week));
+  const wks=new Set(sess.map(s=>s.week));let streak=0,best=0,cur=0;
   const base=monday();
-  // Walk backwards week by week; cur = consecutive streak ending at this week (or last played week)
-  let streak=0,best=0,cur=0,curSet=false;
-  for(let i=0;i<52;i++){
-    const dt=new Date(base);dt.setDate(base.getDate()-i*7);
-    const wk=wkey(dt.getTime());
-    if(wks.has(wk)){
-      streak++;
-      if(!curSet){cur=streak;} // cur grows as long as streak is unbroken from most recent
-    } else {
-      if(!curSet&&i>0){curSet=true;} // gap found — cur is now frozen
-      if(curSet||i===0){best=Math.max(best,streak);streak=0;}
-      if(i===0){break;} // this week not played → cur stays 0, start counting from i=1 onwards for best
-    }
-  }
+  for(let i=0;i<52;i++){const dt=new Date(base);dt.setDate(base.getDate()-i*7);const wk=wkey(dt.getTime());if(wks.has(wk)){streak++;if(i===0)cur=streak;}else{if(i===0)break;best=Math.max(best,streak);streak=0;}}
   best=Math.max(best,streak,cur);
   const ws=[];for(let i=7;i>=0;i--){const dt=new Date(base);dt.setDate(base.getDate()-i*7);ws.push({wk:wkey(dt.getTime()),has:wks.has(wkey(dt.getTime())),d:dt.getDate()+'/'+(dt.getMonth()+1)});}
   return{current:cur,best,weeks:ws};
@@ -1085,29 +1041,22 @@ function renderStats(){
       <div class="stat-box"><div class="stat-box-lbl">Gem. matches/week</div><div class="stat-box-val">${avg}</div><div class="stat-box-sub">per sessie</div></div>
       <div class="stat-box"><div class="stat-box-lbl">Beste sessie</div><div class="stat-box-val">${bst}</div><div class="stat-box-sub">matches</div></div>
     </div>
-    ${top.length?`<div class="tab-section"><h3>Meest gegeten</h3>
-      ${top.map((r,i)=>{const mx2=top[0].count||1;return`<div class="top-item"><div class="top-rank">${['🥇','🥈','🥉'][i]}</div><div class="top-img" style="background:${r.bg}"><div class="fb">${r.e}</div><img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div class="top-info"><div class="top-name">${r.name}</div><div class="top-count">${r.count}× gekookt</div><div class="top-bar" style="width:${Math.round(r.count/mx2*100)}%"></div></div></div>`;}).join('')}
-      ${(()=>{const all=Object.values(freq).sort((a,b)=>b.count-a.count);if(all.length<=3)return'';const mx2=all[0].count||1;return`<button class="all-meals-toggle" id="all-meals-btn" onclick="toggleAllMeals()">Alle ${all.length} gerechten bekijken <em class="chevron">▼</em></button><div class="all-meals-list" id="all-meals-list">${all.map(r=>`<div class="am-row"><div class="am-img" style="background:${r.bg}"><div class="fb">${r.e}</div><img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div class="am-info"><div class="am-name">${r.name}</div><div class="am-bar-wrap"><div class="am-bar" style="width:${Math.round(r.count/mx2*100)}%"></div></div></div><div class="am-count">${r.count}×</div></div>`).join('')}</div>`;})()}
-    </div>`:''}
+    ${top.length?`<div class="tab-section"><h3>Meest gegeten</h3>${top.map((r,i)=>{const mx2=top[0].count||1;return`<div class="top-item"><div class="top-rank">${['🥇','🥈','🥉'][i]}</div><div class="top-img" style="background:${r.bg}"><div class="fb">${r.e}</div><img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div class="top-info"><div class="top-name">${r.name}</div><div class="top-count">${r.count}× gekookt</div><div class="top-bar" style="width:${Math.round(r.count/mx2*100)}%"></div></div></div>`;}).join('')}</div>`:''}
     ${catE.length?`<div class="tab-section"><h3>Categorie verdeling</h3><div class="donut-wrap"><svg viewBox="0 0 100 100" width="100" height="100" style="flex-shrink:0">${donut}</svg><div class="legend">${catE.map(([cat,cnt])=>`<div class="leg-item"><div class="leg-dot" style="background:${catCol[cat]}"></div><div class="leg-lbl">${cat}</div><div class="leg-pct">${Math.round(cnt/totC*100)}%</div></div>`).join('')}</div></div></div>`:''}
-    ${rS.length?`<div class="tab-section"><h3>Matches per sessie</h3><div class="bars-wrap">${rS.map(s=>{const h=Math.max(4,Math.round(s.matchCount/mxM*92));return`<div class="bar-col"><div class="bar-col-val">${s.matchCount}</div><div class="bar-col-fill active" style="height:${h}px"></div><div class="bar-col-lbl">${s.week.split('-').slice(1).join('/')}</div></div>`;}).join('')}</div></div>`:''}
+    ${rS.length?`<div class="tab-section"><h3>Matches per sessie</h3><div class="bars-wrap">${rS.map(s=>`<div class="bar-col"><div class="bar-col-fill active" style="height:${Math.round(s.matchCount/mxM*100)}%"></div><div class="bar-col-lbl">${s.week.split('-').slice(1).join('/')}</div></div>`).join('')}</div></div>`:''}
     ${!tw&&!total?`<div class="empty-state">Sla je eerste weekmenu op<br>om stats te zien</div>`:''}`;
 }
 function renderHist(){
   const el=document.getElementById('hist-content');
   if(!hist.length){el.innerHTML='<div class="empty-state">Nog niets opgeslagen —<br>wijs maaltijden toe en klik op<br>"Weekmenu opslaan".</div>';return;}
-  // Group by numeric monday timestamp to avoid label collisions
-  const bw={};
-  hist.forEach(h=>{const k=wts(h.ts);if(!bw[k])bw[k]=[];bw[k].push(h);});
-  const sortedWeeks=Object.keys(bw).map(Number).sort((a,b)=>b-a);
+  const bw={};hist.forEach(h=>{const wk=wlabel(h.ts);if(!bw[wk])bw[wk]=[];bw[wk].push(h);});
   let html='';
-  sortedWeeks.forEach(wk=>{
-    html+=`<div class="hist-week"><div class="hist-week-lbl">Week van ${wlabel(wk)}</div>`;
-    bw[wk].forEach(h=>{const dn=new Date(h.ts).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});html+=`<div class="hist-item"><div class="hist-img" style="background:${h.bg}"><div class="fb">${h.e}</div><img src="${h.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div><div class="hist-name">${h.name}</div><div class="hist-date">${dn}</div></div></div>`;});
+  Object.keys(bw).forEach(week=>{
+    html+=`<div class="hist-week"><div class="hist-week-lbl">Week van ${week}</div>`;
+    bw[week].forEach(h=>{const dn=new Date(h.ts).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});html+=`<div class="hist-item"><div class="hist-img" style="background:${h.bg}"><div class="fb">${h.e}</div><img src="${h.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s"></div><div><div class="hist-name">${h.name}</div><div class="hist-date">${dn}</div></div></div>`;});
     html+='</div>';
   });
-  html+=`<button class="clear-btn" onclick="clearAll()">Geschiedenis wissen</button>`;
-  el.innerHTML=html;
+  html+=`<button class="clear-btn" onclick="clearAll()">Geschiedenis wissen</button>`;el.innerHTML=html;
 }
 function switchTab(tab){
   const tabs=['menu','smaak','stats','history'];
@@ -1118,88 +1067,400 @@ function toICS(d){return d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';}
 function exportICS(){
   const mon=monday();mon.setHours(18,0,0,0);let ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Dinnr//NL\r\n';
   Object.keys(plan).forEach(di=>{const m=plan[di];if(!m)return;const s=new Date(mon);s.setDate(mon.getDate()+parseInt(di));s.setHours(18,0,0,0);const e=new Date(s);e.setHours(19,0,0,0);ics+=`BEGIN:VEVENT\r\nSUMMARY:${m.e} ${m.name}\r\nDTSTART:${toICS(s)}\r\nDTEND:${toICS(e)}\r\nEND:VEVENT\r\n`;});
-  ics+='END:VCALENDAR';
-  const blob=new Blob([ics],{type:'text/calendar'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='dinnr-week.ics';a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),10000);
+  ics+='END:VCALENDAR';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='dinnr-week.ics';a.click();
 }
 function exportGoogle(){
   const mon=monday();mon.setHours(18,0,0,0);
-  const entries=Object.keys(plan).map(di=>{const m=plan[di];if(!m)return null;const s=new Date(mon);s.setDate(mon.getDate()+parseInt(di));s.setHours(18,0,0,0);const e=new Date(s);e.setHours(19,0,0,0);return{m,s,e,day:DAYS[parseInt(di)]};}).filter(Boolean);
-  if(!entries.length){alert('Wijs eerst maaltijden toe aan dagen.');return;}
-  const list=document.getElementById('gcal-links');
-  list.innerHTML=entries.map(({m,s,e,day})=>{
-    const url=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(m.e+' '+m.name)}&dates=${toICS(s)}/${toICS(e)}`;
-    const dateStr=s.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
-    return`<a class="gcal-item" href="${url}" target="_blank" rel="noopener"><div class="gcal-item-emoji">${m.e}</div><div class="gcal-item-info"><div class="gcal-item-name">${m.name}</div><div class="gcal-item-date">${dateStr}</div></div><div class="gcal-item-arrow">↗</div></a>`;
-  }).join('');
-  document.getElementById('gcal-ovl').classList.add('show');
+  Object.keys(plan).forEach((di,i)=>{const m=plan[di];if(!m)return;const s=new Date(mon);s.setDate(mon.getDate()+parseInt(di));s.setHours(18,0,0,0);const e=new Date(s);e.setHours(19,0,0,0);setTimeout(()=>window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(m.e+' '+m.name)}&dates=${toICS(s)}/${toICS(e)}`,'_blank'),i*300);});
 }
-function closeGcal(){document.getElementById('gcal-ovl').classList.remove('show');}
-
-// ── ADD MORE MEALS ──
-let addMoreSelTag=null;
-function addMoreMeals(){
-  addMoreSelTag=null;
-  const tg=document.getElementById('addmore-tags');
-  tg.innerHTML='';
-  // Show all tags + "Alles" option
-  [{k:null,l:'Alles',e:'🍽'},...TAGS].forEach(tag=>{
-    const b=document.createElement('button');
-    b.className='tag-pill'+(addMoreSelTag===tag.k?' on':'');
-    b.innerHTML=`${tag.e} ${tag.l}`;
-    b.onclick=()=>selectAddMoreTag(tag.k);
-    b.id='amt-'+(tag.k||'all');
-    tg.appendChild(b);
-  });
-  renderAddMoreList();
-  document.getElementById('addmore-ovl').classList.add('show');
-}
-function selectAddMoreTag(k){
-  addMoreSelTag=k;
-  document.querySelectorAll('#addmore-tags .tag-pill').forEach(b=>b.classList.remove('on'));
-  document.getElementById('amt-'+(k||'all')).classList.add('on');
-  renderAddMoreList();
-}
-function renderAddMoreList(){
-  const existingIds=new Set(matches.map(m=>m.id));
-  const pool=(addMoreSelTag===null?ALL:ALL.filter(r=>[...r.t,...r.b].includes(addMoreSelTag))).filter(r=>!existingIds.has(r.id));
-  const list=document.getElementById('addmore-list');
-  if(!pool.length){list.innerHTML='<div style="font-size:13px;color:var(--muted);text-align:center;padding:1rem">Geen nieuwe gerechten gevonden in deze categorie.</div>';return;}
-  list.innerHTML=pool.map(m=>`
-    <div class="maybe-item" style="cursor:pointer" onclick="addMealToMatches(${m.id})">
-      <div style="font-size:17px">${m.e}</div>
-      <div style="flex:1"><div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--ink);font-weight:600">${m.name}</div><div style="font-size:11px;color:var(--muted)">${[...m.t,...m.b].join(' · ')||'Geen categorie'}</div></div>
-      <div style="font-size:12px;color:var(--grn);font-weight:500">+ Toevoegen</div>
-    </div>`).join('');
-}
-function addMealToMatches(id){
-  const meal=ALL.find(r=>r.id===id);if(!meal)return;
-  matches.push(meal);
-  const usedDays=new Set(Object.keys(plan).map(Number));
-  for(let d=0;d<7;d++){if(!usedDays.has(d)){plan[d]=meal;break;}}
-  renderAll();
-  document.getElementById('ressub').textContent=`Diego & Britt zijn het eens over ${matches.length} gerecht${matches.length!==1?'en':''}!`;
-  // Re-render the list so the added meal disappears from the picker
-  renderAddMoreList();
-}
-function closeAddMore(){document.getElementById('addmore-ovl').classList.remove('show');}
 function resetGame(){
-  dV={};bV={};ci=0;fp=null;cp=null;voting=false;p1done=false;matches=[];vetoed=[];plan={};selTags.clear();recs=[];mergeMode=false;nextWeekMode=false;
-  allRecs=[];allDV={};allBV={};
+  dV={};bV={};ci=0;fp=null;cp=null;voting=false;p1done=false;matches=[];vetoed=[];plan={};selTags.clear();recs=[];
   document.getElementById('pick-diego').classList.remove('selected');
   document.getElementById('pick-britt').classList.remove('selected');
   const btn=document.getElementById('pick-btn');btn.disabled=true;btn.textContent='Kies een speler';btn.style.background='';
   showScreen('s-pick');
 }
-function showScreen(id){
-  ['s-pick','s-tags','s-swipe','s-handoff','s-results'].forEach(s=>document.getElementById(s).classList.toggle('gone',s!==id));
-  // Close all overlays whenever navigating between screens
-  ['veto-ovl','veto-anim','matchscreen','gcal-ovl','addmore-ovl'].forEach(o=>{
-    const el=document.getElementById(o);
-    if(el){el.classList.remove('show');}
+function showScreen(id){['s-pick','s-add-meal','s-auto-entry','s-auto-result','s-tags','s-swipe','s-handoff','s-results'].forEach(s=>document.getElementById(s).classList.toggle('gone',s!==id));}
+
+// ── AUTO-PROPOSE ──
+let autoMode='balanced', autoDays=new Set([0,1,2,3,4]), autoProposal=[];
+
+function goToAutoPropose(){
+  renderAutoDays();
+  showScreen('s-auto-entry');
+}
+
+function renderAutoDays(){
+  const g=document.getElementById('auto-days-grid');
+  g.innerHTML='';
+  const DAYS2=['Ma','Di','Wo','Do','Vr','Za','Zo'];
+  DAYS2.forEach((d,i)=>{
+    const b=document.createElement('button');
+    b.className='auto-day-btn'+(autoDays.has(i)?' picked':'');
+    b.textContent=d;
+    b.onclick=()=>toggleAutoDay(i);
+    g.appendChild(b);
   });
+}
+
+function toggleAutoDay(i){
+  if(autoDays.has(i)){if(autoDays.size>1)autoDays.delete(i);}
+  else autoDays.add(i);
+  renderAutoDays();
+}
+
+function selectAutoMode(mode){
+  autoMode=mode;
+  ['balanced','quick','healthy'].forEach(m=>{
+    document.getElementById('aopt-'+m).classList.toggle('selected',m===mode);
+  });
+}
+
+function smartPick(pool, n, riIds){
+  // Score each meal: recent = -10, matches history pattern, spread categories
+  const used=new Set();
+  const result=[];
+  const days=[...autoDays].sort((a,b)=>a-b);
+
+  // Sort pool: non-recent first, then shuffle within tiers
+  const nonRecent=shuffle(pool.filter(r=>!riIds.has(r.id)));
+  const recent=shuffle(pool.filter(r=>riIds.has(r.id)));
+  const ordered=[...nonRecent,...recent];
+
+  // Try to get category balance for 'balanced' mode
+  const catBuckets={};
+  ordered.forEach(r=>{
+    const cats=r.t.length?r.t:['Overig'];
+    cats.forEach(c=>{if(!catBuckets[c])catBuckets[c]=[];catBuckets[c].push(r);});
+  });
+
+  if(autoMode==='balanced'){
+    const priority=['Vis','Kip','Vlees','Healthy','Quick'];
+    for(const cat of priority){
+      if(result.length>=n)break;
+      const bucket=(catBuckets[cat]||[]).filter(r=>!used.has(r.id));
+      if(bucket.length){const pick=bucket[0];used.add(pick.id);result.push(pick);}
+    }
+    // fill rest
+    for(const r of ordered){
+      if(result.length>=n)break;
+      if(!used.has(r.id)){used.add(r.id);result.push(r);}
+    }
+  } else {
+    for(const r of ordered){
+      if(result.length>=n)break;
+      if(!used.has(r.id)){used.add(r.id);result.push(r);}
+    }
+  }
+  return result.slice(0,n);
+}
+
+function shuffle(arr){return [...arr].sort(()=>Math.random()-.5);}
+
+function getAutoPool(){
+  if(autoMode==='quick')return ALL.filter(r=>r.t.includes('Quick')||r.b.length<=1);
+  if(autoMode==='healthy')return ALL.filter(r=>r.t.includes('Healthy')||r.t.includes('Vis'));
+  return ALL;
+}
+
+function generateProposal(){
+  const pool=getAutoPool();
+  const ri=recentIds();
+  const n=autoDays.size;
+  const picked=smartPick(pool,n,ri);
+  const days=[...autoDays].sort((a,b)=>a-b);
+  autoProposal=days.map((d,i)=>({day:d,meal:picked[i]||null}));
+  renderAutoResult();
+  showScreen('s-auto-result');
+}
+
+function shuffleProposal(){
+  const pool=getAutoPool();
+  const ri=recentIds();
+  // Keep locked entries, only replace unlocked
+  const lockedIds=new Set(autoProposal.filter(e=>e.locked&&e.meal).map(e=>e.meal.id));
+  const unlocked=autoProposal.filter(e=>!e.locked);
+  const poolFiltered=pool.filter(r=>!lockedIds.has(r.id));
+  const picked=smartPick(poolFiltered,unlocked.length,ri);
+  let pi=0;
+  autoProposal=autoProposal.map(e=>{
+    if(e.locked)return e;
+    return{...e,meal:picked[pi++]||null};
+  });
+  renderAutoResult();
+}
+
+function renderAutoResult(){
+  const wrap=document.getElementById('ap-cards-wrap');
+  wrap.innerHTML='';
+  const assigned=autoProposal.filter(p=>p.meal).length;
+  document.getElementById('ap-subtitle').textContent=`${assigned} gerecht${assigned!==1?'en':''} voor jouw week — kies eventueel een andere dag.`;
+  document.getElementById('ap-count-note').textContent='';
+
+  autoProposal.forEach((entry,ei)=>{
+    if(!entry.meal)return;
+    const m=entry.meal;
+    const bc=m.b.map(x=>`<span class="chip b" style="font-size:10px">${x}</span>`).join('');
+    const tc=m.t.slice(0,2).map(x=>`<span class="chip t" style="font-size:10px">${x}</span>`).join('');
+    const card=document.createElement('div');
+    card.className='ap-card';card.id='apc-'+ei;
+    const dayBtns=DAYS.map((d,di)=>{
+      const isAvail=[...autoDays].includes(di);
+      const isPicked=entry.day===di;
+      if(!isAvail)return'';
+      return`<button class="ap-day-chip${isPicked?' picked':''}" onclick="reassignAutoDay(${ei},${di})">${d}</button>`;
+    }).join('');
+    const isLocked=entry.locked||false;
+    if(isLocked)card.classList.add('locked-card');
+    card.innerHTML=`
+      <div class="ap-card-img" style="background:${m.bg}">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px">${m.e}</div>
+        <img src="${m.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s">
+      </div>
+      <div class="ap-card-body">
+        <div class="ap-lock-row">
+          <div class="ap-card-name">${m.name}</div>
+          <button class="ap-lock-btn${isLocked?' locked':''}" onclick="toggleLock(${ei})">${isLocked?'🔒 Bewaard':'🔓 Bewaren'}</button>
+        </div>
+        <div class="ap-day-row">${dayBtns}</div>
+        <div class="ap-chips">${bc}${tc}</div>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function reassignAutoDay(ei, newDay){
+  // swap if another entry already has that day
+  const conflict=autoProposal.findIndex((p,i)=>i!==ei&&p.day===newDay);
+  if(conflict>=0){autoProposal[conflict].day=autoProposal[ei].day;}
+  autoProposal[ei].day=newDay;
+  renderAutoResult();
+}
+
+function acceptProposal(){
+  // Set up results screen with the proposed meals
+  matches=[];vetoed=[];plan={};dV={};bV={};recs=ALL;
+  autoProposal.forEach(({day,meal})=>{
+    if(!meal)return;
+    if(!matches.find(m=>m.id===meal.id))matches.push(meal);
+    // mark both players as liking it
+    dV[meal.id]=true;bV[meal.id]=true;
+    plan[day]=meal;
+  });
+  const wk=wkey();
+  if(!sess.find(s=>s.week===wk)){sess.unshift({week:wk,matchCount:matches.length,ts:Date.now()});sess.sort((a,b)=>b.ts-a.ts);saveSess();}
+  document.getElementById('ressub').textContent=`${matches.length} gerecht${matches.length!==1?'en':''} voor jullie week!`;
+  document.getElementById('res-week-lbl').textContent='Week van '+wlabel(Date.now());
+  document.getElementById('save-note').textContent='';
+  renderAll();switchTab('menu');showScreen('s-results');
+}
+
+
+// ── MEAL PICKER ──
+let pickerFilter='all', pickerPendingMeal=null;
+
+function openMealPicker(){
+  pickerFilter='all';
+  document.getElementById('picker-search').value='';
+  renderPickerFilters();
+  renderPickerList();
+  document.getElementById('picker-ovl').classList.add('show');
+}
+function closeMealPicker(){
+  document.getElementById('picker-ovl').classList.remove('show');
+}
+
+function renderPickerFilters(){
+  const row=document.getElementById('picker-filter-row');
+  const filters=[{k:'all',l:'Alles'},{k:'Vlees',l:'🥩 Vlees'},{k:'Kip',l:'🍗 Kip'},{k:'Vis',l:'🐟 Vis'},{k:'Healthy',l:'🥗 Healthy'},{k:'Quick',l:'⚡ Quick'},{k:'Oven',l:'🔥 Oven'},{k:'Pan',l:'🍳 Pan'},{k:'custom',l:'⭐ Eigen'}];
+  row.innerHTML=filters.map(f=>`<button class="picker-filter${pickerFilter===f.k?' on':''}" onclick="setPickerFilter('${f.k}')">${f.l}</button>`).join('');
+}
+
+function setPickerFilter(k){
+  pickerFilter=k;
+  renderPickerFilters();
+  renderPickerList();
+}
+
+function renderPickerList(){
+  const body=document.getElementById('picker-body');
+  const q=document.getElementById('picker-search').value.trim().toLowerCase();
+  const inPlanIds=new Set(Object.values(autoProposal.map(e=>e.meal?.id)).filter(Boolean));
+
+  let pool=[...ALL];
+  if(pickerFilter==='custom') pool=pool.filter(r=>r.custom);
+  else if(pickerFilter!=='all') pool=pool.filter(r=>r.t.includes(pickerFilter)||r.b.includes(pickerFilter));
+  if(q) pool=pool.filter(r=>r.name.toLowerCase().includes(q));
+
+  if(!pool.length){body.innerHTML='<div class="picker-empty">Geen gerechten gevonden</div>';return;}
+
+  // Group by first tag, or 'Overig'
+  const ORDER=['Vlees','Kip','Vis','Healthy','Quick','Friends & family','Overig'];
+  const groups={};
+  pool.forEach(r=>{
+    const cat=(r.t[0]||'Overig');
+    if(!groups[cat])groups[cat]=[];
+    groups[cat].push(r);
+  });
+
+  // If searching or filter active, show flat list
+  const showFlat=q||pickerFilter!=='all';
+  let html='';
+  if(showFlat){
+    html=pool.map(r=>pickerItemHTML(r,inPlanIds)).join('');
+  } else {
+    ORDER.forEach(cat=>{
+      if(!groups[cat])return;
+      html+=`<div class="picker-cat-label">${cat}</div>`;
+      html+=groups[cat].map(r=>pickerItemHTML(r,inPlanIds)).join('');
+    });
+    // any cats not in ORDER
+    Object.keys(groups).filter(c=>!ORDER.includes(c)).forEach(cat=>{
+      html+=`<div class="picker-cat-label">${cat}</div>`;
+      html+=groups[cat].map(r=>pickerItemHTML(r,inPlanIds)).join('');
+    });
+  }
+  body.innerHTML=html;
+}
+
+function pickerItemHTML(r, inPlanIds){
+  const taken=inPlanIds.has(r.id);
+  const bc=r.b.map(x=>`<span class="chip b" style="font-size:10px">${x}</span>`).join('');
+  const tc=r.t.slice(0,2).map(x=>`<span class="chip t" style="font-size:10px">${x}</span>`).join('');
+  const customBadge=r.custom?'<span class="custom-badge">eigen</span>':'';
+  return`<div class="picker-item${taken?' in-plan':''}" onclick="pickerSelectMeal(${r.id})">
+    <div class="picker-item-img" style="background:${r.bg}">${r.e}</div>
+    <div style="flex:1;min-width:0">
+      <div class="picker-item-name">${r.name}${customBadge}</div>
+      <div class="picker-item-chips">${bc}${tc}${taken?'<span style="font-size:10px;color:var(--grn)">al in menu</span>':''}</div>
+    </div>
+    ${!taken?'<div class="picker-item-add">＋</div>':''}
+  </div>`;
+}
+
+function pickerSelectMeal(id){
+  const meal=ALL.find(r=>r.id===id);
+  if(!meal)return;
+  pickerPendingMeal=meal;
+
+  // Show day picker sheet
+  const usedDays=new Set(autoProposal.map(e=>e.day));
+  const freeDays=[...autoDays].filter(d=>!usedDays.has(d));
+
+  document.getElementById('pdm-title').textContent=meal.e+' '+meal.name;
+  const grid=document.getElementById('pdm-grid');
+  grid.innerHTML=DAYS.map((d,di)=>{
+    if(![...autoDays].includes(di))return'';
+    const taken=usedDays.has(di);
+    return`<button class="picker-day-opt${taken?' taken':' free'}" onclick="${taken?'':` confirmPickerDay(${di})`}">${d}${taken?'<br><span style="font-size:8px">bezet</span>':''}</button>`;
+  }).join('');
+
+  // If there's a free day, also offer it directly
+  document.getElementById('picker-day-modal').classList.add('show');
+}
+
+function closeDaySheet(){
+  document.getElementById('picker-day-modal').classList.remove('show');
+  pickerPendingMeal=null;
+}
+
+function confirmPickerDay(di){
+  if(!pickerPendingMeal)return;
+  // Find if this day already has an entry in autoProposal
+  const existingIdx=autoProposal.findIndex(e=>e.day===di);
+  if(existingIdx>=0){
+    autoProposal[existingIdx].meal=pickerPendingMeal;
+    autoProposal[existingIdx].locked=true;
+  } else {
+    // Add new entry
+    autoProposal.push({day:di,meal:pickerPendingMeal,locked:true});
+    autoDays.add(di);
+  }
+  closeDaySheet();
+  closeMealPicker();
+  renderAutoResult();
+}
+
+function toggleLock(ei){
+  autoProposal[ei].locked=!autoProposal[ei].locked;
+  renderAutoResult();
+}
+
+// ── ADD MEAL ──
+const MEAL_EMOJIS=['🍝','🍗','🥩','🐟','🥗','🍲','🫕','🥘','🍛','🌮','🌯','🫓','🥙','🍜','🫙','🧆','🥚','🧀','🥕','🥦'];
+const AM_BG_MAP={'Vlees':'#F5EDE6','Kip':'#F5F0E6','Vis':'#E6EEF8','Healthy':'#E8F2EC','Quick':'#F5F5E6','Friends & family':'#F5F0FF','Oven':'#F7EDE8','Pan':'#F5F5F5','Thermomix':'#E8EEF5'};
+let amEmoji='🍽', amTags=new Set(), amB=new Set();
+
+function openAddMeal(returnTo){
+  addMealReturnScreen=returnTo||'s-pick';
+  amEmoji='🍽'; amTags=new Set(); amB=new Set();
+  document.getElementById('am-name').value='';
+  renderEmojiGrid();renderAmTags();renderAmB();renderCustomMealsList();
+  showScreen('s-add-meal');
+}
+function closeAddMeal(){showScreen(addMealReturnScreen);}
+
+function renderEmojiGrid(){
+  const g=document.getElementById('am-emoji-grid');g.innerHTML='';
+  MEAL_EMOJIS.forEach(e=>{
+    const b=document.createElement('button');b.className='add-emoji-btn'+(amEmoji===e?' picked':'');
+    b.textContent=e;b.onclick=()=>{amEmoji=e;renderEmojiGrid();};g.appendChild(b);
+  });
+}
+function renderAmTags(){
+  const g=document.getElementById('am-tag-grid');g.innerHTML='';
+  [{k:'Vlees',e:'🥩'},{k:'Kip',e:'🍗'},{k:'Vis',e:'🐟'},{k:'Healthy',e:'🥗'},{k:'Quick',e:'⚡'},{k:'Friends & family',e:'🎉'}].forEach(t=>{
+    const b=document.createElement('button');b.className='add-tag-pill'+(amTags.has(t.k)?' on':'');
+    b.textContent=t.e+' '+t.k;b.onclick=()=>{amTags.has(t.k)?amTags.delete(t.k):amTags.add(t.k);renderAmTags();};g.appendChild(b);
+  });
+}
+function renderAmB(){
+  const g=document.getElementById('am-b-grid');g.innerHTML='';
+  [{k:'Oven',e:'🔥'},{k:'Pan',e:'🍳'},{k:'Thermomix',e:'🤖'}].forEach(t=>{
+    const b=document.createElement('button');b.className='add-tag-pill'+(amB.has(t.k)?' on':'');
+    b.textContent=t.e+' '+t.k;b.onclick=()=>{amB.has(t.k)?amB.delete(t.k):amB.add(t.k);renderAmB();};g.appendChild(b);
+  });
+}
+
+function getBgForTags(tags){
+  for(const t of tags){if(AM_BG_MAP[t])return AM_BG_MAP[t];}
+  return '#F5F5F0';
+}
+
+function saveCustomMeal(){
+  const name=document.getElementById('am-name').value.trim();
+  if(!name){document.getElementById('am-name').focus();document.getElementById('am-name').style.borderColor='var(--red)';setTimeout(()=>document.getElementById('am-name').style.borderColor='',1500);return;}
+  const newId=9000+Date.now()%100000;
+  const tags=[...amTags];const bPrep=[...amB];
+  const meal={id:newId,name,b:bPrep,t:tags,bg:getBgForTags([...tags,...bPrep]),e:amEmoji,img:'',custom:true};
+  customMeals.unshift(meal);
+  ALL.push(meal);
+  saveCustomMeals();
+  // reset form
+  document.getElementById('am-name').value='';amEmoji='🍽';amTags=new Set();amB=new Set();
+  renderEmojiGrid();renderAmTags();renderAmB();renderCustomMealsList();
+}
+
+function deleteCustomMeal(id){
+  customMeals=customMeals.filter(m=>m.id!==id);
+  const idx=ALL.findIndex(r=>r.id===id);if(idx>=0)ALL.splice(idx,1);
+  saveCustomMeals();renderCustomMealsList();
+}
+
+function renderCustomMealsList(){
+  const wrap=document.getElementById('custom-meals-wrap');
+  const list=document.getElementById('custom-meals-list');
+  if(!customMeals.length){wrap.classList.add('gone');return;}
+  wrap.classList.remove('gone');
+  list.innerHTML=customMeals.map(m=>`
+    <div class="custom-meal-row">
+      <div style="font-size:20px">${m.e}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--ink);font-weight:600">${m.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${[...m.t,...m.b].join(', ')||'Geen categorie'}</div>
+      </div>
+      <button class="custom-meal-delete" onclick="deleteCustomMeal(${m.id})">✕</button>
+    </div>`).join('');
 }
 </script>
 </body>
