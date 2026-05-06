@@ -1,4 +1,4 @@
-const CACHE = 'dinnr-v1';
+const CACHE = 'dinnr-v2';
 const ASSETS = ['/', '/index.html', '/icon-192.png', '/icon-512.png', '/manifest.json'];
 
 self.addEventListener('install', e => {
