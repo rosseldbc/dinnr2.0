@@ -431,6 +431,26 @@
     .pantry-add-input{flex:1;padding:10px 14px;border-radius:var(--r2);border:1.5px solid var(--border);background:var(--cream2);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s}
     .pantry-add-input:focus{border-color:var(--warm);background:var(--cream)}
     .pantry-recent-label{display:flex;align-items:center;gap:6px;padding:14px 16px 4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--sage)}
+
+    /* ── iPhone / touch improvements ── */
+    .btn,.hero-btn,.nav-btn,.meal-act-btn,.swipe-btn,.filter-chip,.store-tab,.day-btn,.toggle-chip,.add-to-menu-btn,.meal-lock-btn,.pantry-to-shop-btn,.shop-add-btn{touch-action:manipulation;-webkit-touch-callout:none}
+    /* ── Lock button ── */
+    .meal-lock-btn{width:32px;height:32px;border-radius:50%;background:var(--cream2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0;color:var(--muted)}
+    .meal-lock-btn:hover{background:var(--cream3)}
+    .meal-lock-btn.locked{background:var(--warm-lt);border-color:rgba(194,96,42,.3);color:var(--warm2)}
+    .meal-row.locked-meal{border-left:3px solid var(--warm);border-color:rgba(194,96,42,.25)}
+    /* ── Fullscreen recipe overlay ── */
+    .overlay-fs{position:fixed;inset:0;z-index:200;background:var(--cream);overflow-y:auto;-webkit-overflow-scrolling:touch;animation:slideInRight .25s ease;padding-bottom:calc(var(--safe-bot) + 24px)}
+    @keyframes slideInRight{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+    .overlay-fs-header{position:sticky;top:0;z-index:1;display:flex;align-items:center;padding:calc(var(--safe-top) + 12px) 16px 12px;background:var(--cream);border-bottom:1px solid var(--border);gap:10px}
+    .overlay-fs-back{width:38px;height:38px;border-radius:50%;background:var(--cream2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s;-webkit-tap-highlight-color:transparent}
+    .overlay-fs-back:hover{background:var(--cream3)}
+    .overlay-fs-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    /* ── Bigger tap targets on mobile ── */
+    @media(hover:none){
+      .meal-act-btn,.meal-lock-btn{width:36px;height:36px}
+      .shop-item-del{opacity:.6!important}
+    }
   </style>
 </head>
 <body>
@@ -441,11 +461,7 @@
     <div class="ph">
       <div class="logo">Dinn<em>r</em></div>
       <div class="ph-right">
-        <div id="sync-dot" title="Laden…" style="width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background .4s" onclick="syncNow()"></div>
-        <button class="btn btn-sm btn-outline" onclick="suggestMenu()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Voorstel
-        </button>
+        <div id="sync-dot" title="Laden…" style="width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background .4s;cursor:pointer" onclick="syncNow()"></div>
       </div>
     </div>
 
@@ -719,6 +735,7 @@ let swipeFp = null, swipeCp = null, swipeRecs = [], swipeDv = {}, swipeBv = {};
 let swipeCi = 0, swipeVoting = false, swipeP1done = false, swipeSelTags = new Set();
 let swipeDrag = false, swipeSx = 0, swipeDel = null;
 let ingrFilter = 'all';
+let lockedDays = new Set();
 
 function loadAll() {
   const saved = storage.get(RK);
@@ -780,6 +797,13 @@ async function loadAll() {
   sess = storage._local.get(SSK) || [];
   // Shared data — await
   ingredients = await storage.get(INGRK) || [];
+  // Migrate old single-recipe format to multi-recipe array
+  ingredients = ingredients.map(i => {
+    if (!i.recipes) {
+      i.recipes = i.recipe ? [{ name: i.recipe, qty: i.qty || '' }] : [];
+    }
+    return i;
+  });
   const rawPlan = await storage.get(PK) || {};
   const np = {};
   Object.keys(rawPlan).forEach(k => { if (rawPlan[k]) np[parseInt(k)] = rawPlan[k]; });
@@ -882,15 +906,13 @@ function renderMenu() {
       const total = linked.length;
       const allOnList = total > 0 && onList === total;
 
-      el.className = 'meal-row';
+      const isLocked = lockedDays.has(di);
+      el.className = 'meal-row' + (isLocked ? ' locked-meal' : '');
       el.setAttribute('draggable', 'true');
       el.dataset.day = di;
       el.innerHTML = `
         <div class="drag-handle">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
-        </div>
-        <div class="meal-thumb" style="background:${meal.bg}">${meal.e}
-          <img src="${meal.img}" onload="this.style.opacity=1" onerror="this.style.display='none'">
         </div>
         <div class="meal-info">
           <div class="meal-day">${day}</div>
@@ -901,6 +923,11 @@ function renderMenu() {
           </div>
         </div>
         <div class="meal-actions">
+          <button class="meal-lock-btn ${isLocked?'locked':''}" title="${isLocked?'Ontgrendelen':'Vergrendelen voor auto-voorstel'}" onclick="toggleLockDay(${di})">
+            ${isLocked
+              ? `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`
+              : `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`}
+          </button>
           <button class="meal-act-btn" title="Ingrediënten & boodschappen" onclick="openMealIngredients(${di})">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${total>0&&!allOnList?'var(--sage)':'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           </button>
@@ -942,7 +969,7 @@ let _currentMealDi = null;
 function renderMealIngrSheet(di) {
   const meal = plan[di];
   if (!meal) return;
-  const linked = ingredients.filter(i => i.recipe === meal.name);
+  const linked = ingredients.filter(i => i.recipes?.some(r => r.name === meal.name));
   const allOnList = linked.length > 0 && linked.every(i => i.onList);
   const notOnList = linked.filter(i => !i.onList);
   const recipeId = recipes.find(r => r.name === meal.name)?.id;
@@ -951,20 +978,16 @@ function renderMealIngrSheet(di) {
   root.innerHTML = `
     <div style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;justify-content:flex-end;animation:fadeInUp .25s ease">
       <div style="flex:1;background:rgba(28,25,23,.45)" onclick="closeOverlay()"></div>
-      <div style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+20px);max-height:80vh;overflow-y:auto">
+      <div class="sheet" style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+20px);max-height:85vh;overflow-y:auto">
         <div class="sheet-handle"></div>
 
         <!-- header -->
         <div style="padding:0 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
-          <div style="width:44px;height:44px;border-radius:12px;background:${meal.bg};flex-shrink:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px">
-            ${meal.e}
-            <img src="${meal.img}" onload="this.style.opacity=1" onerror="this.style.display='none'" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s">
-          </div>
           <div style="flex:1;min-width:0">
             <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)">${DAYS[di]}</div>
             <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${meal.name}</div>
           </div>
-          ${recipeId ? `<button onclick="closeOverlay();openRecipeDetail(${recipeId})" style="padding:7px 13px;border-radius:var(--r);border:1.5px solid var(--border2);background:transparent;font-size:12px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;transition:all .15s" onmouseover="this.style.borderColor='var(--ink)';this.style.color='var(--ink)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">
+          ${recipeId ? `<button onclick="closeOverlay();openRecipeDetail(${recipeId})" style="padding:7px 13px;border-radius:var(--r);border:1.5px solid var(--border2);background:transparent;font-size:12px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;transition:all .15s">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             Recept
           </button>` : ''}
@@ -978,31 +1001,34 @@ function renderMealIngrSheet(di) {
               <span style="font-size:12px">Voeg ze toe via het recept.</span>
             </div>
           ` : `
-            <button onclick="addAllMealIngrsToList(${di})" style="width:100%;padding:14px;border-radius:var(--r2);border:none;background:${allOnList?'var(--cream3)':'var(--sage)'};color:${allOnList?'var(--muted)':'#fff'};font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:${allOnList?'default':'pointer'};display:flex;align-items:center;justify-content:center;gap:8px">
+            <button onclick="addAllMealIngrsToList(${di})" style="width:100%;padding:14px;border-radius:var(--r2);border:none;background:${allOnList?'var(--cream3)':'var(--sage)'};color:${allOnList?'var(--muted)':'#fff'};font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:${allOnList?'default':'pointer'};display:flex;align-items:center;justify-content:center;gap:8px;touch-action:manipulation">
               <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
               ${allOnList ? '✓ Alle ingrediënten staan op de lijst' : notOnList.length === linked.length ? 'Alle ingrediënten op de lijst' : `Nog ${notOnList.length} toevoegen`}
             </button>
           `}
         </div>
 
-        <!-- ingredient list — read-only, just toggle -->
+        <!-- ingredient list -->
         ${linked.length > 0 ? `
         <div style="padding:14px 20px 0">
           <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px">${linked.length} ingrediënt${linked.length!==1?'en':''}</div>
           <div style="display:flex;flex-direction:column;gap:4px">
-            ${linked.map(item => `
+            ${linked.map(item => {
+              const rLink = item.recipes?.find(r => r.name === meal.name);
+              const displayQty = rLink?.qty || item.qty || '';
+              return `
               <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${item.onList?'var(--sage-lt)':'var(--cream2)'};border:1px solid ${item.onList?'rgba(59,110,74,.2)':'var(--border)'};border-radius:var(--r2)">
                 <div style="flex:1;min-width:0">
                   <span style="font-size:14px;font-weight:500;color:var(--ink)">${item.name}</span>
-                  ${item.qty?`<span style="font-size:12px;color:var(--muted);margin-left:6px">${item.qty}</span>`:''}
+                  ${displayQty?`<span style="font-size:12px;color:var(--muted);margin-left:6px">${displayQty}</span>`:''}
                   ${item.store?`<span style="font-size:10px;padding:1px 6px;border-radius:999px;background:var(--sky-lt);color:var(--sky);margin-left:5px">${item.store}</span>`:''}
                 </div>
                 ${item.onList
                   ? `<span style="font-size:11px;color:var(--sage);font-weight:600;flex-shrink:0;display:flex;align-items:center;gap:4px">
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Op lijst</span>`
-                  : `<button onclick="addSingleIngrToList('${item.id}',${di})" style="font-size:11px;padding:5px 12px;border-radius:999px;border:1.5px solid rgba(59,110,74,.35);background:transparent;color:var(--sage);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;white-space:nowrap;flex-shrink:0">+ Lijst</button>`
+                  : `<button onclick="addSingleIngrToList('${item.id}',${di})" style="font-size:11px;padding:5px 12px;border-radius:999px;border:1.5px solid rgba(59,110,74,.35);background:transparent;color:var(--sage);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;white-space:nowrap;flex-shrink:0;touch-action:manipulation">+ Lijst</button>`
                 }
-              </div>`).join('')}
+              </div>`}).join('')}
           </div>
         </div>` : ''}
 
@@ -1011,6 +1037,7 @@ function renderMealIngrSheet(di) {
         </div>
       </div>
     </div>`;
+  attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
 }
 
 function addSingleIngrToList(id, di) {
@@ -1026,7 +1053,7 @@ function addSingleIngrToList(id, di) {
 function addAllMealIngrsToList(di) {
   const meal = plan[di];
   if (!meal) return;
-  const linked = ingredients.filter(i => i.recipe === meal.name);
+  const linked = ingredients.filter(i => i.recipes?.some(r => r.name === meal.name));
   if (!linked.length || linked.every(i => i.onList)) return;
   let added = 0;
   linked.forEach(i => { if (!i.onList) { i.onList = true; i.checked = false; added++; } });
@@ -1086,28 +1113,36 @@ function clearMenu() {
   showToast('Menu gewist');
 }
 
+function toggleLockDay(di) {
+  if (lockedDays.has(di)) lockedDays.delete(di);
+  else lockedDays.add(di);
+  renderMenu();
+}
+
 function suggestMenu() {
   const recent = recentIds();
-  const available = [...recipes].sort((a,b) => {
+  // Preserve locked meals; collect their IDs so we don't double-assign
+  const result = {};
+  const usedIds = new Set();
+  lockedDays.forEach(di => {
+    if (plan[di]) { result[di] = plan[di]; usedIds.add(plan[di].id); }
+  });
+
+  const available = [...recipes].filter(r => !usedIds.has(r.id)).sort((a,b) => {
     const aR = recent.has(a.id) ? 1 : 0;
     const bR = recent.has(b.id) ? 1 : 0;
     return aR - bR || Math.random() - .5;
   });
-  // Try to make a balanced menu: mix kid-friendly + variety
   const kidMeals = available.filter(r => r.kid);
   const otherMeals = available.filter(r => !r.kid);
-  const usedIds = new Set();
-  const result = [];
-  // Aim for ~3-4 kid-friendly days
   const kidDays = [0, 2, 4, 6];
   DAYS.forEach((_, di) => {
-    if (result[di]) return;
+    if (result[di]) return; // locked
     const pool = kidDays.includes(di) ? [...kidMeals, ...otherMeals] : [...otherMeals, ...kidMeals];
     const pick = pool.find(r => !usedIds.has(r.id));
     if (pick) { result[di] = pick; usedIds.add(pick.id); }
   });
-  plan = {};
-  result.forEach((m, di) => { if (m) plan[di] = m; });
+  plan = result;
   savePlanStorage();
   renderMenu();
   showToast('Menu voorgesteld!');
@@ -1132,6 +1167,7 @@ function openDayPicker(targetDay, replacing) {
       </div>
     </div>`;
   renderSheetList(targetDay, usedIds, 'all');
+  attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
 }
 
 let _sheetFilter = 'all', _sheetDay, _sheetUsedIds;
@@ -1174,6 +1210,37 @@ function pickRecipeForDay(di, recipeId) {
 
 function closeOverlay() {
   document.getElementById('overlay-root').innerHTML = '';
+}
+
+// Attach swipe-down-to-close gesture to a bottom sheet element
+function attachSheetDismiss(sheetEl) {
+  if (!sheetEl) return;
+  let startY = 0, dragging = false;
+  function onMove(e) {
+    if (!dragging) return;
+    const dy = (e.touches ? e.touches[0] : e).clientY - startY;
+    if (dy > 0) sheetEl.style.transform = `translateY(${dy}px)`;
+  }
+  function onEnd(e) {
+    if (!dragging) return;
+    dragging = false;
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onEnd);
+    const dy = (e.changedTouches ? e.changedTouches[0] : e).clientY - startY;
+    sheetEl.style.transition = 'transform .3s ease';
+    if (dy > 110) { sheetEl.style.transform = `translateY(100%)`; setTimeout(closeOverlay, 280); }
+    else { sheetEl.style.transform = ''; setTimeout(() => { sheetEl.style.transition = ''; }, 320); }
+  }
+  const handle = sheetEl.querySelector('.sheet-handle');
+  if (handle) {
+    handle.addEventListener('touchstart', e => {
+      startY = e.touches[0].clientY;
+      dragging = true;
+      sheetEl.style.transition = 'none';
+      document.addEventListener('touchmove', onMove, { passive: true });
+      document.addEventListener('touchend', onEnd);
+    }, { passive: true });
+  }
 }
 
 function savePlan() {
@@ -1259,61 +1326,79 @@ function openRecipeDetail(id) {
 function renderRecipeDetailSheet(id) {
   const r = recipes.find(x => x.id === id);
   if (!r) return;
-  const linked = ingredients.filter(i => i.recipe === r.name);
+  const linked = ingredients.filter(i => i.recipes?.some(rr => rr.name === r.name));
   const root = document.getElementById('overlay-root');
   root.innerHTML = `
-    <div class="overlay" style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;justify-content:flex-end">
-      <div style="flex:1;background:rgba(28,25,23,.5)" onclick="closeOverlay()"></div>
-      <div class="sheet" style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+20px);max-height:92vh;overflow-y:auto">
-        <div class="sheet-handle"></div>
-        <div style="padding:0 20px">
-          <div style="font-size:44px;margin-bottom:6px">${r.e}</div>
-          <div class="sheet-title" style="padding:0">${r.name}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px">
-            ${r.kid?`<span class="kid-badge"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Kindvriendelijk</span>`:''}
-            ${r.b.map(x=>`<span class="pill pill-warm">${x}</span>`).join('')}
-            ${r.t.map(x=>`<span class="pill pill-sage">${x}</span>`).join('')}
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:8px">
-            <button class="btn btn-primary" style="flex:1" onclick="quickAddToMenu(${r.id});closeOverlay()">+ Aan menu toevoegen</button>
-            ${!r.isDefault?`<button class="btn btn-danger btn-sm" onclick="deleteRecipe(${r.id});closeOverlay()"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>`:''}
-          </div>
-          ${!r.isDefault?`<button class="btn btn-outline" style="width:100%;margin-bottom:4px" onclick="openEditRecipe(${r.id})"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Bewerken</button>`:''}
+    <div class="overlay-fs">
+      <div class="overlay-fs-header">
+        <button class="overlay-fs-back" onclick="closeOverlay()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div class="overlay-fs-title">${r.name}</div>
+        ${!r.isDefault
+          ? `<button class="overlay-fs-back" onclick="openEditRecipe(${r.id})" title="Bewerken">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>`
+          : `<div style="width:38px;flex-shrink:0"></div>`}
+      </div>
 
-          <!-- INGREDIENT SECTION -->
-          <div class="ingr-section">
-            <div class="ingr-section-hdr">
-              <span class="ingr-section-title">Ingrediënten</span>
-              ${linked.length ? `<button class="ingr-to-shop-btn" style="width:auto;padding:5px 12px;font-size:11px" onclick="addAllIngrToShop(${id})">
-                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                Alles naar lijst
-              </button>` : ''}
-            </div>
-            <div class="ingr-list" id="ingr-list-${id}">
-              ${linked.length ? linked.map(item => `
-                <div class="ingr-item">
-                  <div class="ingr-item-name">${item.name}</div>
-                  ${item.qty ? `<span class="ingr-item-qty">${item.qty}</span>` : ''}
-                  ${item.store ? `<span class="ingr-item-store">${item.store}</span>` : ''}
-                  <button class="ingr-item-del" onclick="removeIngrFromRecipe('${item.id}',${id})">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  </button>
-                </div>`).join('')
-              : `<div style="font-size:13px;color:var(--muted);padding:6px 0 4px">Nog geen ingrediënten gekoppeld.</div>`}
-            </div>
-            <div class="ingr-add-row" id="ingr-add-row-${id}">
-              <input class="ingr-add-input" id="ingr-name-${id}" placeholder="Ingrediënt…" onkeydown="if(event.key==='Enter')addIngrToRecipe(${id})">
-              <input class="ingr-add-qty" id="ingr-qty-${id}" placeholder="Hoev." onkeydown="if(event.key==='Enter')addIngrToRecipe(${id})">
-              <button class="ingr-add-btn" onclick="addIngrToRecipe(${id})">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              </button>
-            </div>
-            ${linked.length ? `
-            <button class="ingr-to-shop-btn" style="margin-top:10px" onclick="addAllIngrToShop(${id})">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-              Alle ingrediënten naar boodschappenlijst
+      <div style="padding:20px 20px 0">
+        <div style="font-size:48px;margin-bottom:8px">${r.e}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+          ${r.kid?`<span class="kid-badge"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Kindvriendelijk</span>`:''}
+          ${r.b.map(x=>`<span class="pill pill-warm">${x}</span>`).join('')}
+          ${r.t.map(x=>`<span class="pill pill-sage">${x}</span>`).join('')}
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="quickAddToMenu(${r.id});closeOverlay()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Aan menu toevoegen
+        </button>
+        ${!r.isDefault?`<button class="btn btn-danger" style="width:100%;margin-bottom:4px" onclick="deleteRecipe(${r.id});closeOverlay()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          Verwijderen
+        </button>`:''}
+
+        <!-- INGREDIENT SECTION -->
+        <div class="ingr-section">
+          <div class="ingr-section-hdr">
+            <span class="ingr-section-title">Ingrediënten</span>
+            ${linked.length ? `<button class="ingr-to-shop-btn" style="width:auto;padding:5px 12px;font-size:11px" onclick="addAllIngrToShop(${id})">
+              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              Alles naar lijst
             </button>` : ''}
           </div>
+          <div class="ingr-list" id="ingr-list-${id}">
+            ${linked.length ? linked.map(item => {
+              const rLink = item.recipes?.find(rr => rr.name === r.name);
+              const displayQty = rLink?.qty || item.qty || '';
+              const otherRecipes = (item.recipes || []).filter(rr => rr.name !== r.name);
+              return `
+              <div class="ingr-item">
+                <div style="flex:1;min-width:0">
+                  <div class="ingr-item-name">${item.name}</div>
+                  ${otherRecipes.length ? `<div style="font-size:10px;color:var(--muted);margin-top:1px">Ook in: ${otherRecipes.map(rr=>rr.name).join(', ')}</div>` : ''}
+                </div>
+                ${displayQty ? `<span class="ingr-item-qty">${displayQty}</span>` : ''}
+                ${item.store ? `<span class="ingr-item-store">${item.store}</span>` : ''}
+                <button class="ingr-item-del" onclick="removeIngrFromRecipe('${item.id}',${id})">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>`;}).join('')
+            : `<div style="font-size:13px;color:var(--muted);padding:6px 0 4px">Nog geen ingrediënten gekoppeld.</div>`}
+          </div>
+          <div class="ingr-add-row" id="ingr-add-row-${id}">
+            <input class="ingr-add-input" id="ingr-name-${id}" placeholder="Ingrediënt…" onkeydown="if(event.key==='Enter')addIngrToRecipe(${id})">
+            <input class="ingr-add-qty" id="ingr-qty-${id}" placeholder="Hoev." onkeydown="if(event.key==='Enter')addIngrToRecipe(${id})">
+            <button class="ingr-add-btn" onclick="addIngrToRecipe(${id})" style="touch-action:manipulation">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+          ${linked.length ? `
+          <button class="ingr-to-shop-btn" style="margin-top:10px" onclick="addAllIngrToShop(${id})">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Alle ingrediënten naar boodschappenlijst
+          </button>` : ''}
         </div>
       </div>
     </div>`;
@@ -1419,6 +1504,7 @@ function renderRecipeForm(r) {
         </div>
       </div>
     </div>`;
+  attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
 }
 
 function toggleFormTag(t) {
@@ -1758,6 +1844,7 @@ function showSwipeResults(matches, added, emptyLeft) {
         </div>
       </div>
     </div>`;
+  attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
 }
 
 function fillRemainingDays() {
@@ -2082,7 +2169,7 @@ function shopItemHtml(item) {
       <div class="shop-item-name">${item.name}</div>
       <div class="shop-item-meta">
         ${item.qty?`<span class="shop-item-qty">${item.qty}</span>`:''}
-        ${item.recipe?`<span class="shop-item-dish">${item.recipe}</span>`:''}
+        ${(() => { const recs=(item.recipes||[]).filter(r=>r.name); return recs.length===1?`<span class="shop-item-dish">${recs[0].name}</span>`:recs.length>1?`<span class="shop-item-dish">${recs.length} recepten</span>`:''; })()}
         ${item.store?`<span class="shop-item-store">${item.store}</span>`:''}
       </div>
     </div>
@@ -2163,7 +2250,7 @@ function renderShopItemSheet() {
   root.innerHTML = `
     <div style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;justify-content:flex-end;animation:fadeInUp .25s ease">
       <div style="flex:1;background:rgba(28,25,23,.5)" onclick="closeOverlay()"></div>
-      <div style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+16px);max-height:88vh;overflow-y:auto">
+      <div class="sheet" style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+16px);max-height:88vh;overflow-y:auto">
         <div class="sheet-handle"></div>
         <div class="sheet-title">Toevoegen aan lijst</div>
         <div class="form-group">
@@ -2191,6 +2278,7 @@ function renderShopItemSheet() {
         </div>
       </div>
     </div>`;
+  attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
   setTimeout(() => document.getElementById('si-name')?.focus(), 80);
 }
 
@@ -2241,7 +2329,7 @@ function shopAddFromMenu() {
   root.innerHTML = `
     <div style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;justify-content:flex-end;animation:fadeInUp .25s ease">
       <div style="flex:1;background:rgba(28,25,23,.5)" onclick="closeOverlay()"></div>
-      <div style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+16px);max-height:80vh;overflow-y:auto">
+      <div class="sheet" style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+16px);max-height:80vh;overflow-y:auto">
         <div class="sheet-handle"></div>
         <div class="sheet-title">Toevoegen vanuit menu</div>
         <div class="sheet-sub">Kies een gerecht, voeg dan ingrediënten toe.</div>
@@ -2330,7 +2418,7 @@ function ingrItemHtml(item) {
       </div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;align-items:center">
         ${ago?`<span style="font-size:10px;color:var(--muted)">${ago}</span>`:''}
-        ${item.recipe?`<span class="shop-item-dish" style="font-size:10px">${item.recipe}</span>`:''}
+        ${(item.recipes||[]).filter(r=>r.name).map(r=>`<span class="shop-item-dish" style="font-size:10px">${r.name}${r.qty?` · ${r.qty}`:''}</span>`).join('')}
         ${item.store?`<span class="shop-item-store" style="font-size:10px">${item.store}</span>`:''}
         ${item.timesUsed>0?`<span style="font-size:10px;padding:1px 6px;border-radius:999px;background:var(--cream3);color:var(--muted)">${item.timesUsed}×</span>`:''}
       </div>
@@ -2387,7 +2475,7 @@ function openNewIngredient() {
   root.innerHTML = `
     <div style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;justify-content:flex-end;animation:fadeInUp .25s ease">
       <div style="flex:1;background:rgba(28,25,23,.5)" onclick="closeOverlay()"></div>
-      <div style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+16px);max-height:88vh;overflow-y:auto">
+      <div class="sheet" style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+16px);max-height:88vh;overflow-y:auto">
         <div class="sheet-handle"></div>
         <div class="sheet-title">Nieuw ingrediënt</div>
         <div class="form-group">
@@ -2414,6 +2502,7 @@ function openNewIngredient() {
         </div>
       </div>
     </div>`;
+  attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
   setTimeout(() => document.getElementById('ni-name')?.focus(), 80);
 }
 
@@ -2467,20 +2556,34 @@ function addIngrToRecipe(recipeId) {
   const q = name.toLowerCase();
   let item = ingredients.find(i => i.name.toLowerCase() === q);
   if (!item) {
-    item = makeIngredient({ name, qty, recipe: r.name });
+    item = makeIngredient({ name, recipes: [{ name: r.name, qty }] });
     ingredients.unshift(item);
   } else {
-    if (qty) item.qty = qty;
-    item.recipe = r.name;
+    if (!item.recipes) item.recipes = [];
+    const link = item.recipes.find(rr => rr.name === r.name);
+    if (link) { if (qty) link.qty = qty; }
+    else item.recipes.push({ name: r.name, qty });
   }
   saveIngredients();
-  nameEl.value = ''; qtyEl.value = '';
+  nameEl.value = '';
+  if (qtyEl) qtyEl.value = '';
   nameEl.focus();
   renderRecipeDetailSheet(recipeId);
 }
 
 function removeIngrFromRecipe(itemId, recipeId) {
-  ingredients = ingredients.filter(i => i.id !== itemId);
+  const r = recipes.find(x => x.id === recipeId);
+  const item = ingredients.find(i => i.id === itemId);
+  if (!item) return;
+  if (r && item.recipes) {
+    item.recipes = item.recipes.filter(rr => rr.name !== r.name);
+    // Only delete the ingredient entirely if it has no other recipe links and isn't on the list
+    if (!item.recipes.length && !item.onList) {
+      ingredients = ingredients.filter(i => i.id !== itemId);
+    }
+  } else {
+    ingredients = ingredients.filter(i => i.id !== itemId);
+  }
   saveIngredients();
   renderRecipeDetailSheet(recipeId);
 }
@@ -2488,7 +2591,7 @@ function removeIngrFromRecipe(itemId, recipeId) {
 function addAllIngrToShop(recipeId) {
   const r = recipes.find(x => x.id === recipeId);
   if (!r) return;
-  const linked = ingredients.filter(i => i.recipe === r.name);
+  const linked = ingredients.filter(i => i.recipes?.some(rr => rr.name === r.name));
   let added = 0;
   linked.forEach(i => { if (!i.onList) { i.onList = true; i.checked = false; added++; } });
   saveIngredients();
@@ -2504,11 +2607,13 @@ function openAddShopItemForDish(name) { openAddShopItemForRecipe(name); }
 
 // Helper
 function makeIngredient(props) {
+  // recipes: [{ name, qty }] — per-recipe links with individual quantities
+  const recipes = props.recipes || (props.recipe ? [{ name: props.recipe, qty: props.qty || '' }] : []);
   return {
     id: 'i_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
     name: props.name || '',
     qty: props.qty || '',
-    recipe: props.recipe || '',
+    recipes,
     store: props.store || '',
     onList: props.onList || false,
     checked: false,
