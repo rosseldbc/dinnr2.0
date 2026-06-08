@@ -479,6 +479,11 @@
       </div>
     </div>
 
+    <div style="padding:8px 16px 0;display:flex;gap:6px">
+      <button class="filter-chip week-tab on" onclick="switchWeek(0)">Deze week</button>
+      <button class="filter-chip week-tab" onclick="switchWeek(1)">Volgende week</button>
+    </div>
+
     <div class="week-summary-bar">
       <span class="week-filled"><strong id="filled-count">0</strong> van 7 dagen gepland</span>
       <button class="btn btn-sm btn-outline" onclick="clearMenu()" style="font-size:11px;padding:5px 10px">Wissen</button>
@@ -719,9 +724,13 @@ const DEFAULT_RECIPES = [
 
 const DAYS = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
 const DAYS_SHORT = ['Ma','Di','Wo','Do','Vr','Za','Zo'];
-const ALL_TAGS = ['Vlees','Kip','Vis','Healthy','Quick','Groente','Feest','Oven','Pan','Thermomix'];
+const BASE_CATEGORY_TAGS = ['Vlees','Kip','Vis','Healthy','Quick','Groente','Feest'];
+const BASE_PREP_TAGS = ['Oven','Pan','Thermomix'];
+let customTags = [];
+function getAllTags() { return [...BASE_CATEGORY_TAGS, ...customTags, ...BASE_PREP_TAGS]; }
 
 const SK = 'dinnr-hist-v4', SSK = 'dinnr-sess-v2', RK = 'dinnr-recipes-v1', PK = 'dinnr-plan-v1', INGRK = 'dinnr-ingr-v1', DNK = 'dinnr-notes-v1';
+const PK2 = 'dinnr-plan-next-v1', DNK2 = 'dinnr-notes-next-v1', TAGS_KEY = 'dinnr-tags-v1';
 
 const STORES = ['Alle winkels','Carrefour','Lidl','Albert Heijn','Delhaize','Andere'];
 
@@ -735,7 +744,9 @@ let swipeCi = 0, swipeVoting = false, swipeP1done = false, swipeSelTags = new Se
 let swipeDrag = false, swipeSx = 0, swipeDel = null;
 let ingrFilter = 'all';
 let lockedDays = new Set();
-let dayNotes = {};
+let dayNotes = {}, dayNotesNext = {};
+let planNext = {};
+let activeWeekOffset = 0; // 0 = this week, 1 = next week
 
 function loadAll() {
   const saved = storage.get(RK);
@@ -809,7 +820,13 @@ async function loadAll() {
   const np = {};
   Object.keys(rawPlan).forEach(k => { if (rawPlan[k]) np[parseInt(k)] = rawPlan[k]; });
   plan = np;
+  const rawPlanNext = await storage.get(PK2) || {};
+  const np2 = {};
+  Object.keys(rawPlanNext).forEach(k => { if (rawPlanNext[k]) np2[parseInt(k)] = rawPlanNext[k]; });
+  planNext = np2;
   dayNotes = storage._local.get(DNK) || {};
+  dayNotesNext = storage._local.get(DNK2) || {};
+  customTags = storage._local.get(TAGS_KEY) || [];
   const hasShared = !!window.storage;
   showSyncStatus(hasShared);
 }
@@ -817,7 +834,11 @@ async function loadAll() {
 function saveRecipes() { storage._local.set(RK, recipes); }
 function saveHist()    { storage._local.set(SK, hist); }
 function saveSess()    { storage._local.set(SSK, sess); }
-function savePlanStorage() { storage.set(PK, plan).then(() => showSyncStatus(true)).catch(() => showSyncStatus(false)); }
+function savePlanStorage() {
+  const key = activeWeekOffset === 0 ? PK : PK2;
+  storage.set(key, plan).then(() => showSyncStatus(true)).catch(() => showSyncStatus(false));
+}
+function saveCustomTags() { storage._local.set(TAGS_KEY, customTags); }
 function saveIngredients() { storage.set(INGRK, ingredients).then(() => showSyncStatus(true)).catch(() => showSyncStatus(false)); updateShopBadge(); }
 
 async function syncNow() {
@@ -885,8 +906,9 @@ function showToast(msg, dur = 2500) {
 // ══════════════════════════════════════════
 function updateHeroCopy() {
   const n = Object.keys(plan).filter(k => plan[k]).length;
+  const weekLabel = activeWeekOffset === 0 ? 'deze week' : 'volgende week';
   document.getElementById('hero-title').innerHTML = n === 0
-    ? 'Welk menu maak<br>je deze week?'
+    ? `Welk menu maak<br>je ${weekLabel}?`
     : n < 7 ? `Nog ${7-n} dag${7-n===1?'':'en'} in te vullen`
     : 'Menu compleet!';
   document.getElementById('hero-sub').textContent = n === 0
@@ -904,7 +926,7 @@ function todayDayIndex() {
 function renderMenu() {
   const g = document.getElementById('week-grid');
   g.innerHTML = '';
-  const todayDi = todayDayIndex();
+  const todayDi = activeWeekOffset === 0 ? todayDayIndex() : -1;
   DAYS.forEach((day, di) => {
     const meal = plan[di];
     const isPast = di < todayDi;
@@ -1128,18 +1150,28 @@ function removeMealFromDay(di) {
   renderMenu();
 }
 
+function switchWeek(offset) {
+  if (offset === activeWeekOffset) return;
+  // swap active/inactive week data into plan & dayNotes
+  [plan, planNext] = [planNext, plan];
+  [dayNotes, dayNotesNext] = [dayNotesNext, dayNotes];
+  activeWeekOffset = offset;
+  document.querySelectorAll('.week-tab').forEach((el, i) => el.classList.toggle('on', i === offset));
+  renderMenu();
+}
+
 function setDayNote(di, note) {
   if (note.trim()) {
     dayNotes[di] = note.trim();
   } else {
     delete dayNotes[di];
   }
-  storage._local.set(DNK, dayNotes);
+  storage._local.set(activeWeekOffset === 0 ? DNK : DNK2, dayNotes);
 }
 
 function clearDayNote(di) {
   delete dayNotes[di];
-  storage._local.set(DNK, dayNotes);
+  storage._local.set(activeWeekOffset === 0 ? DNK : DNK2, dayNotes);
   renderMenu();
 }
 
@@ -1174,7 +1206,7 @@ function suggestMenu() {
   const kidMeals = available.filter(r => r.kid);
   const otherMeals = available.filter(r => !r.kid);
   const kidDays = [0, 2, 4, 6];
-  const todayDi = todayDayIndex();
+  const todayDi = activeWeekOffset === 0 ? todayDayIndex() : -1;
   DAYS.forEach((_, di) => {
     if (result[di]) return; // locked
     if (di < todayDi) return; // skip past days
@@ -1200,13 +1232,13 @@ function openDayPicker(targetDay, replacing) {
         <div class="sheet-title">${DAYS[targetDay]}</div>
         <div class="sheet-sub">${replacing ? 'Kies een vervangend gerecht' : 'Kies een gerecht voor deze dag'}</div>
         <div style="padding:0 16px 10px;display:flex;gap:8px;align-items:center">
-          <input id="day-note-input" class="form-input" style="flex:1;font-size:13px;padding:8px 12px" placeholder="Of laat een notitie achter… (bijv. BBQ Lot & Lau)" value="${existingNote.replace(/"/g,'&quot;')}">
+          <input id="day-note-input" class="form-input" style="flex:1;font-size:13px;padding:8px 12px" placeholder="Of laat een notitie achter…" value="${existingNote.replace(/"/g,'&quot;')}">
           <button class="btn btn-outline btn-sm" style="white-space:nowrap;flex-shrink:0" onclick="saveDayNoteAndClose(${targetDay})">Opslaan</button>
         </div>
         <div style="padding:0 16px 8px;display:flex;gap:6px;flex-wrap:wrap">
           <button class="filter-chip on" id="sheet-filter-all" onclick="sheetFilter('all')">Alles</button>
           <button class="filter-chip" id="sheet-filter-kid" onclick="sheetFilter('kid')"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Kind</button>
-          ${ALL_TAGS.slice(0,5).map(t=>`<button class="filter-chip" id="sheet-filter-${t}" onclick="sheetFilter('${t}')">${t}</button>`).join('')}
+          ${getAllTags().slice(0,5).map(t=>`<button class="filter-chip" id="sheet-filter-${t}" onclick="sheetFilter('${t}')">${t}</button>`).join('')}
         </div>
         <div id="sheet-list" style="padding:0 16px 16px;display:flex;flex-direction:column;gap:6px"></div>
       </div>
@@ -1301,7 +1333,7 @@ function attachSheetDismiss(sheetEl) {
 function savePlan() {
   const days = Object.keys(plan).filter(k => plan[k]);
   if (!days.length) { showToast('Plan eerst je menu!'); return; }
-  const mon = monday(); mon.setHours(18,0,0,0);
+  const mon = monday(); if (activeWeekOffset === 1) mon.setDate(mon.getDate() + 7); mon.setHours(18,0,0,0);
   days.forEach(di => {
     const m = plan[di];
     const d = new Date(mon); d.setDate(mon.getDate() + parseInt(di));
@@ -1324,7 +1356,7 @@ function renderFilterBar() {
   const bar = document.getElementById('filter-bar');
   bar.innerHTML = `<button class="filter-chip ${activeFilters.size===0?'on':''}" onclick="toggleFilter('__all')">Alles</button>
     <button class="filter-chip ${activeFilters.has('__kid')?'on':''}" onclick="toggleFilter('__kid')"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Kind</button>
-    ${ALL_TAGS.map(t=>`<button class="filter-chip ${activeFilters.has(t)?'on':''}" onclick="toggleFilter('${t}')">${t}</button>`).join('')}`;
+    ${getAllTags().map(t=>`<button class="filter-chip ${activeFilters.has(t)?'on':''}" onclick="toggleFilter('${t}')">${t}</button>`).join('')}`;
 }
 
 function toggleFilter(k) {
@@ -1471,7 +1503,7 @@ function renderRecipeDetailSheet(id) {
 function quickAddToMenu(id) {
   const r = recipes.find(x => x.id === id);
   if (!r) return;
-  const todayDi = todayDayIndex();
+  const todayDi = activeWeekOffset === 0 ? todayDayIndex() : -1;
   const emptyDay = DAYS.findIndex((_, di) => di >= todayDi && !plan[di]);
   if (emptyDay === -1) { showToast('Alle (resterende) dagen zijn al gevuld!'); return; }
   plan[emptyDay] = r;
@@ -1538,11 +1570,12 @@ function renderRecipeForm(r) {
           <input class="form-input" id="rf-emoji" placeholder="🍽" maxlength="2" value="${r?r.e:''}">
         </div>
 
-        <div style="padding:0 20px;margin-bottom:8px">
-          <label class="form-label">Categorie</label>
+        <div style="padding:0 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+          <label class="form-label" style="margin:0">Categorie</label>
+          <button onclick="addCustomCategory()" style="background:none;border:none;font-size:12px;color:var(--warm2);cursor:pointer;padding:4px 0;font-family:'DM Sans',sans-serif;touch-action:manipulation">+ Nieuwe categorie</button>
         </div>
         <div class="toggle-group" id="rf-tags">
-          ${['Vlees','Kip','Vis','Groente','Healthy','Quick','Feest'].map(t=>`
+          ${[...BASE_CATEGORY_TAGS, ...customTags].map(t=>`
             <button class="toggle-chip ${formTags.has(t)?'on':''}" onclick="toggleFormTag('${t}')">${t}</button>`).join('')}
         </div>
 
@@ -1595,9 +1628,30 @@ function renderRecipeForm(r) {
 function toggleFormTag(t) {
   formTags.has(t) ? formTags.delete(t) : formTags.add(t);
   document.querySelectorAll('#rf-tags .toggle-chip').forEach(el => {
-    const tag = el.textContent.trim();
-    el.classList.toggle('on', formTags.has(tag));
+    el.classList.toggle('on', formTags.has(el.textContent.trim()));
   });
+}
+
+function addCustomCategory() {
+  const name = prompt('Naam van de nieuwe categorie:');
+  if (!name || !name.trim()) return;
+  const tag = name.trim();
+  if (customTags.includes(tag) || BASE_CATEGORY_TAGS.includes(tag)) {
+    showToast('Categorie bestaat al');
+    return;
+  }
+  customTags.push(tag);
+  saveCustomTags();
+  // add chip to form immediately
+  const group = document.getElementById('rf-tags');
+  if (group) {
+    const btn = document.createElement('button');
+    btn.className = 'toggle-chip on';
+    btn.textContent = tag;
+    btn.onclick = () => toggleFormTag(tag);
+    group.appendChild(btn);
+    formTags.add(tag);
+  }
 }
 
 function toggleFormBereiding(b) {
@@ -1671,7 +1725,7 @@ function saveRecipeForm() {
 // ══════════════════════════════════════════
 function renderSwipeTags() {
   const g = document.getElementById('swipe-tags');
-  g.innerHTML = ALL_TAGS.map(t => `
+  g.innerHTML = getAllTags().map(t => `
     <button class="filter-chip ${swipeSelTags.has(t)?'on':''}" onclick="toggleSwipeTag('${t}')">${t}</button>`).join('');
 }
 
@@ -2156,7 +2210,7 @@ function exportICS() {
 }
 
 function exportGoogle() {
-  const mon = monday(); mon.setHours(18,0,0,0);
+  const mon = monday(); if (activeWeekOffset === 1) mon.setDate(mon.getDate() + 7); mon.setHours(18,0,0,0);
   const entries = Object.keys(plan).filter(di => plan[di]).map(di => {
     const m = plan[di];
     const s = new Date(mon); s.setDate(mon.getDate()+parseInt(di)); s.setHours(18,0,0,0);
@@ -2731,6 +2785,7 @@ function removeIngrFromRecipe(itemId, recipeId) {
   const r = recipes.find(x => x.id === recipeId);
   const item = ingredients.find(i => i.id === itemId);
   if (!item) return;
+  if (!confirm(`"${item.name}" verwijderen uit dit recept?`)) return;
   if (r && item.recipes) {
     item.recipes = item.recipes.filter(rr => rr.name !== r.name);
     // Only delete the ingredient entirely if it has no other recipe links and isn't on the list
