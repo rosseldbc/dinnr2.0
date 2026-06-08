@@ -172,7 +172,10 @@
     .meal-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s}
     .meal-info{flex:1;min-width:0}
     .meal-day{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:1px}
-    .meal-name{font-family:'Playfair Display',serif;font-size:15px;color:var(--ink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .meal-name{font-family:'Playfair Display',serif;font-size:15px;color:var(--ink);font-weight:700;white-space:normal;line-height:1.25}
+    .meal-note-day{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--cream2);border:1.5px dashed var(--border2);border-radius:var(--r2)}
+    .meal-note-day-icon{width:36px;height:36px;border-radius:10px;background:var(--warm-lt);border:1px solid rgba(194,96,42,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:var(--warm2)}
+    .past-day .meal-row,.past-day .empty-day,.past-day .meal-note-day{opacity:.45;pointer-events:none}
     .meal-tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
     .meal-actions{display:flex;gap:6px;flex-shrink:0}
     .meal-act-btn{width:30px;height:30px;border-radius:50%;background:var(--cream2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
@@ -491,14 +494,10 @@
       <div id="save-note" style="font-size:12px;color:var(--sage);text-align:center;padding:8px 0;min-height:28px"></div>
     </div>
 
-    <div style="display:flex;gap:8px;padding:0 16px 8px">
-      <button class="btn btn-outline btn-sm" style="flex:1" onclick="exportICS()">
+    <div style="padding:0 16px 8px">
+      <button class="btn btn-outline btn-sm" style="width:100%" onclick="exportGoogle()">
         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        .ics exporteren
-      </button>
-      <button class="btn btn-outline btn-sm" style="flex:1" onclick="exportGoogle()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Google Cal
+        Exporteer naar Google Calendar
       </button>
     </div>
   </div>
@@ -722,7 +721,7 @@ const DAYS = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Z
 const DAYS_SHORT = ['Ma','Di','Wo','Do','Vr','Za','Zo'];
 const ALL_TAGS = ['Vlees','Kip','Vis','Healthy','Quick','Groente','Feest','Oven','Pan','Thermomix'];
 
-const SK = 'dinnr-hist-v4', SSK = 'dinnr-sess-v2', RK = 'dinnr-recipes-v1', PK = 'dinnr-plan-v1', INGRK = 'dinnr-ingr-v1';
+const SK = 'dinnr-hist-v4', SSK = 'dinnr-sess-v2', RK = 'dinnr-recipes-v1', PK = 'dinnr-plan-v1', INGRK = 'dinnr-ingr-v1', DNK = 'dinnr-notes-v1';
 
 const STORES = ['Alle winkels','Carrefour','Lidl','Albert Heijn','Delhaize','Andere'];
 
@@ -736,6 +735,7 @@ let swipeCi = 0, swipeVoting = false, swipeP1done = false, swipeSelTags = new Se
 let swipeDrag = false, swipeSx = 0, swipeDel = null;
 let ingrFilter = 'all';
 let lockedDays = new Set();
+let dayNotes = {};
 
 function loadAll() {
   const saved = storage.get(RK);
@@ -747,6 +747,7 @@ function loadAll() {
   const np = {};
   Object.keys(plan).forEach(k => { if (plan[k]) np[parseInt(k)] = plan[k]; });
   plan = np;
+  dayNotes = storage._local.get(DNK) || {};
 }
 
 // ══════════════════════════════════════════
@@ -808,6 +809,7 @@ async function loadAll() {
   const np = {};
   Object.keys(rawPlan).forEach(k => { if (rawPlan[k]) np[parseInt(k)] = rawPlan[k]; });
   plan = np;
+  dayNotes = storage._local.get(DNK) || {};
   const hasShared = !!window.storage;
   showSyncStatus(hasShared);
 }
@@ -894,20 +896,28 @@ function updateHeroCopy() {
   document.getElementById('filled-count').textContent = n;
 }
 
+function todayDayIndex() {
+  const d = new Date().getDay(); // 0=Sun,1=Mon,...,6=Sat
+  return d === 0 ? 6 : d - 1;  // convert to 0=Mon,...,6=Sun
+}
+
 function renderMenu() {
   const g = document.getElementById('week-grid');
   g.innerHTML = '';
+  const todayDi = todayDayIndex();
   DAYS.forEach((day, di) => {
     const meal = plan[di];
+    const isPast = di < todayDi;
     const el = document.createElement('div');
+    if (isPast) el.className = 'past-day';
     if (meal) {
-      const linked = ingredients.filter(i => i.recipe === meal.name);
+      const linked = ingredients.filter(i => i.recipes?.some(r => r.name === meal.name));
       const onList = linked.filter(i => i.onList).length;
       const total = linked.length;
       const allOnList = total > 0 && onList === total;
 
       const isLocked = lockedDays.has(di);
-      el.className = 'meal-row' + (isLocked ? ' locked-meal' : '');
+      el.className = (isPast ? 'past-day ' : '') + 'meal-row' + (isLocked ? ' locked-meal' : '');
       el.setAttribute('draggable', 'true');
       el.dataset.day = di;
       el.innerHTML = `
@@ -915,7 +925,7 @@ function renderMenu() {
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
         </div>
         <div class="meal-info">
-          <div class="meal-day">${day}</div>
+          <div class="meal-day">${day}${isPast?' <span style="font-size:9px;opacity:.6">(voorbij)</span>':''}</div>
           <div class="meal-name">${meal.name}</div>
           <div class="meal-tags" style="margin-top:3px">
             ${meal.kid ? '<span class="kid-badge"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Kind</span>' : ''}
@@ -928,11 +938,11 @@ function renderMenu() {
               ? `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`
               : `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`}
           </button>
+          <button class="meal-act-btn" title="Vervangen" onclick="openDayPicker(${di}, true)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></button>
+          <button class="meal-act-btn" title="Verwijderen" onclick="removeMealFromDay(${di})"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           <button class="meal-act-btn" title="Ingrediënten & boodschappen" onclick="openMealIngredients(${di})">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${total>0&&!allOnList?'var(--sage)':'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           </button>
-          <button class="meal-act-btn" title="Vervangen" onclick="openDayPicker(${di}, true)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></button>
-          <button class="meal-act-btn" title="Verwijderen" onclick="removeMealFromDay(${di})"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>`;
 
       el.addEventListener('dragstart', onDragStart);
@@ -940,17 +950,30 @@ function renderMenu() {
       el.addEventListener('dragover', onDragOver);
       el.addEventListener('dragleave', onDragLeave);
       el.addEventListener('drop', onDrop);
+    } else if (dayNotes[di]) {
+      el.className = (isPast ? 'past-day ' : '') + 'meal-note-day';
+      el.dataset.day = di;
+      el.innerHTML = `
+        <div class="meal-note-day-icon">📝</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">${day}</div>
+          <div style="font-size:14px;font-weight:600;color:var(--ink);line-height:1.3">${dayNotes[di]}</div>
+        </div>
+        <button style="width:28px;height:28px;border-radius:50%;background:var(--cream3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;touch-action:manipulation" onclick="event.stopPropagation();clearDayNote(${di})" title="Verwijder notitie">
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>`;
+      if (!isPast) el.addEventListener('click', () => openDayPicker(di, false));
     } else {
-      el.className = 'empty-day';
+      el.className = (isPast ? 'past-day ' : '') + 'empty-day';
       el.dataset.day = di;
       el.setAttribute('draggable', 'false');
       el.innerHTML = `
-        <div class="empty-day-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-        <div class="empty-day-txt"><strong>${day}</strong>Klik om een gerecht te kiezen</div>`;
+        <div class="empty-day-icon">${isPast ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'}</div>
+        <div class="empty-day-txt"><strong>${day}</strong>${isPast ? 'Dag voorbij' : 'Klik om een gerecht te kiezen'}</div>`;
       el.addEventListener('dragover', onDragOver);
       el.addEventListener('dragleave', onDragLeave);
       el.addEventListener('drop', onDrop);
-      el.addEventListener('click', () => openDayPicker(di, false));
+      if (!isPast) el.addEventListener('click', () => openDayPicker(di, false));
     }
     g.appendChild(el);
   });
@@ -1105,6 +1128,21 @@ function removeMealFromDay(di) {
   renderMenu();
 }
 
+function setDayNote(di, note) {
+  if (note.trim()) {
+    dayNotes[di] = note.trim();
+  } else {
+    delete dayNotes[di];
+  }
+  storage._local.set(DNK, dayNotes);
+}
+
+function clearDayNote(di) {
+  delete dayNotes[di];
+  storage._local.set(DNK, dayNotes);
+  renderMenu();
+}
+
 function clearMenu() {
   if (!Object.keys(plan).length) return;
   plan = {};
@@ -1136,8 +1174,10 @@ function suggestMenu() {
   const kidMeals = available.filter(r => r.kid);
   const otherMeals = available.filter(r => !r.kid);
   const kidDays = [0, 2, 4, 6];
+  const todayDi = todayDayIndex();
   DAYS.forEach((_, di) => {
     if (result[di]) return; // locked
+    if (di < todayDi) return; // skip past days
     const pool = kidDays.includes(di) ? [...kidMeals, ...otherMeals] : [...otherMeals, ...kidMeals];
     const pick = pool.find(r => !usedIds.has(r.id));
     if (pick) { result[di] = pick; usedIds.add(pick.id); }
@@ -1150,6 +1190,7 @@ function suggestMenu() {
 
 function openDayPicker(targetDay, replacing) {
   const usedIds = new Set(Object.entries(plan).filter(([d]) => parseInt(d) !== targetDay).map(([,m]) => m.id));
+  const existingNote = dayNotes[targetDay] || '';
   const root = document.getElementById('overlay-root');
   root.innerHTML = `
     <div class="overlay" style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;justify-content:flex-end">
@@ -1158,6 +1199,10 @@ function openDayPicker(targetDay, replacing) {
         <div class="sheet-handle"></div>
         <div class="sheet-title">${DAYS[targetDay]}</div>
         <div class="sheet-sub">${replacing ? 'Kies een vervangend gerecht' : 'Kies een gerecht voor deze dag'}</div>
+        <div style="padding:0 16px 10px;display:flex;gap:8px;align-items:center">
+          <input id="day-note-input" class="form-input" style="flex:1;font-size:13px;padding:8px 12px" placeholder="Of laat een notitie achter… (bijv. BBQ Lot & Lau)" value="${existingNote.replace(/"/g,'&quot;')}">
+          <button class="btn btn-outline btn-sm" style="white-space:nowrap;flex-shrink:0" onclick="saveDayNoteAndClose(${targetDay})">Opslaan</button>
+        </div>
         <div style="padding:0 16px 8px;display:flex;gap:6px;flex-wrap:wrap">
           <button class="filter-chip on" id="sheet-filter-all" onclick="sheetFilter('all')">Alles</button>
           <button class="filter-chip" id="sheet-filter-kid" onclick="sheetFilter('kid')"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Kind</button>
@@ -1168,6 +1213,14 @@ function openDayPicker(targetDay, replacing) {
     </div>`;
   renderSheetList(targetDay, usedIds, 'all');
   attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
+}
+
+function saveDayNoteAndClose(di) {
+  const input = document.getElementById('day-note-input');
+  if (!input) return;
+  setDayNote(di, input.value);
+  closeOverlay();
+  renderMenu();
 }
 
 let _sheetFilter = 'all', _sheetDay, _sheetUsedIds;
@@ -1213,12 +1266,13 @@ function closeOverlay() {
 }
 
 // Attach swipe-down-to-close gesture to a bottom sheet element
+// Responds to touches in the top 64px of the sheet (handle + title area)
 function attachSheetDismiss(sheetEl) {
   if (!sheetEl) return;
   let startY = 0, dragging = false;
   function onMove(e) {
     if (!dragging) return;
-    const dy = (e.touches ? e.touches[0] : e).clientY - startY;
+    const dy = e.touches[0].clientY - startY;
     if (dy > 0) sheetEl.style.transform = `translateY(${dy}px)`;
   }
   function onEnd(e) {
@@ -1226,21 +1280,22 @@ function attachSheetDismiss(sheetEl) {
     dragging = false;
     document.removeEventListener('touchmove', onMove);
     document.removeEventListener('touchend', onEnd);
-    const dy = (e.changedTouches ? e.changedTouches[0] : e).clientY - startY;
+    const dy = e.changedTouches[0].clientY - startY;
     sheetEl.style.transition = 'transform .3s ease';
-    if (dy > 110) { sheetEl.style.transform = `translateY(100%)`; setTimeout(closeOverlay, 280); }
+    if (dy > 90) { sheetEl.style.transform = 'translateY(100%)'; setTimeout(closeOverlay, 280); }
     else { sheetEl.style.transform = ''; setTimeout(() => { sheetEl.style.transition = ''; }, 320); }
   }
-  const handle = sheetEl.querySelector('.sheet-handle');
-  if (handle) {
-    handle.addEventListener('touchstart', e => {
-      startY = e.touches[0].clientY;
-      dragging = true;
-      sheetEl.style.transition = 'none';
-      document.addEventListener('touchmove', onMove, { passive: true });
-      document.addEventListener('touchend', onEnd);
-    }, { passive: true });
-  }
+  sheetEl.addEventListener('touchstart', e => {
+    const rect = sheetEl.getBoundingClientRect();
+    const touchY = e.touches[0].clientY;
+    // only start drag from top 64px of the sheet
+    if (touchY - rect.top > 64) return;
+    startY = touchY;
+    dragging = true;
+    sheetEl.style.transition = 'none';
+    document.addEventListener('touchmove', onMove, { passive: true });
+    document.addEventListener('touchend', onEnd);
+  }, { passive: true });
 }
 
 function savePlan() {
@@ -1312,7 +1367,6 @@ function renderRecipes() {
       </div>
       <div class="recipe-actions">
         <button class="add-to-menu-btn" onclick="event.stopPropagation();quickAddToMenu(${r.id})">+ Menu</button>
-        ${!r.isDefault ? `<button class="meal-act-btn" style="font-size:12px" onclick="event.stopPropagation();deleteRecipe(${r.id})"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>` : ''}
       </div>
     </div>`).join('');
 }
@@ -1343,21 +1397,17 @@ function renderRecipeDetailSheet(id) {
       </div>
 
       <div style="padding:20px 20px 0">
-        <div style="font-size:48px;margin-bottom:8px">${r.e}</div>
+        ${r.photo ? `<img src="${r.photo}" style="width:100%;max-height:220px;object-fit:cover;border-radius:var(--r2);margin-bottom:14px">` : `<div style="font-size:48px;margin-bottom:8px">${r.e}</div>`}
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
           ${r.kid?`<span class="kid-badge"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Kindvriendelijk</span>`:''}
           ${r.b.map(x=>`<span class="pill pill-warm">${x}</span>`).join('')}
           ${r.t.map(x=>`<span class="pill pill-sage">${x}</span>`).join('')}
         </div>
 
-        <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="quickAddToMenu(${r.id});closeOverlay()">
+        <button class="btn btn-primary" style="width:100%;margin-bottom:16px" onclick="quickAddToMenu(${r.id});closeOverlay()">
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Aan menu toevoegen
         </button>
-        ${!r.isDefault?`<button class="btn btn-danger" style="width:100%;margin-bottom:4px" onclick="deleteRecipe(${r.id});closeOverlay()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-          Verwijderen
-        </button>`:''}
 
         <!-- INGREDIENT SECTION -->
         <div class="ingr-section">
@@ -1374,13 +1424,16 @@ function renderRecipeDetailSheet(id) {
               const displayQty = rLink?.qty || item.qty || '';
               const otherRecipes = (item.recipes || []).filter(rr => rr.name !== r.name);
               return `
-              <div class="ingr-item">
+              <div class="ingr-item" id="ingr-item-${item.id}">
                 <div style="flex:1;min-width:0">
                   <div class="ingr-item-name">${item.name}</div>
                   ${otherRecipes.length ? `<div style="font-size:10px;color:var(--muted);margin-top:1px">Ook in: ${otherRecipes.map(rr=>rr.name).join(', ')}</div>` : ''}
                 </div>
                 ${displayQty ? `<span class="ingr-item-qty">${displayQty}</span>` : ''}
                 ${item.store ? `<span class="ingr-item-store">${item.store}</span>` : ''}
+                <button class="ingr-item-del" style="background:var(--cream2)" onclick="startEditIngr('${item.id}',${id})" title="Bewerken">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
                 <button class="ingr-item-del" onclick="removeIngrFromRecipe('${item.id}',${id})">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
@@ -1400,6 +1453,17 @@ function renderRecipeDetailSheet(id) {
             Alle ingrediënten naar boodschappenlijst
           </button>` : ''}
         </div>
+
+        ${r.steps ? `
+        <div style="margin-top:16px">
+          <div class="section-label" style="margin:0 0 8px">Bereiding</div>
+          <div style="font-size:14px;color:var(--ink);line-height:1.7;white-space:pre-wrap;background:var(--cream2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px">${r.steps}</div>
+        </div>` : ''}
+
+        ${!r.isDefault ? `
+        <div style="margin-top:24px;padding-bottom:8px;text-align:center">
+          <button onclick="deleteRecipe(${r.id});closeOverlay()" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;padding:8px;touch-action:manipulation">Recept verwijderen</button>
+        </div>` : ''}
       </div>
     </div>`;
 }
@@ -1407,9 +1471,9 @@ function renderRecipeDetailSheet(id) {
 function quickAddToMenu(id) {
   const r = recipes.find(x => x.id === id);
   if (!r) return;
-  // Find first empty day
-  const emptyDay = DAYS.findIndex((_, di) => !plan[di]);
-  if (emptyDay === -1) { showToast('Alle dagen zijn al gevuld!'); return; }
+  const todayDi = todayDayIndex();
+  const emptyDay = DAYS.findIndex((_, di) => di >= todayDi && !plan[di]);
+  if (emptyDay === -1) { showToast('Alle (resterende) dagen zijn al gevuld!'); return; }
   plan[emptyDay] = r;
   savePlanStorage();
   showToast(`${r.name} → ${DAYS_SHORT[emptyDay]}`);
@@ -1429,12 +1493,15 @@ function deleteRecipe(id) {
 // ══════════════════════════════════════════
 let editingRecipeId = null;
 let formTags = new Set(), formBereiding = new Set(), formKid = false;
+let formPhoto = '', formSteps = '';
 
 function openAddRecipe() {
   editingRecipeId = null;
   formTags = new Set();
   formBereiding = new Set();
   formKid = false;
+  formPhoto = '';
+  formSteps = '';
   renderRecipeForm(null);
 }
 
@@ -1445,6 +1512,8 @@ function openEditRecipe(id) {
   formTags = new Set(r.t);
   formBereiding = new Set(r.b);
   formKid = r.kid;
+  formPhoto = r.photo || '';
+  formSteps = r.steps || '';
   closeOverlay();
   renderRecipeForm(r);
 }
@@ -1496,7 +1565,23 @@ function renderRecipeForm(r) {
           <div class="toggle-knob"></div>
         </div>
 
-        <div style="padding:0 20px;margin-top:4px;display:flex;gap:8px">
+        <div class="form-group">
+          <label class="form-label">Foto (optioneel)</label>
+          ${formPhoto ? `<img src="${formPhoto}" id="rf-photo-preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:var(--r2);margin-bottom:8px">` : ''}
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--cream2);border:1.5px dashed var(--border2);border-radius:var(--r2);cursor:pointer;touch-action:manipulation">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--warm2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span style="font-size:13px;color:var(--muted)">${formPhoto ? 'Foto wijzigen' : 'Foto uploaden uit bibliotheek'}</span>
+            <input type="file" accept="image/*" style="display:none" onchange="handleRecipePhotoUpload(event)">
+          </label>
+          ${formPhoto ? `<button onclick="removeRecipePhoto()" style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;padding:6px 0;touch-action:manipulation">Foto verwijderen</button>` : ''}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bereidingsstappen (optioneel)</label>
+          <textarea class="form-input" id="rf-steps" placeholder="Beschrijf de stappen…" rows="5" style="resize:vertical;min-height:100px;font-family:'DM Sans',sans-serif;line-height:1.6">${formSteps.replace(/</g,'&lt;')}</textarea>
+        </div>
+
+        <div style="padding:0 20px;margin-top:4px;display:flex;gap:8px;padding-bottom:calc(env(safe-area-inset-bottom)+32px)">
           <button class="btn btn-primary" style="flex:1" onclick="saveRecipeForm()">
             ${r ? 'Opslaan' : 'Recept toevoegen'}
           </button>
@@ -1528,14 +1613,42 @@ function toggleFormKid() {
   document.getElementById('rf-kid-toggle').classList.toggle('on', formKid);
 }
 
+function removeRecipePhoto() {
+  formPhoto = '';
+  formSteps = document.getElementById('rf-steps')?.value || formSteps;
+  renderRecipeForm(editingRecipeId ? recipes.find(x => x.id === editingRecipeId) : null);
+}
+
+function handleRecipePhotoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    formPhoto = ev.target.result;
+    const preview = document.getElementById('rf-photo-preview');
+    if (preview) {
+      preview.src = formPhoto;
+    } else {
+      // re-render to show preview
+      const nameVal = document.getElementById('rf-name')?.value || '';
+      const stepsVal = document.getElementById('rf-steps')?.value || '';
+      formSteps = stepsVal;
+      renderRecipeForm(editingRecipeId ? {...recipes.find(x=>x.id===editingRecipeId), photo: formPhoto, steps: formSteps, name: nameVal} : null);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
 function saveRecipeForm() {
   const name = document.getElementById('rf-name').value.trim();
   if (!name) { showToast('Vul een naam in!'); return; }
   const emoji = document.getElementById('rf-emoji').value.trim() || '🍽';
+  const steps = document.getElementById('rf-steps')?.value.trim() || '';
   if (editingRecipeId) {
     const r = recipes.find(x => x.id === editingRecipeId);
     if (r) {
       r.name = name; r.e = emoji; r.t = [...formTags]; r.b = [...formBereiding]; r.kid = formKid;
+      r.photo = formPhoto || ''; r.steps = steps;
     }
     showToast('✓ Recept bijgewerkt');
   } else {
@@ -1543,7 +1656,8 @@ function saveRecipeForm() {
     recipes.push({
       id: maxId + 1, name, e: emoji,
       t: [...formTags], b: [...formBereiding],
-      kid: formKid, bg: '#F3EDE3', img: ''
+      kid: formKid, bg: '#F3EDE3', img: '',
+      photo: formPhoto || '', steps
     });
     showToast('✓ Recept toegevoegd!');
   }
@@ -1925,12 +2039,33 @@ function renderStats() {
     return;
   }
 
+  // Top 3 most eaten
+  const eatCount = {};
+  hist.forEach(h => { eatCount[h.name] = (eatCount[h.name] || 0) + 1; });
+  const top3 = Object.entries(eatCount).sort((a,b) => b[1]-a[1]).slice(0,3);
+
   document.getElementById('stat-grid-wrap').innerHTML = `<div class="stat-grid" style="padding:0 16px">
     <div class="stat-box"><div class="stat-box-lbl">Weken gepland</div><div class="stat-box-val">${tw}</div><div class="stat-box-sub">sessies</div></div>
     <div class="stat-box"><div class="stat-box-lbl">Maaltijden</div><div class="stat-box-val">${total}</div><div class="stat-box-sub">gegeten</div></div>
     <div class="stat-box"><div class="stat-box-lbl">Gem. matches</div><div class="stat-box-val">${avg}</div><div class="stat-box-sub">per swipe-sessie</div></div>
     <div class="stat-box"><div class="stat-box-lbl">Recepten</div><div class="stat-box-val">${recipes.length}</div><div class="stat-box-sub">in bibliotheek</div></div>
-  </div>`;
+  </div>
+  ${top3.length ? `
+  <div style="padding:16px 16px 0">
+    <div class="section-label" style="margin-top:0">Top 3 meest gegeten</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${top3.map(([name, count], i) => {
+        const medal = ['🥇','🥈','🥉'][i];
+        return `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--cream);border:1px solid var(--border);border-radius:var(--r2)">
+          <div style="font-size:20px;flex-shrink:0">${medal}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+          </div>
+          <div style="font-size:13px;font-weight:600;color:var(--warm2);flex-shrink:0">${count}×</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>` : ''}`;
 
   // Top ingredients
   const topIngr = [...ingredients].filter(p => p.timesUsed > 0).sort((a,b) => b.timesUsed - a.timesUsed).slice(0, 8);
@@ -2022,14 +2157,35 @@ function exportICS() {
 
 function exportGoogle() {
   const mon = monday(); mon.setHours(18,0,0,0);
-  Object.keys(plan).forEach((di, i) => {
-    const m = plan[di]; if (!m) return;
+  const entries = Object.keys(plan).filter(di => plan[di]).map(di => {
+    const m = plan[di];
     const s = new Date(mon); s.setDate(mon.getDate()+parseInt(di)); s.setHours(18,0,0,0);
     const e = new Date(s); e.setHours(19,0,0,0);
-    setTimeout(() => window.open(
-      `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(m.e+' '+m.name)}&dates=${toICS(s)}/${toICS(e)}`,
-      '_blank'), i * 300);
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(m.e+' '+m.name)}&dates=${toICS(s)}/${toICS(e)}`;
+    return { day: DAYS[di], name: m.name, url };
   });
+  if (!entries.length) { showToast('Geen maaltijden gepland!'); return; }
+  const root = document.getElementById('overlay-root');
+  root.innerHTML = `
+    <div class="overlay" style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;justify-content:flex-end">
+      <div style="flex:1;background:rgba(28,25,23,.5)" onclick="closeOverlay()"></div>
+      <div class="sheet" style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+20px);max-height:80vh;overflow-y:auto">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Google Calendar</div>
+        <div class="sheet-sub">Tik op elke dag om toe te voegen aan je agenda.</div>
+        <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
+          ${entries.map(en => `
+            <a href="${en.url}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--cream2);border:1px solid var(--border);border-radius:var(--r2);text-decoration:none;color:inherit;touch-action:manipulation">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)">${en.day}</div>
+                <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--ink)">${en.name}</div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warm2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
 }
 
 // ══════════════════════════════════════════
@@ -2584,6 +2740,42 @@ function removeIngrFromRecipe(itemId, recipeId) {
   } else {
     ingredients = ingredients.filter(i => i.id !== itemId);
   }
+  saveIngredients();
+  renderRecipeDetailSheet(recipeId);
+}
+
+function startEditIngr(itemId, recipeId) {
+  const item = ingredients.find(i => i.id === itemId);
+  const r = recipes.find(x => x.id === recipeId);
+  if (!item || !r) return;
+  const rLink = item.recipes?.find(rr => rr.name === r.name);
+  const currentQty = rLink?.qty || '';
+  const row = document.getElementById('ingr-item-' + itemId);
+  if (!row) return;
+  row.innerHTML = `
+    <input style="flex:1;min-width:0;border:1.5px solid var(--warm);border-radius:var(--r);padding:6px 10px;font-size:13px;background:var(--cream);font-family:'DM Sans',sans-serif" id="edit-ingr-name-${itemId}" value="${item.name.replace(/"/g,'&quot;')}">
+    <input style="width:70px;border:1.5px solid var(--warm);border-radius:var(--r);padding:6px 8px;font-size:13px;background:var(--cream);font-family:'DM Sans',sans-serif" id="edit-ingr-qty-${itemId}" value="${currentQty.replace(/"/g,'&quot;')}" placeholder="Hoev.">
+    <button class="ingr-add-btn" onclick="saveIngrEdit('${itemId}',${recipeId})" style="touch-action:manipulation">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </button>`;
+}
+
+function saveIngrEdit(itemId, recipeId) {
+  const item = ingredients.find(i => i.id === itemId);
+  const r = recipes.find(x => x.id === recipeId);
+  if (!item || !r) return;
+  const nameEl = document.getElementById('edit-ingr-name-' + itemId);
+  const qtyEl = document.getElementById('edit-ingr-qty-' + itemId);
+  if (!nameEl) return;
+  const newName = nameEl.value.trim();
+  const newQty = qtyEl ? qtyEl.value.trim() : '';
+  if (!newName) { showToast('Vul een naam in!'); return; }
+  item.name = newName;
+  const rLink = item.recipes?.find(rr => rr.name === r.name);
+  if (rLink) rLink.qty = newQty;
+  else if (item.recipes) item.recipes.push({ name: r.name, qty: newQty });
+  // keep top-level qty in sync for backwards compat
+  if (item.recipes?.length === 1) item.qty = newQty;
   saveIngredients();
   renderRecipeDetailSheet(recipeId);
 }
