@@ -1389,8 +1389,10 @@ function renderRecipes() {
   }
   grid.innerHTML = items.map(r => `
     <div class="recipe-card ${r.kid?'kid-friendly':''}" onclick="openRecipeDetail(${r.id})">
-      <div class="recipe-img" style="background:${r.bg}">${r.e}
-        <img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'">
+      <div class="recipe-img" style="background:${r.bg}">
+        ${r.photo
+          ? `<img src="${r.photo}" onload="this.style.opacity=1" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s">`
+          : `${r.e}<img src="${r.img}" onload="this.style.opacity=1" onerror="this.style.display='none'">`}
       </div>
       <div class="recipe-info">
         <div class="recipe-name">${r.name}</div>
@@ -1466,11 +1468,8 @@ function renderRecipeDetailSheet(id) {
                 </div>
                 ${displayQty ? `<span class="ingr-item-qty">${displayQty}</span>` : ''}
                 ${item.store ? `<span class="ingr-item-store">${item.store}</span>` : ''}
-                <button class="ingr-item-del" style="background:var(--cream2)" onclick="startEditIngr('${item.id}',${id})" title="Bewerken">
+                <button class="ingr-item-del" onclick="startEditIngr('${item.id}',${id})" title="Bewerken">
                   <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                </button>
-                <button class="ingr-item-del" onclick="removeIngrFromRecipe('${item.id}',${id})">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>`;}).join('')
             : `<div style="font-size:13px;color:var(--muted);padding:6px 0 4px">Nog geen ingrediënten gekoppeld.</div>`}
@@ -1566,11 +1565,6 @@ function renderRecipeForm(r) {
         <div class="form-group">
           <label class="form-label">Naam *</label>
           <input class="form-input" id="rf-name" placeholder="Bijv. Zalmfilet met groenten" value="${r?r.name:''}">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Emoji (optioneel)</label>
-          <input class="form-input" id="rf-emoji" placeholder="🍽" maxlength="2" value="${r?r.e:''}">
         </div>
 
         <div style="padding:0 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
@@ -1699,19 +1693,18 @@ function handleRecipePhotoUpload(e) {
 function saveRecipeForm() {
   const name = document.getElementById('rf-name').value.trim();
   if (!name) { showToast('Vul een naam in!'); return; }
-  const emoji = document.getElementById('rf-emoji').value.trim() || '🍽';
   const steps = document.getElementById('rf-steps')?.value.trim() || '';
   if (editingRecipeId) {
     const r = recipes.find(x => x.id === editingRecipeId);
     if (r) {
-      r.name = name; r.e = emoji; r.t = [...formTags]; r.b = [...formBereiding]; r.kid = formKid;
+      r.name = name; r.t = [...formTags]; r.b = [...formBereiding]; r.kid = formKid;
       r.photo = formPhoto || ''; r.steps = steps;
     }
     showToast('✓ Recept bijgewerkt');
   } else {
     const maxId = recipes.reduce((m, r) => Math.max(m, r.id), 0);
     recipes.push({
-      id: maxId + 1, name, e: emoji,
+      id: maxId + 1, name, e: '🍽',
       t: [...formTags], b: [...formBereiding],
       kid: formKid, bg: '#F3EDE3', img: '',
       photo: formPhoto || '', steps
@@ -2810,12 +2803,16 @@ function startEditIngr(itemId, recipeId) {
   const currentQty = rLink?.qty || '';
   const row = document.getElementById('ingr-item-' + itemId);
   if (!row) return;
+  row.style.flexWrap = 'wrap';
   row.innerHTML = `
     <input style="flex:1;min-width:0;border:1.5px solid var(--warm);border-radius:var(--r);padding:6px 10px;font-size:13px;background:var(--cream);font-family:'DM Sans',sans-serif" id="edit-ingr-name-${itemId}" value="${item.name.replace(/"/g,'&quot;')}">
     <input style="width:70px;border:1.5px solid var(--warm);border-radius:var(--r);padding:6px 8px;font-size:13px;background:var(--cream);font-family:'DM Sans',sans-serif" id="edit-ingr-qty-${itemId}" value="${currentQty.replace(/"/g,'&quot;')}" placeholder="Hoev.">
     <button class="ingr-add-btn" onclick="saveIngrEdit('${itemId}',${recipeId})" style="touch-action:manipulation">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    </button>`;
+    </button>
+    <div style="width:100%;text-align:right;padding-top:4px">
+      <button onclick="removeIngrFromRecipe('${itemId}',${recipeId})" style="background:none;border:none;font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;padding:4px;touch-action:manipulation">Verwijderen</button>
+    </div>`;
 }
 
 function saveIngrEdit(itemId, recipeId) {
