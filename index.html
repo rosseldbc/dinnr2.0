@@ -1210,6 +1210,7 @@ function suggestMenu() {
   DAYS.forEach((_, di) => {
     if (result[di]) return; // locked
     if (di < todayDi) return; // skip past days
+    if (dayNotes[di]) return; // skip days with a note
     const pool = kidDays.includes(di) ? [...kidMeals, ...otherMeals] : [...otherMeals, ...kidMeals];
     const pick = pool.find(r => !usedIds.has(r.id));
     if (pick) { result[di] = pick; usedIds.add(pick.id); }
