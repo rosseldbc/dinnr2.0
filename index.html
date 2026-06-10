@@ -822,7 +822,7 @@ async function loadAll() {
       i.recipes = i.recipe ? [{ name: i.recipe, qty: i.qty || '' }] : [];
     }
     return i;
-  });
+  }).filter(i => !i.promo || i.onList); // promo items that aren't on the list anymore get purged
   const rawPlan = await storage.get(PK) || {};
   const np = {};
   Object.keys(rawPlan).forEach(k => { if (rawPlan[k]) np[parseInt(k)] = rawPlan[k]; });
@@ -2392,11 +2392,11 @@ function shopItemHtml(item) {
       ${item.checked?`<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`:''}
     </div>
     <div class="shop-item-body">
-      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-name">${item.name}${item.promo?` <span style="font-size:9px;font-weight:700;letter-spacing:.5px;padding:1px 5px;border-radius:999px;background:#EDE9F8;color:#6B4FA0;vertical-align:middle">PROMO</span>`:''}</div>
       <div class="shop-item-meta">
         ${item.qty?`<span class="shop-item-qty">${item.qty}</span>`:''}
         ${item.category?`<span style="font-size:10px;padding:1px 6px;border-radius:999px;background:var(--warm-lt);color:var(--warm2);font-weight:500">${item.category}</span>`:''}
-        ${(() => { const recs=(item.recipes||[]).filter(r=>r.name); return recs.length===1?`<span class="shop-item-dish">${recs[0].name}</span>`:recs.length>1?`<span class="shop-item-dish">${recs.length} recepten</span>`:''; })()}
+        ${item.promo?'':`${(() => { const recs=(item.recipes||[]).filter(r=>r.name); return recs.length===1?`<span class="shop-item-dish">${recs[0].name}</span>`:recs.length>1?`<span class="shop-item-dish">${recs.length} recepten</span>`:''; })()}`}
         ${item.store?`<span class="shop-item-store">${item.store}</span>`:''}
       </div>
     </div>
@@ -2410,11 +2410,16 @@ function toggleShopItem(id) {
   const item = ingredients.find(i => i.id === id);
   if (!item) return;
   if (!item.checked) {
-    // Checking off → mark checked, record purchase
-    item.checked = true;
-    item.timesUsed = (item.timesUsed || 0) + 1;
-    item.lastUsed = Date.now();
-    showToast(`${item.name} afgevinkt`);
+    if (item.promo) {
+      // promo: delete immediately, no history
+      ingredients = ingredients.filter(i => i.id !== id);
+      showToast(`${item.name} ✓ (promo)`);
+    } else {
+      item.checked = true;
+      item.timesUsed = (item.timesUsed || 0) + 1;
+      item.lastUsed = Date.now();
+      showToast(`${item.name} afgevinkt`);
+    }
   } else {
     item.checked = false;
   }
@@ -2467,7 +2472,7 @@ function addToListByName(name) {
 }
 
 function openAddShopItem(prefill = '') {
-  _si = { name: prefill, qty: '', recipe: '', store: '' };
+  _si = { name: prefill, qty: '', recipe: '', store: '', category: '', promo: false };
   renderShopItemSheet();
 }
 
@@ -2480,6 +2485,11 @@ function renderShopItemSheet() {
       <div class="sheet" style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+16px);max-height:88vh;overflow-y:auto">
         <div class="sheet-handle"></div>
         <div class="sheet-title">Toevoegen aan lijst</div>
+        <div style="padding:0 20px 12px;display:flex;gap:8px">
+          <button id="si-promo-btn" onclick="toggleSiPromo()" style="flex:1;padding:10px;border-radius:var(--r2);border:1.5px solid ${_si.promo?'#6B4FA0':'var(--border)'};background:${_si.promo?'#EDE9F8':'var(--cream2)'};color:${_si.promo?'#6B4FA0':'var(--muted)'};font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;touch-action:manipulation;transition:all .2s">
+            🏷️ PROMO${_si.promo?' ✓':''}
+          </button>
+        </div>
         <div class="form-group">
           <label class="form-label">Naam *</label>
           <input class="form-input" id="si-name" value="${_si.name}" placeholder="Bijv. Kipfilet">
@@ -2532,24 +2542,34 @@ function selectSiStore(s) {
   _si.store = _si.store === s ? '' : s;
   document.querySelectorAll('.shop-stores-grid .store-chip').forEach(el => el.classList.toggle('on', el.textContent.trim() === _si.store));
 }
+function toggleSiPromo() {
+  _si.promo = !_si.promo;
+  renderShopItemSheet();
+}
 
 function saveShopItem() {
   const name = document.getElementById('si-name')?.value.trim();
   if (!name) { showToast('Vul een naam in'); return; }
   const qty = document.getElementById('si-qty')?.value.trim();
-  const q = name.toLowerCase();
-  let item = ingredients.find(i => i.name.toLowerCase() === q);
-  if (item) {
-    if (qty) item.qty = qty;
-    if (_si.recipe) item.recipe = _si.recipe;
-    if (_si.store) item.store = _si.store;
-    if (_si.category) item.category = _si.category;
-    if (item.onList) { showToast(`${item.name} staat al op de lijst`); closeOverlay(); return; }
-    item.onList = true;
-    item.checked = false;
-  } else {
-    item = makeIngredient({ name, qty, recipe: _si.recipe, store: _si.store, category: _si.category, onList: true });
+  let item;
+  if (_si.promo) {
+    item = makeIngredient({ name, qty, recipe: _si.recipe, store: _si.store, category: _si.category, promo: true, onList: true });
     ingredients.unshift(item);
+  } else {
+    const q = name.toLowerCase();
+    item = ingredients.find(i => i.name.toLowerCase() === q);
+    if (item) {
+      if (qty) item.qty = qty;
+      if (_si.recipe) item.recipe = _si.recipe;
+      if (_si.store) item.store = _si.store;
+      if (_si.category) item.category = _si.category;
+      if (item.onList) { showToast(`${item.name} staat al op de lijst`); closeOverlay(); return; }
+      item.onList = true;
+      item.checked = false;
+    } else {
+      item = makeIngredient({ name, qty, recipe: _si.recipe, store: _si.store, category: _si.category, onList: true });
+      ingredients.unshift(item);
+    }
   }
   saveIngredients();
   closeOverlay();
@@ -2941,6 +2961,7 @@ function makeIngredient(props) {
     recipes,
     category: props.category || '',
     store: props.store || '',
+    promo: props.promo || false,
     onList: props.onList || false,
     checked: false,
     timesUsed: 0,
