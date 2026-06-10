@@ -744,6 +744,7 @@ let swipeCi = 0, swipeVoting = false, swipeP1done = false, swipeSelTags = new Se
 let swipeDrag = false, swipeSx = 0, swipeDel = null;
 let ingrFilter = 'all';
 let lockedDays = new Set();
+let lockedDaysNext = new Set();
 let dayNotes = {}, dayNotesNext = {};
 let planNext = {};
 let activeWeekOffset = 0; // 0 = this week, 1 = next week
@@ -1152,9 +1153,10 @@ function removeMealFromDay(di) {
 
 function switchWeek(offset) {
   if (offset === activeWeekOffset) return;
-  // swap active/inactive week data into plan & dayNotes
+  // swap active/inactive week data
   [plan, planNext] = [planNext, plan];
   [dayNotes, dayNotesNext] = [dayNotesNext, dayNotes];
+  [lockedDays, lockedDaysNext] = [lockedDaysNext, lockedDays];
   activeWeekOffset = offset;
   document.querySelectorAll('.week-tab').forEach((el, i) => el.classList.toggle('on', i === offset));
   renderMenu();
