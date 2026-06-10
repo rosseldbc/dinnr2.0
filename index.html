@@ -732,7 +732,8 @@ function getAllTags() { return [...BASE_CATEGORY_TAGS, ...customTags, ...BASE_PR
 const SK = 'dinnr-hist-v4', SSK = 'dinnr-sess-v2', RK = 'dinnr-recipes-v1', PK = 'dinnr-plan-v1', INGRK = 'dinnr-ingr-v1', DNK = 'dinnr-notes-v1';
 const PK2 = 'dinnr-plan-next-v1', DNK2 = 'dinnr-notes-next-v1', TAGS_KEY = 'dinnr-tags-v1';
 
-const STORES = ['Alle winkels','Carrefour','Lidl','Albert Heijn','Delhaize','Andere'];
+const STORES = ['Alle winkels','Delhaize','Albert Heijn','Lidl','Aldi','Carrefour','Andere'];
+const INGR_CATEGORIES = ['Vlees','Vis','Drank','Zuivel','Groenten','Fruit','Snacks','Varia'];
 
 // ══════════════════════════════════════════
 //  STATE
@@ -806,6 +807,11 @@ function showSyncStatus(ok) {
 async function loadAll() {
   const savedR = storage._local.get(RK);
   recipes = savedR && savedR.length ? savedR : DEFAULT_RECIPES.map(r => ({...r}));
+  // Migrate: clear emojis from all recipes (one-time write if any found)
+  if (recipes.some(r => r.e)) {
+    recipes = recipes.map(r => ({...r, e: ''}));
+    saveRecipes();
+  }
   hist = storage._local.get(SK) || [];
   sess = storage._local.get(SSK) || [];
   // Shared data — await
@@ -1417,6 +1423,7 @@ function openRecipeDetail(id) {
 function renderRecipeDetailSheet(id) {
   const r = recipes.find(x => x.id === id);
   if (!r) return;
+  _ingrAddCat = ''; _ingrAddStore = '';
   const linked = ingredients.filter(i => i.recipes?.some(rr => rr.name === r.name));
   const root = document.getElementById('overlay-root');
   root.innerHTML = `
@@ -1434,7 +1441,7 @@ function renderRecipeDetailSheet(id) {
       </div>
 
       <div style="padding:20px 20px 0">
-        ${r.photo ? `<img src="${r.photo}" style="width:100%;max-height:220px;object-fit:cover;border-radius:var(--r2);margin-bottom:14px">` : `<div style="font-size:48px;margin-bottom:8px">${r.e}</div>`}
+        ${r.photo ? `<img src="${r.photo}" style="width:100%;max-height:220px;object-fit:cover;border-radius:var(--r2);margin-bottom:14px">` : ''}
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
           ${r.kid?`<span class="kid-badge"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Kindvriendelijk</span>`:''}
           ${r.b.map(x=>`<span class="pill pill-warm">${x}</span>`).join('')}
@@ -1464,10 +1471,13 @@ function renderRecipeDetailSheet(id) {
               <div class="ingr-item" id="ingr-item-${item.id}">
                 <div style="flex:1;min-width:0">
                   <div class="ingr-item-name">${item.name}</div>
-                  ${otherRecipes.length ? `<div style="font-size:10px;color:var(--muted);margin-top:1px">Ook in: ${otherRecipes.map(rr=>rr.name).join(', ')}</div>` : ''}
+                  <div style="display:flex;gap:3px;flex-wrap:wrap;margin-top:2px">
+                    ${item.category ? `<span style="font-size:10px;padding:1px 6px;border-radius:999px;background:var(--warm-lt);color:var(--warm2);font-weight:500">${item.category}</span>` : ''}
+                    ${item.store ? `<span class="ingr-item-store">${item.store}</span>` : ''}
+                    ${otherRecipes.length ? `<span style="font-size:10px;color:var(--muted)">Ook in: ${otherRecipes.map(rr=>rr.name).join(', ')}</span>` : ''}
+                  </div>
                 </div>
                 ${displayQty ? `<span class="ingr-item-qty">${displayQty}</span>` : ''}
-                ${item.store ? `<span class="ingr-item-store">${item.store}</span>` : ''}
                 <button class="ingr-item-del" onclick="startEditIngr('${item.id}',${id})" title="Bewerken">
                   <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </button>
@@ -1480,6 +1490,16 @@ function renderRecipeDetailSheet(id) {
             <button class="ingr-add-btn" onclick="addIngrToRecipe(${id})" style="touch-action:manipulation">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
+          </div>
+          <div style="overflow-x:auto;padding:4px 0 2px">
+            <div id="ingr-cat-chips-${id}" style="display:flex;gap:4px;min-width:max-content">
+              ${INGR_CATEGORIES.map(c=>`<button style="padding:4px 10px;border-radius:999px;border:1.5px solid var(--border);background:var(--cream2);font-size:11px;color:var(--muted);cursor:pointer;white-space:nowrap;touch-action:manipulation;transition:all .15s;font-family:'DM Sans',sans-serif" onclick="setIngrAddCat('${c}',${id})">${c}</button>`).join('')}
+            </div>
+          </div>
+          <div style="overflow-x:auto;padding:2px 0 4px">
+            <div id="ingr-store-chips-${id}" style="display:flex;gap:4px;min-width:max-content">
+              ${STORES.slice(1).map(s=>`<button style="padding:4px 10px;border-radius:999px;border:1.5px solid var(--border);background:var(--cream2);font-size:11px;color:var(--muted);cursor:pointer;white-space:nowrap;touch-action:manipulation;transition:all .15s;font-family:'DM Sans',sans-serif" onclick="setIngrAddStore('${s}',${id})">${s}</button>`).join('')}
+            </div>
           </div>
           ${linked.length ? `
           <button class="ingr-to-shop-btn" style="margin-top:10px" onclick="addAllIngrToShop(${id})">
@@ -2211,7 +2231,7 @@ function exportGoogle() {
     const m = plan[di];
     const s = new Date(mon); s.setDate(mon.getDate()+parseInt(di)); s.setHours(18,0,0,0);
     const e = new Date(s); e.setHours(19,0,0,0);
-    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(m.e+' '+m.name)}&dates=${toICS(s)}/${toICS(e)}`;
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(m.name)}&dates=${toICS(s)}/${toICS(e)}`;
     return { day: DAYS[di], name: m.name, url };
   });
   if (!entries.length) { showToast('Geen maaltijden gepland!'); return; }
@@ -2375,6 +2395,7 @@ function shopItemHtml(item) {
       <div class="shop-item-name">${item.name}</div>
       <div class="shop-item-meta">
         ${item.qty?`<span class="shop-item-qty">${item.qty}</span>`:''}
+        ${item.category?`<span style="font-size:10px;padding:1px 6px;border-radius:999px;background:var(--warm-lt);color:var(--warm2);font-weight:500">${item.category}</span>`:''}
         ${(() => { const recs=(item.recipes||[]).filter(r=>r.name); return recs.length===1?`<span class="shop-item-dish">${recs[0].name}</span>`:recs.length>1?`<span class="shop-item-dish">${recs.length} recepten</span>`:''; })()}
         ${item.store?`<span class="shop-item-store">${item.store}</span>`:''}
       </div>
@@ -2474,6 +2495,10 @@ function renderShopItemSheet() {
             <span class="dish-opt-name">${r}</span>
           </div>`).join('')}
         </div>
+        <div style="padding:0 20px;margin-bottom:8px"><label class="form-label">Categorie</label></div>
+        <div class="shop-stores-grid" id="si-cat-grid">
+          ${INGR_CATEGORIES.map(c => `<button class="store-chip ${(_si.category||'')=== c?'on':''}" onclick="selectSiCat('${c}')">${c}</button>`).join('')}
+        </div>
         <div style="padding:0 20px;margin-bottom:8px"><label class="form-label">Winkel</label></div>
         <div class="shop-stores-grid">
           ${STORES.slice(1).map(s => `<button class="store-chip ${_si.store===s?'on':''}" onclick="selectSiStore('${s}')">${s}</button>`).join('')}
@@ -2499,6 +2524,10 @@ function selectSiRecipe(r) {
   _si.recipe = _si.recipe === r ? '' : r;
   document.querySelectorAll('#si-recipe-list .dish-opt').forEach(el => el.classList.toggle('on', el.dataset.recipe === _si.recipe));
 }
+function selectSiCat(c) {
+  _si.category = (_si.category||'') === c ? '' : c;
+  document.querySelectorAll('#si-cat-grid .store-chip').forEach(el => el.classList.toggle('on', el.textContent.trim() === _si.category));
+}
 function selectSiStore(s) {
   _si.store = _si.store === s ? '' : s;
   document.querySelectorAll('.shop-stores-grid .store-chip').forEach(el => el.classList.toggle('on', el.textContent.trim() === _si.store));
@@ -2514,11 +2543,12 @@ function saveShopItem() {
     if (qty) item.qty = qty;
     if (_si.recipe) item.recipe = _si.recipe;
     if (_si.store) item.store = _si.store;
+    if (_si.category) item.category = _si.category;
     if (item.onList) { showToast(`${item.name} staat al op de lijst`); closeOverlay(); return; }
     item.onList = true;
     item.checked = false;
   } else {
-    item = makeIngredient({ name, qty, recipe: _si.recipe, store: _si.store, onList: true });
+    item = makeIngredient({ name, qty, recipe: _si.recipe, store: _si.store, category: _si.category, onList: true });
     ingredients.unshift(item);
   }
   saveIngredients();
@@ -2762,13 +2792,15 @@ function addIngrToRecipe(recipeId) {
   const q = name.toLowerCase();
   let item = ingredients.find(i => i.name.toLowerCase() === q);
   if (!item) {
-    item = makeIngredient({ name, recipes: [{ name: r.name, qty }] });
+    item = makeIngredient({ name, recipes: [{ name: r.name, qty }], category: _ingrAddCat, store: _ingrAddStore });
     ingredients.unshift(item);
   } else {
     if (!item.recipes) item.recipes = [];
     const link = item.recipes.find(rr => rr.name === r.name);
     if (link) { if (qty) link.qty = qty; }
     else item.recipes.push({ name: r.name, qty });
+    if (_ingrAddCat) item.category = _ingrAddCat;
+    if (_ingrAddStore) item.store = _ingrAddStore;
   }
   saveIngredients();
   nameEl.value = '';
@@ -2810,9 +2842,42 @@ function startEditIngr(itemId, recipeId) {
     <button class="ingr-add-btn" onclick="saveIngrEdit('${itemId}',${recipeId})" style="touch-action:manipulation">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </button>
-    <div style="width:100%;text-align:right;padding-top:4px">
+    <div style="width:100%;overflow-x:auto;padding:6px 0 2px">
+      <div id="edit-cat-chips-${itemId}" style="display:flex;gap:4px;min-width:max-content">
+        ${INGR_CATEGORIES.map(c=>`<button style="padding:4px 10px;border-radius:999px;border:1.5px solid ${c===item.category?'var(--warm)':'var(--border)'};background:${c===item.category?'var(--warm-lt)':'var(--cream2)'};color:${c===item.category?'var(--warm2)':'var(--muted)'};font-size:11px;cursor:pointer;white-space:nowrap;touch-action:manipulation;transition:all .15s;font-family:'DM Sans',sans-serif" onclick="toggleEditCat('${c}','${itemId}')">${c}</button>`).join('')}
+      </div>
+    </div>
+    <div style="width:100%;overflow-x:auto;padding:2px 0 4px">
+      <div id="edit-store-chips-${itemId}" style="display:flex;gap:4px;min-width:max-content">
+        ${STORES.slice(1).map(s=>`<button style="padding:4px 10px;border-radius:999px;border:1.5px solid ${s===item.store?'var(--sky)':'var(--border)'};background:${s===item.store?'var(--sky-lt)':'var(--cream2)'};color:${s===item.store?'var(--sky)':'var(--muted)'};font-size:11px;cursor:pointer;white-space:nowrap;touch-action:manipulation;transition:all .15s;font-family:'DM Sans',sans-serif" onclick="toggleEditStore('${s}','${itemId}')">${s}</button>`).join('')}
+      </div>
+    </div>
+    <div style="width:100%;text-align:right;padding-top:2px">
       <button onclick="removeIngrFromRecipe('${itemId}',${recipeId})" style="background:none;border:none;font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;padding:4px;touch-action:manipulation">Verwijderen</button>
     </div>`;
+}
+
+function toggleEditCat(cat, itemId) {
+  const item = ingredients.find(i => i.id === itemId);
+  if (!item) return;
+  item.category = item.category === cat ? '' : cat;
+  document.querySelectorAll(`#edit-cat-chips-${itemId} button`).forEach(b => {
+    const sel = b.textContent.trim() === item.category;
+    b.style.borderColor = sel ? 'var(--warm)' : 'var(--border)';
+    b.style.background = sel ? 'var(--warm-lt)' : 'var(--cream2)';
+    b.style.color = sel ? 'var(--warm2)' : 'var(--muted)';
+  });
+}
+function toggleEditStore(store, itemId) {
+  const item = ingredients.find(i => i.id === itemId);
+  if (!item) return;
+  item.store = item.store === store ? '' : store;
+  document.querySelectorAll(`#edit-store-chips-${itemId} button`).forEach(b => {
+    const sel = b.textContent.trim() === item.store;
+    b.style.borderColor = sel ? 'var(--sky)' : 'var(--border)';
+    b.style.background = sel ? 'var(--sky-lt)' : 'var(--cream2)';
+    b.style.color = sel ? 'var(--sky)' : 'var(--muted)';
+  });
 }
 
 function saveIngrEdit(itemId, recipeId) {
@@ -2853,6 +2918,19 @@ function addIngredientForMeal(id, name) { closeOverlay(); openAddShopItemForReci
 function openAddShopItemForDish(name) { openAddShopItemForRecipe(name); }
 
 // Helper
+let _ingrAddCat = '', _ingrAddStore = '';
+
+function setIngrAddCat(cat, id) {
+  _ingrAddCat = _ingrAddCat === cat ? '' : cat;
+  document.querySelectorAll(`#ingr-cat-chips-${id} button`).forEach(b =>
+    b.classList.toggle('on', b.textContent.trim() === _ingrAddCat));
+}
+function setIngrAddStore(store, id) {
+  _ingrAddStore = _ingrAddStore === store ? '' : store;
+  document.querySelectorAll(`#ingr-store-chips-${id} button`).forEach(b =>
+    b.classList.toggle('on', b.textContent.trim() === _ingrAddStore));
+}
+
 function makeIngredient(props) {
   // recipes: [{ name, qty }] — per-recipe links with individual quantities
   const recipes = props.recipes || (props.recipe ? [{ name: props.recipe, qty: props.qty || '' }] : []);
@@ -2861,6 +2939,7 @@ function makeIngredient(props) {
     name: props.name || '',
     qty: props.qty || '',
     recipes,
+    category: props.category || '',
     store: props.store || '',
     onList: props.onList || false,
     checked: false,
