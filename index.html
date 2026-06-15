@@ -730,7 +730,7 @@ let customTags = [];
 function getAllTags() { return [...BASE_CATEGORY_TAGS, ...customTags, ...BASE_PREP_TAGS]; }
 
 const SK = 'dinnr-hist-v4', SSK = 'dinnr-sess-v2', RK = 'dinnr-recipes-v1', PK = 'dinnr-plan-v1', INGRK = 'dinnr-ingr-v1', DNK = 'dinnr-notes-v1';
-const PK2 = 'dinnr-plan-next-v1', DNK2 = 'dinnr-notes-next-v1', TAGS_KEY = 'dinnr-tags-v1';
+const PK2 = 'dinnr-plan-next-v1', DNK2 = 'dinnr-notes-next-v1', TAGS_KEY = 'dinnr-tags-v1', WSK = 'dinnr-week-stamp';
 
 const STORES = ['Alle winkels','Delhaize','Albert Heijn','Lidl','Aldi','Carrefour','Andere'];
 const INGR_CATEGORIES = ['Vlees','Vis','Drank','Zuivel','Groenten','Fruit','Snacks','Varia'];
@@ -823,6 +823,18 @@ async function loadAll() {
     }
     return i;
   }).filter(i => !i.promo || i.onList); // promo items that aren't on the list anymore get purged
+  // Week rollover: if a new week has started since last open, promote next→this and clear next
+  const currentWeekKey = wkey();
+  const storedWeekKey = storage._local.get(WSK);
+  if (storedWeekKey && storedWeekKey !== currentWeekKey) {
+    const nextPlanData = await storage.get(PK2) || {};
+    const nextNotesData = storage._local.get(DNK2) || {};
+    await storage.set(PK, nextPlanData);
+    await storage.set(PK2, {});
+    storage._local.set(DNK, nextNotesData);
+    storage._local.set(DNK2, {});
+  }
+  storage._local.set(WSK, currentWeekKey);
   const rawPlan = await storage.get(PK) || {};
   const np = {};
   Object.keys(rawPlan).forEach(k => { if (rawPlan[k]) np[parseInt(k)] = rawPlan[k]; });
@@ -931,6 +943,7 @@ function todayDayIndex() {
 }
 
 function renderMenu() {
+  updateWeekTabs();
   const g = document.getElementById('week-grid');
   g.innerHTML = '';
   const todayDi = activeWeekOffset === 0 ? todayDayIndex() : -1;
@@ -2204,6 +2217,20 @@ function monday(ts) {
 }
 function wkey(ts) { const m = monday(ts); return `${m.getFullYear()}-${m.getMonth()+1}-${m.getDate()}`; }
 function wlabel(ts) { const m = monday(ts); return `${m.getDate()}/${m.getMonth()+1}/${m.getFullYear()}`; }
+function getISOWeek(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+function updateWeekTabs() {
+  const thisMonday = monday();
+  const nextMonday = new Date(thisMonday); nextMonday.setDate(thisMonday.getDate() + 7);
+  const tabs = document.querySelectorAll('.week-tab');
+  if (tabs[0]) tabs[0].textContent = `Week ${getISOWeek(thisMonday)}`;
+  if (tabs[1]) tabs[1].textContent = `Week ${getISOWeek(nextMonday)}`;
+}
 function recentIds() {
   const cut = Date.now() - 14 * 24 * 60 * 60 * 1000;
   return new Set(hist.filter(h => h.ts > cut).map(h => h.id));
@@ -2387,7 +2414,7 @@ function quickAddFrequent(id) {
 
 function shopItemHtml(item) {
   const nameE = item.name.replace(/'/g, "\\'");
-  return `<div class="shop-item ${item.checked?'checked':''}" onclick="toggleShopItem('${item.id}')">
+  return `<div class="shop-item ${item.checked?'checked':''}" id="shop-item-${item.id}" onclick="toggleShopItem('${item.id}')">
     <div class="shop-check">
       ${item.checked?`<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`:''}
     </div>
@@ -2400,10 +2427,84 @@ function shopItemHtml(item) {
         ${item.store?`<span class="shop-item-store">${item.store}</span>`:''}
       </div>
     </div>
-    <button class="shop-item-del" onclick="event.stopPropagation();removeFromList('${item.id}')">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <button class="shop-item-del" onclick="event.stopPropagation();startEditShopItem('${item.id}')">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
     </button>
   </div>`;
+}
+
+function startEditShopItem(id) {
+  const item = ingredients.find(i => i.id === id);
+  const row = document.getElementById('shop-item-' + id);
+  if (!item || !row) return;
+  row.removeAttribute('onclick');
+  row.style.flexWrap = 'wrap';
+  row.style.alignItems = 'flex-start';
+  row.innerHTML = `
+    <div style="flex:1;min-width:0;display:flex;gap:6px;align-items:center;padding:4px 0">
+      <input style="flex:1;min-width:0;border:1.5px solid var(--warm);border-radius:var(--r);padding:6px 10px;font-size:13px;background:var(--cream);font-family:'DM Sans',sans-serif" id="edit-si-name-${id}" value="${item.name.replace(/"/g,'&quot;')}">
+      <input style="width:72px;border:1.5px solid var(--warm);border-radius:var(--r);padding:6px 8px;font-size:13px;background:var(--cream);font-family:'DM Sans',sans-serif" id="edit-si-qty-${id}" value="${(item.qty||'').replace(/"/g,'&quot;')}" placeholder="Hoev.">
+      <button style="width:34px;height:34px;border-radius:var(--r);background:var(--warm);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;touch-action:manipulation" onclick="saveShopItemEdit('${id}')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+    </div>
+    <div style="width:100%;overflow-x:auto;padding:6px 0 2px">
+      <div id="edit-si-cat-${id}" style="display:flex;gap:4px;min-width:max-content">
+        ${INGR_CATEGORIES.map(c=>`<button style="padding:4px 10px;border-radius:999px;border:1.5px solid ${c===item.category?'var(--warm)':'var(--border)'};background:${c===item.category?'var(--warm-lt)':'var(--cream2)'};color:${c===item.category?'var(--warm2)':'var(--muted)'};font-size:11px;cursor:pointer;white-space:nowrap;touch-action:manipulation;transition:all .15s;font-family:'DM Sans',sans-serif" onclick="toggleEditSiCat('${c}','${id}')">${c}</button>`).join('')}
+      </div>
+    </div>
+    <div style="width:100%;overflow-x:auto;padding:2px 0 4px">
+      <div id="edit-si-store-${id}" style="display:flex;gap:4px;min-width:max-content">
+        ${STORES.slice(1).map(s=>`<button style="padding:4px 10px;border-radius:999px;border:1.5px solid ${s===item.store?'var(--sky)':'var(--border)'};background:${s===item.store?'var(--sky-lt)':'var(--cream2)'};color:${s===item.store?'var(--sky)':'var(--muted)'};font-size:11px;cursor:pointer;white-space:nowrap;touch-action:manipulation;transition:all .15s;font-family:'DM Sans',sans-serif" onclick="toggleEditSiStore('${s}','${id}')">${s}</button>`).join('')}
+      </div>
+    </div>
+    <div style="width:100%;display:flex;justify-content:space-between;align-items:center;padding-top:2px">
+      <button onclick="cancelEditShopItem('${id}')" style="background:none;border:none;font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;padding:4px;touch-action:manipulation">Annuleren</button>
+      <button onclick="removeFromList('${id}')" style="background:none;border:none;font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;padding:4px;touch-action:manipulation">Van lijst verwijderen</button>
+    </div>`;
+}
+
+function cancelEditShopItem(id) {
+  renderShopList();
+}
+
+function toggleEditSiCat(cat, id) {
+  const item = ingredients.find(i => i.id === id);
+  if (!item) return;
+  item.category = item.category === cat ? '' : cat;
+  document.querySelectorAll(`#edit-si-cat-${id} button`).forEach(b => {
+    const sel = b.textContent.trim() === item.category;
+    b.style.borderColor = sel ? 'var(--warm)' : 'var(--border)';
+    b.style.background = sel ? 'var(--warm-lt)' : 'var(--cream2)';
+    b.style.color = sel ? 'var(--warm2)' : 'var(--muted)';
+  });
+}
+
+function toggleEditSiStore(store, id) {
+  const item = ingredients.find(i => i.id === id);
+  if (!item) return;
+  item.store = item.store === store ? '' : store;
+  document.querySelectorAll(`#edit-si-store-${id} button`).forEach(b => {
+    const sel = b.textContent.trim() === item.store;
+    b.style.borderColor = sel ? 'var(--sky)' : 'var(--border)';
+    b.style.background = sel ? 'var(--sky-lt)' : 'var(--cream2)';
+    b.style.color = sel ? 'var(--sky)' : 'var(--muted)';
+  });
+}
+
+function saveShopItemEdit(id) {
+  const item = ingredients.find(i => i.id === id);
+  if (!item) return;
+  const nameEl = document.getElementById('edit-si-name-' + id);
+  const qtyEl = document.getElementById('edit-si-qty-' + id);
+  if (!nameEl) return;
+  const newName = nameEl.value.trim();
+  if (!newName) { showToast('Vul een naam in'); return; }
+  item.name = newName;
+  if (qtyEl) item.qty = qtyEl.value.trim();
+  saveIngredients();
+  renderShopList();
+  showToast(`${item.name} opgeslagen`);
 }
 
 function toggleShopItem(id) {
