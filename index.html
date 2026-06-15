@@ -730,7 +730,7 @@ let customTags = [];
 function getAllTags() { return [...BASE_CATEGORY_TAGS, ...customTags, ...BASE_PREP_TAGS]; }
 
 const SK = 'dinnr-hist-v4', SSK = 'dinnr-sess-v2', RK = 'dinnr-recipes-v1', PK = 'dinnr-plan-v1', INGRK = 'dinnr-ingr-v1', DNK = 'dinnr-notes-v1';
-const PK2 = 'dinnr-plan-next-v1', DNK2 = 'dinnr-notes-next-v1', TAGS_KEY = 'dinnr-tags-v1';
+const PK2 = 'dinnr-plan-next-v1', DNK2 = 'dinnr-notes-next-v1', TAGS_KEY = 'dinnr-tags-v1', WSK = 'dinnr-week-stamp';
 
 const STORES = ['Alle winkels','Delhaize','Albert Heijn','Lidl','Aldi','Carrefour','Andere'];
 const INGR_CATEGORIES = ['Vlees','Vis','Drank','Zuivel','Groenten','Fruit','Snacks','Varia'];
@@ -823,6 +823,18 @@ async function loadAll() {
     }
     return i;
   }).filter(i => !i.promo || i.onList); // promo items that aren't on the list anymore get purged
+  // Week rollover: if a new week has started since last open, promote next→this and clear next
+  const currentWeekKey = wkey();
+  const storedWeekKey = storage._local.get(WSK);
+  if (storedWeekKey && storedWeekKey !== currentWeekKey) {
+    const nextPlanData = await storage.get(PK2) || {};
+    const nextNotesData = storage._local.get(DNK2) || {};
+    await storage.set(PK, nextPlanData);
+    await storage.set(PK2, {});
+    storage._local.set(DNK, nextNotesData);
+    storage._local.set(DNK2, {});
+  }
+  storage._local.set(WSK, currentWeekKey);
   const rawPlan = await storage.get(PK) || {};
   const np = {};
   Object.keys(rawPlan).forEach(k => { if (rawPlan[k]) np[parseInt(k)] = rawPlan[k]; });
@@ -931,6 +943,7 @@ function todayDayIndex() {
 }
 
 function renderMenu() {
+  updateWeekTabs();
   const g = document.getElementById('week-grid');
   g.innerHTML = '';
   const todayDi = activeWeekOffset === 0 ? todayDayIndex() : -1;
@@ -2204,6 +2217,20 @@ function monday(ts) {
 }
 function wkey(ts) { const m = monday(ts); return `${m.getFullYear()}-${m.getMonth()+1}-${m.getDate()}`; }
 function wlabel(ts) { const m = monday(ts); return `${m.getDate()}/${m.getMonth()+1}/${m.getFullYear()}`; }
+function getISOWeek(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+function updateWeekTabs() {
+  const thisMonday = monday();
+  const nextMonday = new Date(thisMonday); nextMonday.setDate(thisMonday.getDate() + 7);
+  const tabs = document.querySelectorAll('.week-tab');
+  if (tabs[0]) tabs[0].textContent = `Week ${getISOWeek(thisMonday)}`;
+  if (tabs[1]) tabs[1].textContent = `Week ${getISOWeek(nextMonday)}`;
+}
 function recentIds() {
   const cut = Date.now() - 14 * 24 * 60 * 60 * 1000;
   return new Set(hist.filter(h => h.ts > cut).map(h => h.id));
