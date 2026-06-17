@@ -19,6 +19,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.383.0/umd/lucide.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -465,6 +467,12 @@
       <div class="logo">Dinn<em>r</em></div>
       <div class="ph-right">
         <div id="sync-dot" title="Laden…" style="width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background .4s;cursor:pointer" onclick="syncNow()"></div>
+        <button onclick="openSettings()" style="background:none;border:none;padding:4px;cursor:pointer;display:flex;align-items:center;color:var(--muted);touch-action:manipulation" title="Synchronisatie">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button onclick="openSettings()" style="background:none;border:none;padding:4px;cursor:pointer;display:flex;align-items:center;color:var(--muted);touch-action:manipulation" title="Instellingen">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
       </div>
     </div>
 
@@ -731,6 +739,10 @@ function getAllTags() { return [...BASE_CATEGORY_TAGS, ...customTags, ...BASE_PR
 
 const SK = 'dinnr-hist-v4', SSK = 'dinnr-sess-v2', RK = 'dinnr-recipes-v1', PK = 'dinnr-plan-v1', INGRK = 'dinnr-ingr-v1', DNK = 'dinnr-notes-v1';
 const PK2 = 'dinnr-plan-next-v1', DNK2 = 'dinnr-notes-next-v1', TAGS_KEY = 'dinnr-tags-v1', WSK = 'dinnr-week-stamp';
+const LK = 'dinnr-locked-v1', LK2 = 'dinnr-locked-next-v1';
+const HOUSEHOLD_KEY = 'dinnr-household-id', FB_CONFIG_KEY = 'dinnr-firebase-config';
+// All keys synced to Firebase (excludes browse history and session)
+const SYNC_KEYS = [RK, PK, PK2, INGRK, DNK, DNK2, TAGS_KEY, LK, LK2];
 
 const STORES = ['Alle winkels','Delhaize','Albert Heijn','Lidl','Aldi','Carrefour','Andere'];
 const INGR_CATEGORIES = ['Vlees','Vis','Drank','Zuivel','Groenten','Fruit','Snacks','Varia'];
@@ -750,25 +762,19 @@ let dayNotes = {}, dayNotesNext = {};
 let planNext = {};
 let activeWeekOffset = 0; // 0 = this week, 1 = next week
 
-function loadAll() {
-  const saved = storage.get(RK);
-  recipes = saved && saved.length ? saved : DEFAULT_RECIPES.map(r => ({...r}));
-  hist = storage.get(SK) || [];
-  sess = storage.get(SSK) || [];
-  ingredients = storage.get(INGRK) || [];
-  plan = storage.get(PK) || {};
-  const np = {};
-  Object.keys(plan).forEach(k => { if (plan[k]) np[parseInt(k)] = plan[k]; });
-  plan = np;
-  dayNotes = storage._local.get(DNK) || {};
-}
+// ══════════════════════════════════════════
+//  STORAGE — Firebase Realtime Database + localStorage fallback
+// ══════════════════════════════════════════
+let _db = null;
 
-// ══════════════════════════════════════════
-//  STORAGE — shared across devices via artifact storage
-//  Falls back to localStorage when artifact storage unavailable
-// ══════════════════════════════════════════
-const SHARED_KEYS = new Set([PK, INGRK]); // menu + ingredients synced cross-device
-const LOCAL_KEYS  = new Set([SK, SSK, RK]); // history/sessions/recipes stay local
+function getHouseholdId() {
+  let id = localStorage.getItem(HOUSEHOLD_KEY);
+  if (!id) {
+    id = 'dinnr' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    localStorage.setItem(HOUSEHOLD_KEY, id);
+  }
+  return id;
+}
 
 const storage = {
   _local: {
@@ -777,26 +783,28 @@ const storage = {
     delete: k => { try { localStorage.removeItem(k); } catch(e) {} }
   },
   get: async (k) => {
-    if (SHARED_KEYS.has(k) && window.storage) {
+    if (_db && SYNC_KEYS.includes(k)) {
       try {
-        const r = await window.storage.get(k, true);
-        return r ? JSON.parse(r.value) : null;
-      } catch(e) { return storage._local.get(k); }
+        const snap = await _db.ref(`households/${getHouseholdId()}/${k}`).once('value');
+        const val = snap.val();
+        if (val !== null) { storage._local.set(k, val); return val; }
+      } catch(e) {}
     }
     return storage._local.get(k);
   },
   set: async (k, v) => {
-    storage._local.set(k, v); // always write locally too
-    if (SHARED_KEYS.has(k) && window.storage) {
-      try { await window.storage.set(k, JSON.stringify(v), true); } catch(e) {}
+    storage._local.set(k, v);
+    if (_db && SYNC_KEYS.includes(k)) {
+      try { await _db.ref(`households/${getHouseholdId()}/${k}`).set(v); showSyncStatus(true); }
+      catch(e) { showSyncStatus(false); }
     }
   },
-  delete: (k) => {
+  delete: k => {
     storage._local.delete(k);
+    if (_db && SYNC_KEYS.includes(k)) _db.ref(`households/${getHouseholdId()}/${k}`).remove().catch(() => {});
   }
 };
 
-// Sync indicator
 function showSyncStatus(ok) {
   const el = document.getElementById('sync-dot');
   if (!el) return;
@@ -804,7 +812,53 @@ function showSyncStatus(ok) {
   el.style.background = ok ? '#3B6E4A' : '#C2602A';
 }
 
+let _reloadPending = false;
+function scheduleRemoteReload() {
+  if (_reloadPending) return;
+  _reloadPending = true;
+  setTimeout(async () => {
+    _reloadPending = false;
+    await loadAll();
+    const page = PAGES?.find(p => !document.getElementById('page-'+p)?.classList.contains('gone'));
+    if (page === 'menu') renderMenu();
+    else if (page === 'shop') renderShopPage();
+    else if (page === 'recipes') renderRecipes();
+    else if (page === 'stats') renderStats();
+  }, 1200);
+}
+
+function initFirebase() {
+  const raw = localStorage.getItem(FB_CONFIG_KEY);
+  if (!raw) { showSyncStatus(false); return; }
+  try {
+    const config = JSON.parse(raw);
+    if (!firebase.apps.length) firebase.initializeApp(config);
+    _db = firebase.database();
+    attachRealtimeListeners();
+    showSyncStatus(true);
+  } catch(e) {
+    console.warn('Firebase init failed:', e);
+    showSyncStatus(false);
+  }
+}
+
+function attachRealtimeListeners() {
+  if (!_db) return;
+  const hid = getHouseholdId();
+  const initialFires = new Set(SYNC_KEYS);
+  SYNC_KEYS.forEach(key => {
+    _db.ref(`households/${hid}/${key}`).on('value', snap => {
+      if (initialFires.has(key)) { initialFires.delete(key); return; }
+      const val = snap.val();
+      if (val === null) return;
+      storage._local.set(key, val);
+      scheduleRemoteReload();
+    });
+  });
+}
+
 async function loadAll() {
+  initFirebase();
   const savedR = storage._local.get(RK);
   recipes = savedR && savedR.length ? savedR : DEFAULT_RECIPES.map(r => ({...r}));
   // Migrate: clear emojis from all recipes (one-time write if any found)
@@ -828,11 +882,14 @@ async function loadAll() {
   const storedWeekKey = storage._local.get(WSK);
   if (storedWeekKey && storedWeekKey !== currentWeekKey) {
     const nextPlanData = await storage.get(PK2) || {};
-    const nextNotesData = storage._local.get(DNK2) || {};
+    const nextNotesData = await storage.get(DNK2) || {};
+    const nextLockedData = await storage.get(LK2) || [];
     await storage.set(PK, nextPlanData);
     await storage.set(PK2, {});
-    storage._local.set(DNK, nextNotesData);
-    storage._local.set(DNK2, {});
+    await storage.set(DNK, nextNotesData);
+    await storage.set(DNK2, {});
+    await storage.set(LK, nextLockedData);
+    await storage.set(LK2, []);
   }
   storage._local.set(WSK, currentWeekKey);
   const rawPlan = await storage.get(PK) || {};
@@ -843,21 +900,26 @@ async function loadAll() {
   const np2 = {};
   Object.keys(rawPlanNext).forEach(k => { if (rawPlanNext[k]) np2[parseInt(k)] = rawPlanNext[k]; });
   planNext = np2;
-  dayNotes = storage._local.get(DNK) || {};
-  dayNotesNext = storage._local.get(DNK2) || {};
-  customTags = storage._local.get(TAGS_KEY) || [];
-  const hasShared = !!window.storage;
-  showSyncStatus(hasShared);
+  dayNotes = await storage.get(DNK) || {};
+  dayNotesNext = await storage.get(DNK2) || {};
+  customTags = await storage.get(TAGS_KEY) || [];
+  lockedDays = new Set(await storage.get(LK) || []);
+  lockedDaysNext = new Set(await storage.get(LK2) || []);
 }
 
 function saveRecipes() { storage._local.set(RK, recipes); }
+function saveLockedDays() {
+  const key = activeWeekOffset === 0 ? LK : LK2;
+  const data = [...(activeWeekOffset === 0 ? lockedDays : lockedDaysNext)];
+  storage.set(key, data);
+}
 function saveHist()    { storage._local.set(SK, hist); }
 function saveSess()    { storage._local.set(SSK, sess); }
 function savePlanStorage() {
   const key = activeWeekOffset === 0 ? PK : PK2;
   storage.set(key, plan).then(() => showSyncStatus(true)).catch(() => showSyncStatus(false));
 }
-function saveCustomTags() { storage._local.set(TAGS_KEY, customTags); }
+function saveCustomTags() { storage.set(TAGS_KEY, customTags); }
 function saveIngredients() { storage.set(INGRK, ingredients).then(() => showSyncStatus(true)).catch(() => showSyncStatus(false)); updateShopBadge(); }
 
 async function syncNow() {
@@ -866,6 +928,77 @@ async function syncNow() {
   const page = PAGES.find(p => !document.getElementById('page-'+p)?.classList.contains('gone'));
   if (page) showPage(page);
   showToast('Gesynchroniseerd');
+}
+
+function openSettings() {
+  const hid = getHouseholdId();
+  const hasConfig = !!localStorage.getItem(FB_CONFIG_KEY);
+  const root = document.getElementById('overlay-root');
+  root.innerHTML = `
+    <div style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;justify-content:flex-end;animation:fadeInUp .25s ease">
+      <div style="flex:1;background:rgba(28,25,23,.5)" onclick="closeOverlay()"></div>
+      <div class="sheet" style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+24px);max-height:90vh;overflow-y:auto">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Synchronisatie</div>
+        <div style="padding:0 20px 16px">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5">Verbind met Firebase om de app te delen. Alle data wordt dan real-time gesynchroniseerd op alle toestellen.</div>
+          <div style="margin-bottom:20px">
+            <div class="form-label" style="margin-bottom:6px">Stap 1 — Firebase config</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5">
+              Ga naar <strong>console.firebase.google.com</strong> → nieuw project → web app toevoegen → kopieer het config object en plak het hier:
+            </div>
+            <textarea id="fb-config-input" style="width:100%;box-sizing:border-box;height:110px;border:1.5px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;font-family:monospace;background:var(--cream2);resize:none" placeholder='{ "apiKey": "...", "databaseURL": "...", ... }'>${hasConfig ? localStorage.getItem(FB_CONFIG_KEY) : ''}</textarea>
+            <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="saveFirebaseConfig()">Verbinden</button>
+            ${hasConfig ? '<div style="font-size:11px;color:#3B6E4A;margin-top:6px;text-align:center">&#10003; Firebase is geconfigureerd</div>' : ''}
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px">
+            <div class="form-label" style="margin-bottom:6px">Stap 2 — Huishoud-code</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">Dit is jouw unieke code. Geef dit aan je partner — zij vult het in onder "Ander huishoud" op haar toestel.</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:12px;font-weight:600;font-family:monospace;word-break:break-all">${hid}</div>
+              <button class="btn btn-outline" style="flex-shrink:0" onclick="navigator.clipboard.writeText('${hid}').then(()=>showToast('Code gekopieerd'))">Kopieer</button>
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:16px">
+            <div class="form-label" style="margin-bottom:6px">Ander huishoud gebruiken</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Plak de code van je partner om dezelfde data te gebruiken:</div>
+            <div style="display:flex;gap:8px">
+              <input class="form-input" id="join-code-input" placeholder="dinnr..." style="flex:1;margin-bottom:0">
+              <button class="btn btn-outline" style="flex-shrink:0" onclick="joinHousehold()">Verbinden</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
+}
+
+function saveFirebaseConfig() {
+  const raw = document.getElementById('fb-config-input')?.value.trim();
+  if (!raw) { showToast('Plak je Firebase config'); return; }
+  try { JSON.parse(raw); } catch(e) { showToast('Ongeldige JSON'); return; }
+  localStorage.setItem(FB_CONFIG_KEY, raw);
+  _db = null;
+  if (typeof firebase !== 'undefined' && firebase.apps.length) {
+    firebase.apps.forEach(app => app.delete());
+  }
+  initFirebase();
+  closeOverlay();
+  showToast('Firebase verbonden!');
+  loadAll().then(() => { renderMenu(); });
+}
+
+function joinHousehold() {
+  const code = document.getElementById('join-code-input')?.value.trim();
+  if (!code) { showToast('Vul een code in'); return; }
+  if (!localStorage.getItem(FB_CONFIG_KEY)) { showToast('Configureer eerst Firebase (stap 1)'); return; }
+  if (!confirm('Overschakelen naar dit huishoud? Lokale data wordt vervangen door die van het nieuwe huishoud.')) return;
+  localStorage.setItem(HOUSEHOLD_KEY, code);
+  if (_db) SYNC_KEYS.forEach(k => _db.ref('households/' + code + '/' + k).off());
+  attachRealtimeListeners();
+  closeOverlay();
+  showToast('Verbonden! Data wordt geladen...');
+  loadAll().then(() => { renderMenu(); });
 }
 
 // loadAll() is called in INIT below after definition
@@ -1187,12 +1320,12 @@ function setDayNote(di, note) {
   } else {
     delete dayNotes[di];
   }
-  storage._local.set(activeWeekOffset === 0 ? DNK : DNK2, dayNotes);
+  storage.set(activeWeekOffset === 0 ? DNK : DNK2, dayNotes);
 }
 
 function clearDayNote(di) {
   delete dayNotes[di];
-  storage._local.set(activeWeekOffset === 0 ? DNK : DNK2, dayNotes);
+  storage.set(activeWeekOffset === 0 ? DNK : DNK2, dayNotes);
   renderMenu();
 }
 
@@ -1207,6 +1340,7 @@ function clearMenu() {
 function toggleLockDay(di) {
   if (lockedDays.has(di)) lockedDays.delete(di);
   else lockedDays.add(di);
+  saveLockedDays();
   renderMenu();
 }
 
