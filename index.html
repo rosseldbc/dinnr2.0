@@ -1626,7 +1626,7 @@ function renderRecipeDetailSheet(id) {
             : `<div style="font-size:13px;color:var(--muted);padding:6px 0 4px">Nog geen ingrediënten gekoppeld.</div>`}
           </div>
           <div class="ingr-add-row" id="ingr-add-row-${id}">
-            <input class="ingr-add-input" id="ingr-name-${id}" placeholder="Ingrediënt…" onkeydown="if(event.key==='Enter')addIngrToRecipe(${id})">
+            <input class="ingr-add-input" id="ingr-name-${id}" placeholder="Ingrediënt…" onkeydown="if(event.key==='Enter')addIngrToRecipe(${id})" oninput="prefillIngrChips(${id})">
             <input class="ingr-add-qty" id="ingr-qty-${id}" placeholder="Hoev." onkeydown="if(event.key==='Enter')addIngrToRecipe(${id})">
             <button class="ingr-add-btn" onclick="addIngrToRecipe(${id})" style="touch-action:manipulation">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2549,9 +2549,14 @@ function shopItemHtml(item) {
     <div class="shop-item-body">
       <div class="shop-item-name">${item.name}${item.promo?` <span style="font-size:9px;font-weight:700;letter-spacing:.5px;padding:1px 5px;border-radius:999px;background:#EDE9F8;color:#6B4FA0;vertical-align:middle">PROMO</span>`:''}</div>
       <div class="shop-item-meta">
-        ${item.qty?`<span class="shop-item-qty">${item.qty}</span>`:''}
+        ${(() => {
+          if (item.promo) return item.qty ? `<span class="shop-item-qty">${item.qty}</span>` : '';
+          const recs = (item.recipes||[]).filter(r=>r.name);
+          if (recs.length === 0) return item.qty ? `<span class="shop-item-qty">${item.qty}</span>` : '';
+          if (recs.length === 1) return `${recs[0].qty?`<span class="shop-item-qty">${recs[0].qty}</span>`:''}<span class="shop-item-dish">${recs[0].name}</span>`;
+          return recs.map(r=>`<span style="font-size:10px;padding:1px 7px;border-radius:999px;background:var(--cream3);color:var(--ink2);white-space:nowrap">${r.qty?r.qty+' · ':''}${r.name}</span>`).join('');
+        })()}
         ${item.category?`<span style="font-size:10px;padding:1px 6px;border-radius:999px;background:var(--warm-lt);color:var(--warm2);font-weight:500">${item.category}</span>`:''}
-        ${item.promo?'':`${(() => { const recs=(item.recipes||[]).filter(r=>r.name); return recs.length===1?`<span class="shop-item-dish">${recs[0].name}</span>`:recs.length>1?`<span class="shop-item-dish">${recs.length} recepten</span>`:''; })()}`}
         ${item.store?`<span class="shop-item-store">${item.store}</span>`:''}
       </div>
     </div>
@@ -3178,6 +3183,16 @@ function setIngrAddStore(store, id) {
   _ingrAddStore = _ingrAddStore === store ? '' : store;
   document.querySelectorAll(`#ingr-store-chips-${id} button`).forEach(b =>
     b.classList.toggle('on', b.textContent.trim() === _ingrAddStore));
+}
+function prefillIngrChips(recipeId) {
+  const nameEl = document.getElementById('ingr-name-' + recipeId);
+  if (!nameEl) return;
+  const q = nameEl.value.trim().toLowerCase();
+  const existing = ingredients.find(i => i.name.toLowerCase() === q);
+  if (existing) {
+    if (existing.category && existing.category !== _ingrAddCat) setIngrAddCat(existing.category, recipeId);
+    if (existing.store && existing.store !== _ingrAddStore) setIngrAddStore(existing.store, recipeId);
+  }
 }
 
 function makeIngredient(props) {
