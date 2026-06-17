@@ -827,12 +827,19 @@ function scheduleRemoteReload() {
   }, 1200);
 }
 
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBxRVFgth63t9QJRTpu9-i1UM17YFGcFsM",
+  authDomain: "dinnr-b15ac.firebaseapp.com",
+  databaseURL: "https://dinnr-b15ac-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "dinnr-b15ac",
+  storageBucket: "dinnr-b15ac.firebasestorage.app",
+  messagingSenderId: "744056197209",
+  appId: "1:744056197209:web:45240fc1dd8c0b7954a148"
+};
+
 function initFirebase() {
-  const raw = localStorage.getItem(FB_CONFIG_KEY);
-  if (!raw) { showSyncStatus(false); return; }
   try {
-    const config = JSON.parse(raw);
-    if (!firebase.apps.length) firebase.initializeApp(config);
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     _db = firebase.database();
     attachRealtimeListeners();
     showSyncStatus(true);
@@ -932,39 +939,37 @@ async function syncNow() {
 
 function openSettings() {
   const hid = getHouseholdId();
-  const hasConfig = !!localStorage.getItem(FB_CONFIG_KEY);
   const root = document.getElementById('overlay-root');
   root.innerHTML = `
     <div style="position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;justify-content:flex-end;animation:fadeInUp .25s ease">
       <div style="flex:1;background:rgba(28,25,23,.5)" onclick="closeOverlay()"></div>
       <div class="sheet" style="background:var(--cream);border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom)+24px);max-height:90vh;overflow-y:auto">
         <div class="sheet-handle"></div>
-        <div class="sheet-title">Synchronisatie</div>
+        <div class="sheet-title">Toestellen verbinden</div>
         <div style="padding:0 20px 16px">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5">Verbind met Firebase om de app te delen. Alle data wordt dan real-time gesynchroniseerd op alle toestellen.</div>
-          <div style="margin-bottom:20px">
-            <div class="form-label" style="margin-bottom:6px">Stap 1 — Firebase config</div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5">
-              Ga naar <strong>console.firebase.google.com</strong> → nieuw project → web app toevoegen → kopieer het config object en plak het hier:
-            </div>
-            <textarea id="fb-config-input" style="width:100%;box-sizing:border-box;height:110px;border:1.5px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;font-family:monospace;background:var(--cream2);resize:none" placeholder='{ "apiKey": "...", "databaseURL": "...", ... }'>${hasConfig ? localStorage.getItem(FB_CONFIG_KEY) : ''}</textarea>
-            <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="saveFirebaseConfig()">Verbinden</button>
-            ${hasConfig ? '<div style="font-size:11px;color:#3B6E4A;margin-top:6px;text-align:center">&#10003; Firebase is geconfigureerd</div>' : ''}
+          <div style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5">
+            Alle toestellen in hetzelfde huishoud delen automatisch dezelfde data in real-time.
           </div>
-          <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px">
-            <div class="form-label" style="margin-bottom:6px">Stap 2 — Huishoud-code</div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">Dit is jouw unieke code. Geef dit aan je partner — zij vult het in onder "Ander huishoud" op haar toestel.</div>
+
+          <div style="margin-bottom:20px">
+            <div class="form-label" style="margin-bottom:6px">Jouw huishoud-code</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">
+              Geef deze code aan je partner. Zij vult hem in op haar toestel onder "Verbinden met huishoud".
+            </div>
             <div style="display:flex;gap:8px;align-items:center">
               <div style="flex:1;background:var(--cream2);border:1.5px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:12px;font-weight:600;font-family:monospace;word-break:break-all">${hid}</div>
-              <button class="btn btn-outline" style="flex-shrink:0" onclick="navigator.clipboard.writeText('${hid}').then(()=>showToast('Code gekopieerd'))">Kopieer</button>
+              <button class="btn btn-outline" style="flex-shrink:0" onclick="navigator.clipboard.writeText('${hid}').then(()=>showToast('Code gekopieerd!'))">Kopieer</button>
             </div>
           </div>
+
           <div style="border-top:1px solid var(--border);padding-top:16px">
-            <div class="form-label" style="margin-bottom:6px">Ander huishoud gebruiken</div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Plak de code van je partner om dezelfde data te gebruiken:</div>
+            <div class="form-label" style="margin-bottom:6px">Verbinden met huishoud</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.5">
+              Heb je een code ontvangen? Vul hem hier in om dezelfde data te gebruiken:
+            </div>
             <div style="display:flex;gap:8px">
               <input class="form-input" id="join-code-input" placeholder="dinnr..." style="flex:1;margin-bottom:0">
-              <button class="btn btn-outline" style="flex-shrink:0" onclick="joinHousehold()">Verbinden</button>
+              <button class="btn btn-primary" style="flex-shrink:0" onclick="joinHousehold()">Verbinden</button>
             </div>
           </div>
         </div>
@@ -973,37 +978,12 @@ function openSettings() {
   attachSheetDismiss(document.querySelector('#overlay-root .sheet'));
 }
 
-function saveFirebaseConfig() {
-  let raw = document.getElementById('fb-config-input')?.value.trim();
-  if (!raw) { showToast('Plak je Firebase config'); return; }
-  // Accept both plain JSON and JS object literal (e.g. pasted from Firebase npm tab)
-  const objMatch = raw.match(/\{[\s\S]*\}/);
-  if (objMatch) raw = objMatch[0];
-  let parsed;
-  try { parsed = JSON.parse(raw); } catch(e) {
-    // Try JS object literal with unquoted keys
-    try { parsed = Function('return (' + raw + ')')(); raw = JSON.stringify(parsed); }
-    catch(e2) { showToast('Ongeldige config — gebruik het "Config" tabblad'); return; }
-  }
-  if (!parsed.databaseURL) { showToast('databaseURL ontbreekt — controleer je config'); return; }
-  localStorage.setItem(FB_CONFIG_KEY, raw);
-  _db = null;
-  if (typeof firebase !== 'undefined' && firebase.apps.length) {
-    firebase.apps.forEach(app => app.delete());
-  }
-  initFirebase();
-  closeOverlay();
-  showToast('Firebase verbonden!');
-  loadAll().then(() => { renderMenu(); });
-}
-
 function joinHousehold() {
   const code = document.getElementById('join-code-input')?.value.trim();
   if (!code) { showToast('Vul een code in'); return; }
-  if (!localStorage.getItem(FB_CONFIG_KEY)) { showToast('Configureer eerst Firebase (stap 1)'); return; }
-  if (!confirm('Overschakelen naar dit huishoud? Lokale data wordt vervangen door die van het nieuwe huishoud.')) return;
+  if (!confirm('Overschakelen naar dit huishoud? Jouw huidige data wordt vervangen door die van het nieuwe huishoud.')) return;
+  if (_db) SYNC_KEYS.forEach(k => _db.ref('households/' + getHouseholdId() + '/' + k).off());
   localStorage.setItem(HOUSEHOLD_KEY, code);
-  if (_db) SYNC_KEYS.forEach(k => _db.ref('households/' + code + '/' + k).off());
   attachRealtimeListeners();
   closeOverlay();
   showToast('Verbonden! Data wordt geladen...');
