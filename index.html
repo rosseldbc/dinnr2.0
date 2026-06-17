@@ -974,9 +974,18 @@ function openSettings() {
 }
 
 function saveFirebaseConfig() {
-  const raw = document.getElementById('fb-config-input')?.value.trim();
+  let raw = document.getElementById('fb-config-input')?.value.trim();
   if (!raw) { showToast('Plak je Firebase config'); return; }
-  try { JSON.parse(raw); } catch(e) { showToast('Ongeldige JSON'); return; }
+  // Accept both plain JSON and JS object literal (e.g. pasted from Firebase npm tab)
+  const objMatch = raw.match(/\{[\s\S]*\}/);
+  if (objMatch) raw = objMatch[0];
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch(e) {
+    // Try JS object literal with unquoted keys
+    try { parsed = Function('return (' + raw + ')')(); raw = JSON.stringify(parsed); }
+    catch(e2) { showToast('Ongeldige config — gebruik het "Config" tabblad'); return; }
+  }
+  if (!parsed.databaseURL) { showToast('databaseURL ontbreekt — controleer je config'); return; }
   localStorage.setItem(FB_CONFIG_KEY, raw);
   _db = null;
   if (typeof firebase !== 'undefined' && firebase.apps.length) {
