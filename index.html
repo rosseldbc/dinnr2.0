@@ -999,6 +999,9 @@ function joinHousehold() {
   if (!confirm('Overschakelen naar dit huishoud? Jouw huidige data wordt vervangen door die van het nieuwe huishoud.')) return;
   if (_db) SYNC_KEYS.forEach(k => _db.ref('households/' + getHouseholdId() + '/' + k).off());
   localStorage.setItem(HOUSEHOLD_KEY, code);
+  // Clear local cache so the write-through doesn't push stale data to the new household
+  SYNC_KEYS.forEach(k => storage._local.delete(k));
+  _listenersAttached = false;
   attachRealtimeListeners();
   closeOverlay();
   showToast('Verbonden! Data wordt geladen...');
