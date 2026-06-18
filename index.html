@@ -789,6 +789,12 @@ const storage = {
         const snap = await _db.ref(`households/${getHouseholdId()}/${k}`).once('value');
         const val = snap.val();
         if (val !== null) { storage._local.set(k, val); return val; }
+        // Firebase is empty — push local data up so other devices can sync it
+        const localVal = storage._local.get(k);
+        if (localVal !== null) {
+          _db.ref(`households/${getHouseholdId()}/${k}`).set(localVal).catch(() => {});
+          return localVal;
+        }
       } catch(e) {}
     }
     return storage._local.get(k);
