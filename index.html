@@ -766,6 +766,7 @@ let activeWeekOffset = 0; // 0 = this week, 1 = next week
 //  STORAGE — Firebase Realtime Database + localStorage fallback
 // ══════════════════════════════════════════
 let _db = null;
+let _listenersAttached = false;
 
 function getHouseholdId() {
   let id = localStorage.getItem(HOUSEHOLD_KEY);
@@ -840,6 +841,7 @@ const FIREBASE_CONFIG = {
 };
 
 function initFirebase() {
+  if (_db) return;
   try {
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     _db = firebase.database();
@@ -852,7 +854,8 @@ function initFirebase() {
 }
 
 function attachRealtimeListeners() {
-  if (!_db) return;
+  if (!_db || _listenersAttached) return;
+  _listenersAttached = true;
   const hid = getHouseholdId();
   const initialFires = new Set(SYNC_KEYS);
   SYNC_KEYS.forEach(key => {
@@ -868,7 +871,7 @@ function attachRealtimeListeners() {
 
 async function loadAll() {
   initFirebase();
-  const savedR = storage._local.get(RK);
+  const savedR = await storage.get(RK);
   recipes = savedR && savedR.length ? savedR : DEFAULT_RECIPES.map(r => ({...r}));
   // Migrate: clear emojis from all recipes (one-time write if any found)
   if (recipes.some(r => r.e)) {
@@ -916,7 +919,7 @@ async function loadAll() {
   lockedDaysNext = new Set(await storage.get(LK2) || []);
 }
 
-function saveRecipes() { storage._local.set(RK, recipes); }
+function saveRecipes() { storage.set(RK, recipes); }
 function saveLockedDays() {
   const key = activeWeekOffset === 0 ? LK : LK2;
   const data = [...(activeWeekOffset === 0 ? lockedDays : lockedDaysNext)];
@@ -926,7 +929,8 @@ function saveHist()    { storage._local.set(SK, hist); }
 function saveSess()    { storage._local.set(SSK, sess); }
 function savePlanStorage() {
   const key = activeWeekOffset === 0 ? PK : PK2;
-  storage.set(key, plan).then(() => showSyncStatus(true)).catch(() => showSyncStatus(false));
+  const data = activeWeekOffset === 0 ? plan : planNext;
+  storage.set(key, data).then(() => showSyncStatus(true)).catch(() => showSyncStatus(false));
 }
 function saveCustomTags() { storage.set(TAGS_KEY, customTags); }
 function saveIngredients() { storage.set(INGRK, ingredients).then(() => showSyncStatus(true)).catch(() => showSyncStatus(false)); updateShopBadge(); }
