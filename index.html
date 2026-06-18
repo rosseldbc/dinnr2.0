@@ -874,7 +874,8 @@ function attachRealtimeListeners() {
 async function loadAll() {
   initFirebase();
   const savedR = await storage.get(RK);
-  recipes = savedR && savedR.length ? savedR : DEFAULT_RECIPES.map(r => ({...r}));
+  recipes = (savedR && savedR.length ? savedR : DEFAULT_RECIPES.map(r => ({...r})))
+    .map(r => ({...r, t: r.t||[], b: r.b||[]}));
   // Migrate: clear emojis from all recipes (one-time write if any found)
   if (recipes.some(r => r.e)) {
     recipes = recipes.map(r => ({...r, e: ''}));
@@ -1492,7 +1493,7 @@ function getFilteredRecipes() {
   return recipes.filter(r => {
     const matchQ = !q || r.name.toLowerCase().includes(q);
     const matchF = activeFilters.size === 0 || [...activeFilters].every(f =>
-      f === '__kid' ? r.kid : r.t.includes(f) || r.b.includes(f));
+      f === '__kid' ? r.kid : (r.t||[]).includes(f) || (r.b||[]).includes(f));
     return matchQ && matchF;
   });
 }
@@ -1516,8 +1517,8 @@ function renderRecipes() {
         <div class="recipe-name">${r.name}</div>
         <div class="recipe-chips">
           ${r.kid?`<span class="kid-badge"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Kind</span>`:''}
-          ${r.b.map(x=>`<span class="pill pill-warm" style="font-size:10px">${x}</span>`).join('')}
-          ${r.t.map(x=>`<span class="pill pill-sage" style="font-size:10px">${x}</span>`).join('')}
+          ${(r.b||[]).map(x=>`<span class="pill pill-warm" style="font-size:10px">${x}</span>`).join('')}
+          ${(r.t||[]).map(x=>`<span class="pill pill-sage" style="font-size:10px">${x}</span>`).join('')}
         </div>
       </div>
       <div class="recipe-actions">
