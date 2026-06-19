@@ -746,7 +746,10 @@ const FIXED_HOUSEHOLD_ID = 'dinnr-rosseldbc-7f3k2m';
 const SYNC_KEYS = [RK, PK, PK2, INGRK, DNK, DNK2, TAGS_KEY, LK, LK2];
 
 const STORES = ['Alle winkels','Delhaize','Albert Heijn','Lidl','Aldi','Carrefour','Andere'];
-const INGR_CATEGORIES = ['Vlees','Vis','Drank','Zuivel','Groenten','Fruit','Snacks','Varia'];
+const INGR_CATEGORIES = ['Groenten','Fruit','Maaltijdbox','Brood','Vlees','Charcuterie','Vis','Zuivel','Droge voeding','Drank','Diepvries','Snacks','Varia'];
+const STORE_LAYOUTS = {
+  'Delhaize': ['Groenten','Fruit','Maaltijdbox','Brood','Vlees','Charcuterie','Droge voeding','Drank','Diepvries','Varia']
+};
 
 // ══════════════════════════════════════════
 //  STATE
@@ -2455,21 +2458,41 @@ function renderShopList() {
       <div style="font-size:13px;line-height:1.7">Voeg items toe via de balk onderaan,<br>of gebruik de knoppen rechtsboven.</div>
     </div>`;
   } else {
-    // Group unchecked by store
-    const unchecked = items.filter(i => !i.checked).sort((a,b) => (a.store||'').localeCompare(b.store||'') || a.name.localeCompare(b.name));
+    const unchecked = items.filter(i => !i.checked).sort((a,b) => a.name.localeCompare(b.name));
     const checked = items.filter(i => i.checked);
-    const groups = {};
-    unchecked.forEach(i => { const k = i.store || ''; if (!groups[k]) groups[k]=[]; groups[k].push(i); });
-    const multipleGroups = Object.keys(groups).filter(k => k).length > 1;
 
-    Object.keys(groups).sort().forEach(store => {
-      if (multipleGroups && store) {
-        html += `<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);padding:12px 16px 4px">${store}</div>`;
-      }
-      html += `<div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin:0 16px 6px">`;
-      groups[store].forEach(item => { html += shopItemHtml(item); });
-      html += `</div>`;
-    });
+    const storeLayout = shopStoreFilter !== 'Alle' ? STORE_LAYOUTS[shopStoreFilter] : null;
+    if (storeLayout) {
+      // Group by aisle order for stores with a defined layout
+      const byAisle = {};
+      storeLayout.forEach(cat => { byAisle[cat] = []; });
+      byAisle['Overige'] = [];
+      unchecked.forEach(i => {
+        const cat = storeLayout.includes(i.category) ? i.category : 'Overige';
+        byAisle[cat].push(i);
+      });
+      [...storeLayout, 'Overige'].forEach(aisle => {
+        const aisleItems = byAisle[aisle];
+        if (!aisleItems.length) return;
+        html += `<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);padding:12px 16px 4px">${aisle}</div>`;
+        html += `<div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin:0 16px 6px">`;
+        aisleItems.forEach(item => { html += shopItemHtml(item); });
+        html += `</div>`;
+      });
+    } else {
+      // Group by store when viewing all stores
+      const groups = {};
+      unchecked.forEach(i => { const k = i.store || ''; if (!groups[k]) groups[k]=[]; groups[k].push(i); });
+      const multipleGroups = Object.keys(groups).filter(k => k).length > 1;
+      Object.keys(groups).sort().forEach(store => {
+        if (multipleGroups && store) {
+          html += `<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);padding:12px 16px 4px">${store}</div>`;
+        }
+        html += `<div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin:0 16px 6px">`;
+        groups[store].forEach(item => { html += shopItemHtml(item); });
+        html += `</div>`;
+      });
+    }
 
     if (checked.length) {
       html += `<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);padding:10px 16px 4px">Afgevinkt</div>`;
